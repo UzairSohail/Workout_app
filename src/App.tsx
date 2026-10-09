@@ -29,6 +29,7 @@ export function App() {
           <Route path="/workout" element={<WorkoutPage />} />
           <Route path="/history" element={<History />} />
           <Route path="/history/:id" element={<WorkoutDetail />} />
+          <Route path="/history/:id/edit" element={<WorkoutPage />} />
           <Route path="/exercises" element={<Exercises />} />
           <Route path="/exercises/new" element={<CustomExercise />} />
           <Route path="/exercises/:id" element={<ExerciseDetail />} />

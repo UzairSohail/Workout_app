@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { db, exportBackup, importBackup, updateSettings, type Backup } from '../db';
+import { backupNow, saveFile } from '../backup';
+import { db, importBackup, updateSettings, type Backup } from '../db';
+import { fmtDate } from '../format';
 import { NumInput } from '../components/NumInput';
 import { exerciseName, useExercises } from '../exercises';
 import { useSettings } from '../hooks';
@@ -7,14 +9,6 @@ import { BAR, platesPerSide } from '../logic/plates';
 import { fmt, toDisplay } from '../logic/units';
 import type { Units } from '../types';
 
-function download(name: string, text: string, type: string) {
-  const url = URL.createObjectURL(new Blob([text], { type }));
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = name;
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
 
 const csvCell = (v: string | number) => (typeof v === 'string' && /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : String(v));
 
@@ -50,8 +44,11 @@ export function SettingsPage() {
   };
 
   const exportJson = async () => {
-    const data = await exportBackup();
-    download(`workouts-backup-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify(data), 'application/json');
+    try {
+      await backupNow();
+    } catch {
+      /* cancelled */
+    }
   };
 
   const exportCsv = async () => {
@@ -65,7 +62,7 @@ export function SettingsPage() {
         ]));
       }
     }
-    download('workouts.csv', rows.map((r) => r.map(csvCell).join(',')).join('\n'), 'text/csv');
+    await saveFile('workouts.csv', rows.map((r) => r.map(csvCell).join(',')).join('\n'), 'text/csv').catch(() => {});
   };
 
   const importJson = async (file: File) => {
@@ -114,7 +111,10 @@ export function SettingsPage() {
 
       <section className="card form">
         <h2>Your data</h2>
-        <p className="muted small">Everything is stored on this phone only. Export a backup now and then so you never lose your history.</p>
+        <p className="muted small">
+          Everything is stored on this phone only. Export a backup now and then so you never lose your history.
+          {s.lastBackupAt ? ` Last backup: ${fmtDate(s.lastBackupAt)}.` : ' No backup yet.'}
+        </p>
         <button className="secondary wide" onClick={exportJson}>Export backup (JSON)</button>
         <button className="secondary wide" onClick={exportCsv}>Export spreadsheet (CSV)</button>
         <label className="button secondary wide file">

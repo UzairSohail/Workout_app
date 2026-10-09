@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db';
 import { ExerciseImage } from '../components/ExerciseImage';
 import { ExercisePicker } from '../components/ExercisePicker';
@@ -18,8 +19,9 @@ const TYPE_LABEL: Record<SetType, string> = { warmup: 'W', working: '', drop: 'D
 const NEXT_TYPE: Record<SetType, SetType> = { working: 'warmup', warmup: 'drop', drop: 'working' };
 const PR_LABEL: Record<PrKind, string> = { weight: 'Heaviest', e1rm: 'Best 1RM', reps: 'Most reps' };
 
-function useWakeLock() {
+function useWakeLock(enabled: boolean) {
   useEffect(() => {
+    if (!enabled) return;
     let lock: { release: () => Promise<void> } | null = null;
     const nav = navigator as Navigator & { wakeLock?: { request: (t: 'screen') => Promise<typeof lock> } };
     const req = async () => {
@@ -35,7 +37,7 @@ function useWakeLock() {
       document.removeEventListener('visibilitychange', req);
       lock?.release().catch(() => {});
     };
-  }, []);
+  }, [enabled]);
 }
 
 function Elapsed({ since }: { since: number }) {
@@ -47,15 +49,34 @@ function Elapsed({ since }: { since: number }) {
   return <>{fmtDuration(Date.now() - since)}</>;
 }
 
+function useWorkoutToEdit(id: string | undefined) {
+  return useLiveQuery(async () => (id ? (await db.workouts.get(id)) ?? null : undefined), [id]);
+}
+
+const toLocalInput = (t: number) => {
+  const d = new Date(t);
+  return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+};
+
+/** Logs the workout in progress, or edits a finished one when the route has an :id. */
 export function WorkoutPage() {
-  const stored = useActiveWorkout();
-  const finished = useFinished();
+  const { id: editId } = useParams();
+  const editing = !!editId;
+  const active = useActiveWorkout();
+  const edited = useWorkoutToEdit(editId);
+  const stored = editing ? edited : active;
+  const allFinished = useFinished();
+  const [w, setW] = useState<Workout | null>(null);
+  // Records and suggestions only look at workouts before this one.
+  const finished = useMemo(
+    () => (w && allFinished ? allFinished.filter((x) => x.id !== w.id && x.startedAt < w.startedAt) : allFinished),
+    [allFinished, w?.id, w?.startedAt],
+  );
   const settings = useSettings();
   const { byId } = useExercises();
   const navigate = useNavigate();
-  const [w, setW] = useState<Workout | null>(null);
   const [picker, setPicker] = useState(false);
-  useWakeLock();
+  useWakeLock(!editing);
 
   useEffect(() => {
     if (stored && (!w || w.id !== stored.id)) setW(structuredClone(stored));
@@ -78,6 +99,7 @@ export function WorkoutPage() {
 
   if (stored === undefined) return <p className="muted">Loading…</p>;
   if (stored === null && !w) {
+    if (editing) return <p>Workout not found. <Link to="/history">Back to history</Link></p>;
     return (
       <section className="card">
         <h2>No workout in progress</h2>
@@ -109,6 +131,15 @@ export function WorkoutPage() {
     navigate(`/history/${w.id}?done=1`, { replace: true });
   };
 
+  const saveEdit = async () => {
+    // Drop sets left empty while editing, and exercises with nothing logged.
+    const exercises = w.exercises
+      .map((e) => ({ ...e, sets: e.sets.filter((x) => x.done || x.reps != null).map((x) => ({ ...x, done: x.reps != null })) }))
+      .filter((e) => e.sets.length > 0);
+    await db.workouts.put({ ...w, exercises });
+    navigate(`/history/${w.id}`, { replace: true });
+  };
+
   const discard = async (skipConfirm = false) => {
     if (!skipConfirm && !confirm('Discard this workout? Nothing will be saved.')) return;
     stopRest();
@@ -121,9 +152,29 @@ export function WorkoutPage() {
       <header className="page-head sticky">
         <div className="section-head">
           <input className="title-input" value={w.name} onChange={(e) => mutate((d) => { d.name = e.target.value; })} />
-          <button onClick={finish}>Finish</button>
+          <button onClick={editing ? saveEdit : finish}>{editing ? 'Save' : 'Finish'}</button>
         </div>
-        <p className="muted small"><Elapsed since={w.startedAt} /></p>
+        {editing ? (
+          <div className="row">
+            <label className="mini-field"><span>Started</span>
+              <input type="datetime-local" value={toLocalInput(w.startedAt)} onChange={(e) => {
+                const t = new Date(e.target.value).getTime();
+                if (Number.isNaN(t)) return;
+                mutate((d) => {
+                  const len = (d.finishedAt ?? d.startedAt) - d.startedAt;
+                  d.startedAt = t;
+                  d.finishedAt = t + len;
+                });
+              }} />
+            </label>
+            <label className="mini-field"><span>Minutes</span>
+              <NumInput value={Math.round(((w.finishedAt ?? w.startedAt) - w.startedAt) / 60000)}
+                onChange={(v) => v != null && mutate((d) => { d.finishedAt = d.startedAt + v * 60000; })} />
+            </label>
+          </div>
+        ) : (
+          <p className="muted small"><Elapsed since={w.startedAt} /></p>
+        )}
       </header>
 
       {w.exercises.map((le, ei) => {
@@ -204,7 +255,7 @@ export function WorkoutPage() {
                           if (done && x.reps == null) x.reps = x.target ?? s?.reps ?? le.repMin;
                           if (done && x.weight == null && s?.weight != null) x.weight = s.weight;
                         });
-                        if (done) startRest(set.type === 'warmup' ? Math.min(60, le.rest) : le.rest);
+                        if (done && !editing) startRest(set.type === 'warmup' ? Math.min(60, le.rest) : le.rest);
                       }}
                     >✓</button>
                     {prs.length > 0 && <span className="pr-badge">🏆 {prs.map((p) => PR_LABEL[p]).join(' · ')}</span>}
@@ -228,9 +279,9 @@ export function WorkoutPage() {
 
       <button className="secondary wide" onClick={() => setPicker(true)}>+ Add exercise</button>
       <textarea placeholder="Workout notes" value={w.notes ?? ''} onChange={(e) => mutate((d) => { d.notes = e.target.value; })} />
-      <button className="ghost danger wide" onClick={() => discard()}>Discard workout</button>
+      {!editing && <button className="ghost danger wide" onClick={() => discard()}>Discard workout</button>}
 
-      <RestTimer />
+      {!editing && <RestTimer />}
 
       {picker && (
         <ExercisePicker
