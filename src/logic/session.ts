@@ -3,6 +3,7 @@ import type { Day, Exercise, ExerciseNote, LoggedExercise, LoggedSet, LogMode, P
 import { suggest } from './progression';
 import { advance, completeDay, emptyLift, GZCL_STAGES, liftKey, prescribe } from './schemes';
 import { countedSets, LOWER_BODY } from './stats';
+import { startingWeight } from './startWeight';
 import { wantsWarmup, warmupSets } from './warmup';
 
 /** Previous sessions of one exercise, most recent first. */
@@ -28,12 +29,15 @@ export function suggestionFor(
   settings: Settings,
   excludeId?: string,
 ) {
+  const history = historyFor(le.exerciseId, finished, excludeId);
+  const ex = byId.get(le.exerciseId);
   return suggest(
-    historyFor(le.exerciseId, finished, excludeId),
+    history,
     le.repMin,
     le.repMax,
-    incrementFor(byId.get(le.exerciseId), settings),
+    incrementFor(ex, settings),
     settings.units,
+    history.length ? null : startingWeight(ex, settings, le.repMin, le.repMax),
   );
 }
 
@@ -88,7 +92,9 @@ function schemeExercise(
   settings: Settings,
 ): LoggedExercise {
   const lift = state.lifts[liftKey(p.scheme, p.exerciseId)];
-  const fallback = p.scheme === '531' ? null : lastTopWeight(p.exerciseId, finished);
+  const fallback = p.scheme === '531'
+    ? null
+    : lastTopWeight(p.exerciseId, finished) ?? startingWeight(byId.get(p.exerciseId), settings, p.repMin, p.repMax);
   const rx = prescribe(
     p,
     lift?.weight == null && fallback != null ? { ...(lift ?? emptyLift()), weight: fallback } : lift,

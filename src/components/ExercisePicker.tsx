@@ -5,6 +5,7 @@ import { hasGear } from '../logic/equipment';
 import { freshAlternatives } from '../logic/variety';
 import type { Exercise } from '../types';
 import { ExerciseImage } from './ExerciseImage';
+import { MuscleTags } from './MuscleTags';
 
 const STRENGTH = new Set(['strength', 'powerlifting', 'olympic weightlifting', 'strongman', 'custom']);
 
@@ -90,7 +91,7 @@ export function ExercisePicker({ onPick, onClose, title = 'Add exercise', initia
         <ExerciseImage exercise={e} />
         <span>
           <strong>{e.name}</strong>
-          <small className="muted">{cap(e.primaryMuscles[0] ?? '')} · {e.equipment}</small>
+          <small className="muted"><MuscleTags exercise={e} compact /> {e.equipment}</small>
         </span>
       </button>
     </li>

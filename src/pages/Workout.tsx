@@ -3,12 +3,13 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db';
 import { ExerciseImage } from '../components/ExerciseImage';
+import { MuscleTags } from '../components/MuscleTags';
 import { ExercisePicker } from '../components/ExercisePicker';
 import { NumInput } from '../components/NumInput';
 import { RestTimer, startRest, stopRest } from '../components/RestTimer';
 import { saveExerciseNote, StickyNote } from '../components/ExerciseNote';
 import { SetTimer } from '../components/SetTimer';
-import { cap, exerciseName, useExercises } from '../exercises';
+import { exerciseName, useExercises } from '../exercises';
 import { fmtDuration, fmtSecs } from '../format';
 import { useActiveWorkout, useFinished, useSettings } from '../hooks';
 import { defaultMode, finishWorkout, historyFor, newLoggedExercise, suggestionFor, withWarmups } from '../logic/session';
@@ -253,12 +254,7 @@ export function WorkoutPage() {
               <Link to={`/exercises/${le.exerciseId}`}><ExerciseImage exercise={ex} /></Link>
               <div className="grow">
                 <strong>{exerciseName(byId, le.exerciseId)}</strong>
-                {ex && ex.primaryMuscles.length > 0 && (
-                  <small className="muscles">
-                    🎯 {ex.primaryMuscles.map(cap).join(', ')}
-                    {ex.secondaryMuscles.length > 0 && <span className="muted"> · also {ex.secondaryMuscles.join(', ')}</span>}
-                  </small>
-                )}
+                <MuscleTags exercise={ex} />
                 <small className="muted">
                   {le.scheme ? SCHEME_LABEL[le.scheme] : timed ? `Target ${le.repMin}–${le.repMax} sec` : `Target ${le.repMin}–${le.repMax} reps`}
                   {last && <> · Last: {countedSets(last.sets).map(fmtLast).join(', ')}</>}

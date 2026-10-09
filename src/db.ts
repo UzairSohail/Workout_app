@@ -64,6 +64,18 @@ export async function updateSettings(patch: Partial<Settings>) {
   await db.settings.put({ ...current, ...patch, id: 'me' });
 }
 
+/** Records body weight (kg) for a day, replacing that day's entry, and keeps Settings on the latest value. */
+export async function logBodyWeight(kg: number, date = Date.now()) {
+  const day = new Date(date);
+  day.setHours(0, 0, 0, 0);
+  const start = day.getTime();
+  const noon = start + 12 * 3600e3;
+  const same = await db.bodyWeight.where('date').between(start, start + 864e5, true, false).first();
+  await db.bodyWeight.put({ id: same?.id ?? uid(), date: noon, weight: kg });
+  const latest = await db.bodyWeight.orderBy('date').last();
+  if (latest) await updateSettings({ bodyWeight: latest.weight });
+}
+
 export async function finishedWorkouts(): Promise<Workout[]> {
   const all = await db.workouts.orderBy('startedAt').reverse().toArray();
   return all.filter((w) => w.finishedAt);

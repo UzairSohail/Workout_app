@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ExerciseImage } from '../components/ExerciseImage';
+import { MuscleTags } from '../components/MuscleTags';
 import { ExerciseFilters, filterExercises, MyGearToggle } from '../components/ExercisePicker';
 import { useSettings } from '../hooks';
-import { cap, useExercises } from '../exercises';
+import { useExercises } from '../exercises';
 
 export function Exercises() {
   const { all, loading, error } = useExercises();
@@ -43,7 +44,7 @@ export function Exercises() {
               <ExerciseImage exercise={e} />
               <span>
                 <strong>{e.name}</strong>
-                <small className="muted">{e.primaryMuscles.map(cap).join(', ')} · {e.equipment}{e.custom ? ' · custom' : ''}</small>
+                <small className="muted"><MuscleTags exercise={e} compact /> {e.equipment}{e.custom ? ' · custom' : ''}</small>
               </span>
             </Link>
           </li>

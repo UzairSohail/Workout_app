@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { BarChart, HBars, LineChart } from '../components/Charts';
 import { NumInput } from '../components/NumInput';
-import { db, uid } from '../db';
+import { db, logBodyWeight } from '../db';
 import { cap, useExercises } from '../exercises';
 import { fmtDate } from '../format';
 import { useFinished, useSettings } from '../hooks';
@@ -26,7 +26,7 @@ function BodyWeightCard() {
     if (value == null || value <= 0) return;
     // Noon local time, so the date never slips across a timezone boundary.
     const t = new Date(`${date}T12:00:00`).getTime();
-    await db.bodyWeight.put({ id: uid(), date: Number.isNaN(t) ? Date.now() : t, weight: fromDisplay(value, units) });
+    await logBodyWeight(fromDisplay(value, units), Number.isNaN(t) ? Date.now() : t);
     setValue(null);
   };
 

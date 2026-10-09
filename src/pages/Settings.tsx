@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { backupNow, saveFile } from '../backup';
-import { db, importBackup, updateSettings, type Backup } from '../db';
+import { db, importBackup, logBodyWeight, updateSettings, type Backup } from '../db';
 import { fmtDate } from '../format';
 import { NumInput } from '../components/NumInput';
 import { exerciseName, useExercises } from '../exercises';
 import { useSettings } from '../hooks';
 import { BAR, platesPerSide } from '../logic/plates';
-import { fmt, toDisplay } from '../logic/units';
+import { fmt, fromDisplay, toDisplay } from '../logic/units';
 import type { Units } from '../types';
 import { GEAR } from '../logic/equipment';
 
@@ -88,6 +88,37 @@ export function SettingsPage() {
           <div className="segmented">
             {(['kg', 'lb'] as Units[]).map((u) => (
               <button key={u} className={s.units === u ? 'on' : ''} onClick={() => setUnits(u)}>{u}</button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="card form">
+        <h2>About you</h2>
+        <p className="muted small">Used to suggest a starting weight the first time you do an exercise. You can always change it, and after one session the app goes by what you actually lifted.</p>
+        <div className="row">
+          <label className="mini-field"><span>Body weight ({s.units})</span>
+            <NumInput decimal ariaLabel="Your body weight" value={s.bodyWeight ? Math.round(toDisplay(s.bodyWeight, s.units) * 10) / 10 : null}
+              onChange={(v) => v != null && v > 0 && logBodyWeight(fromDisplay(v, s.units))} />
+          </label>
+          <label className="mini-field"><span>Height ({s.units === 'kg' ? 'cm' : 'in'})</span>
+            <NumInput decimal ariaLabel="Your height" value={s.height ? Math.round((s.units === 'kg' ? s.height : s.height / 2.54) * 10) / 10 : null}
+              onChange={(v) => updateSettings({ height: v ? (s.units === 'kg' ? v : v * 2.54) : undefined })} />
+          </label>
+        </div>
+        <div>
+          <span className="label">Sex (strength estimates differ a lot)</span>
+          <div className="segmented">
+            {([['male', 'Male'], ['female', 'Female'], [undefined, 'Skip']] as const).map(([v, t]) => (
+              <button key={t} className={s.sex === v ? 'on' : ''} onClick={() => updateSettings({ sex: v })}>{t}</button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <span className="label">Lifting experience</span>
+          <div className="segmented">
+            {([['beginner', 'Under 1 year'], ['intermediate', '1–3 years'], ['advanced', '3+ years']] as const).map(([v, t]) => (
+              <button key={v} className={(s.experience ?? 'beginner') === v ? 'on' : ''} onClick={() => updateSettings({ experience: v })}>{t}</button>
             ))}
           </div>
         </div>

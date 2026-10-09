@@ -32,6 +32,11 @@ export interface Settings {
   warmups?: boolean;
   /** Library equipment types the user's gym doesn't have; hidden from pickers and the generator. */
   missingEquipment?: string[];
+  /** Profile used to suggest starting weights. Body weight in kg (latest), height in cm. */
+  bodyWeight?: number;
+  height?: number;
+  sex?: 'male' | 'female';
+  experience?: 'beginner' | 'intermediate' | 'advanced';
 }
 
 /**

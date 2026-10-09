@@ -3,6 +3,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { useNavigate, useParams } from 'react-router-dom';
 import { db } from '../db';
 import { ExerciseImage } from '../components/ExerciseImage';
+import { MuscleTags } from '../components/MuscleTags';
 import { StickyNote } from '../components/ExerciseNote';
 import { cap, useExercises } from '../exercises';
 import { fmtDate, fmtSecs } from '../format';
@@ -70,7 +71,8 @@ export function ExerciseDetail() {
       <header className="page-head">
         <button className="ghost back" onClick={() => navigate(-1)}>‹ Back</button>
         <h1>{ex.name}</h1>
-        <p className="muted">{ex.primaryMuscles.map(cap).join(', ')}{ex.secondaryMuscles.length ? ` (also ${ex.secondaryMuscles.join(', ')})` : ''} · {ex.equipment}</p>
+        <MuscleTags exercise={ex} />
+        <p className="muted small">Equipment: {cap(ex.equipment)}</p>
       </header>
 
       <ExerciseImage exercise={ex} animate className="hero" />
