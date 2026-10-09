@@ -1,5 +1,5 @@
 import Dexie, { type EntityTable } from 'dexie';
-import type { Exercise, Program, Settings, Workout } from './types';
+import type { Exercise, Program, ProgramState, Settings, Workout } from './types';
 import { BUILT_IN_PROGRAMS } from './programs';
 
 export const db = new Dexie('workout-app') as Dexie & {
@@ -7,6 +7,7 @@ export const db = new Dexie('workout-app') as Dexie & {
   programs: EntityTable<Program, 'id'>;
   workouts: EntityTable<Workout, 'id'>;
   customExercises: EntityTable<Exercise, 'id'>;
+  programState: EntityTable<ProgramState, 'programId'>;
 };
 
 db.version(1).stores({
@@ -14,6 +15,9 @@ db.version(1).stores({
   programs: 'id, createdAt',
   workouts: 'id, startedAt, finishedAt',
   customExercises: 'id, name',
+});
+db.version(2).stores({
+  programState: 'programId',
 });
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -72,6 +76,7 @@ export interface Backup {
   programs: Program[];
   workouts: Workout[];
   customExercises: Exercise[];
+  programState?: ProgramState[];
 }
 
 export async function exportBackup(): Promise<Backup> {
@@ -83,16 +88,22 @@ export async function exportBackup(): Promise<Backup> {
     programs: (await db.programs.toArray()).filter((p) => !p.builtIn),
     workouts: await db.workouts.toArray(),
     customExercises: await db.customExercises.toArray(),
+    programState: await db.programState.toArray(),
   };
 }
 
 /** Merges a backup into the database; existing rows with the same id are replaced. */
 export async function importBackup(data: Backup) {
   if (data?.app !== 'workout-app') throw new Error('This file is not a workout app backup.');
-  await db.transaction('rw', [db.settings, db.programs, db.workouts, db.customExercises], async () => {
+  await db.transaction('rw', [db.settings, db.programs, db.workouts, db.customExercises, db.programState], async () => {
     await db.settings.bulkPut(data.settings ?? []);
     await db.programs.bulkPut(data.programs ?? []);
     await db.workouts.bulkPut(data.workouts ?? []);
     await db.customExercises.bulkPut(data.customExercises ?? []);
+    await db.programState.bulkPut(data.programState ?? []);
   });
+}
+
+export async function getProgramState(programId: string): Promise<ProgramState> {
+  return (await db.programState.get(programId)) ?? { programId, week: 0, doneDays: [], lifts: {} };
 }

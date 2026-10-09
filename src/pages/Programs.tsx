@@ -2,6 +2,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { Link, useNavigate } from 'react-router-dom';
 import { db, uid, updateSettings } from '../db';
 import { useSettings } from '../hooks';
+import { programUsesSchemes } from '../logic/schemes';
 import type { Program } from '../types';
 
 export async function copyProgram(p: Program): Promise<string> {
@@ -31,7 +32,11 @@ export function Programs() {
     navigate(`/programs/${id}`);
   };
 
-  const activate = (p: Program) => updateSettings({ activeProgramId: p.id, nextDayIndex: 0 });
+  const activate = async (p: Program) => {
+    await updateSettings({ activeProgramId: p.id, nextDayIndex: 0 });
+    // Programs with their own progression need starting weights first.
+    if (programUsesSchemes(p.days)) navigate(`/programs/${p.id}`);
+  };
 
   return (
     <>

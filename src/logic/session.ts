@@ -1,7 +1,8 @@
-import { db, getSettings, uid } from '../db';
-import type { Day, Exercise, LoggedExercise, LoggedSet, Program, Settings, Workout } from '../types';
+import { db, getProgramState, getSettings, uid } from '../db';
+import type { Day, Exercise, LoggedExercise, LoggedSet, PlannedExercise, Program, ProgramState, SchemeKind, Settings, Workout } from '../types';
 import { suggest } from './progression';
-import { LOWER_BODY } from './stats';
+import { advance, completeDay, emptyLift, GZCL_STAGES, liftKey, prescribe } from './schemes';
+import { countedSets, LOWER_BODY } from './stats';
 
 /** Previous sessions of one exercise, most recent first. */
 export function historyFor(exerciseId: string, finished: Workout[], excludeId?: string): LoggedExercise[] {
@@ -54,6 +55,41 @@ export function newLoggedExercise(
   };
 }
 
+/** Last top working weight logged for an exercise, used when a program lift has no starting weight yet. */
+export function lastTopWeight(exerciseId: string, finished: Workout[]): number | null {
+  const last = historyFor(exerciseId, finished)[0];
+  if (!last) return null;
+  const top = Math.max(0, ...countedSets(last.sets).map((s) => s.weight));
+  return top > 0 ? top : null;
+}
+
+function schemeExercise(
+  p: PlannedExercise & { scheme: SchemeKind },
+  state: ProgramState,
+  finished: Workout[],
+  byId: Map<string, Exercise>,
+  settings: Settings,
+): LoggedExercise {
+  const lift = state.lifts[liftKey(p.scheme, p.exerciseId)];
+  const fallback = p.scheme === '531' ? null : lastTopWeight(p.exerciseId, finished);
+  const rx = prescribe(
+    p,
+    lift?.weight == null && fallback != null ? { ...(lift ?? emptyLift()), weight: fallback } : lift,
+    state.week,
+    incrementFor(byId.get(p.exerciseId), settings),
+    settings.units,
+  );
+  return {
+    exerciseId: p.exerciseId,
+    repMin: Math.min(...rx.sets.map((x) => x.target)),
+    repMax: Math.max(...rx.sets.map((x) => x.target)),
+    rest: p.rest,
+    scheme: p.scheme,
+    note: rx.note,
+    sets: rx.sets.map((x) => ({ weight: x.weight, reps: null, type: 'working', done: false, target: x.target, amrap: x.amrap })),
+  };
+}
+
 async function allFinished() {
   return (await db.workouts.toArray()).filter((w) => w.finishedAt);
 }
@@ -70,8 +106,11 @@ export async function startWorkout(
   let name = 'Workout';
   if (opts.day) {
     name = opts.day.name;
+    const state = opts.program ? await getProgramState(opts.program.id) : undefined;
     exercises = opts.day.exercises.map((p) =>
-      newLoggedExercise(p.exerciseId, p.sets, p.repMin, p.repMax, p.rest, finished, byId, settings),
+      p.scheme && state
+        ? schemeExercise(p as PlannedExercise & { scheme: SchemeKind }, state, finished, byId, settings)
+        : newLoggedExercise(p.exerciseId, p.sets, p.repMin, p.repMax, p.rest, finished, byId, settings),
     );
   } else if (opts.copyOf) {
     name = opts.copyOf.name;
@@ -103,6 +142,7 @@ export async function finishWorkout(w: Workout) {
     .filter((e) => e.sets.length > 0);
   await db.workouts.put({ ...w, exercises, finishedAt: Date.now() });
   const settings = await getSettings();
+  if (w.programId && w.dayId) await advanceProgram(w.programId, w.dayId, exercises, settings);
   if (w.programId && w.programId === settings.activeProgramId && w.dayId) {
     const program = await db.programs.get(w.programId);
     const idx = program?.days.findIndex((d) => d.id === w.dayId) ?? -1;
@@ -110,4 +150,32 @@ export async function finishWorkout(w: Workout) {
       await db.settings.put({ ...settings, nextDayIndex: (idx + 1) % program.days.length });
     }
   }
+}
+
+async function advanceProgram(programId: string, dayId: string, logged: LoggedExercise[], settings: Settings) {
+  const program = await db.programs.get(programId);
+  const day = program?.days.find((d) => d.id === dayId);
+  if (!program || !day || !day.exercises.some((e) => e.scheme)) return;
+  const { loadLibrary } = await import('../exercises');
+  const library = await loadLibrary().catch(() => []);
+  const custom = await db.customExercises.toArray();
+  const byId = new Map([...library, ...custom].map((e) => [e.id, e]));
+  const inc = (exerciseId: string) => incrementFor(byId.get(exerciseId), settings);
+
+  let state = await getProgramState(programId);
+  const lifts = { ...state.lifts };
+  for (const p of day.exercises) {
+    if (!p.scheme) continue;
+    const le = logged.find((e) => e.exerciseId === p.exerciseId && e.scheme === p.scheme);
+    if (!le) continue;
+    const key = liftKey(p.scheme, p.exerciseId);
+    const stages = p.scheme in GZCL_STAGES ? GZCL_STAGES[p.scheme as keyof typeof GZCL_STAGES] : null;
+    const expected = stages ? stages[Math.min(lifts[key]?.stage ?? 0, stages.length - 1)][0] : p.sets;
+    lifts[key] = advance(p.scheme, lifts[key], le, expected, inc(p.exerciseId), settings.units);
+  }
+  state = { ...state, lifts };
+  if (day.exercises.some((e) => e.scheme === '531')) {
+    state = completeDay(state, dayId, program.days.map((d) => d.id), inc, settings.units);
+  }
+  await db.programState.put(state);
 }

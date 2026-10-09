@@ -9,6 +9,7 @@ import { exerciseName, useExercises } from '../exercises';
 import { fmtDuration } from '../format';
 import { useActiveWorkout, useFinished, useSettings } from '../hooks';
 import { finishWorkout, historyFor, newLoggedExercise, suggestionFor } from '../logic/session';
+import { SCHEME_LABEL } from '../logic/schemes';
 import { countedSets, recordsFor, sessionPrs, type PrKind } from '../logic/stats';
 import { fmt, fromDisplay, toDisplay } from '../logic/units';
 import type { LoggedExercise, SetType, Workout } from '../types';
@@ -129,7 +130,7 @@ export function WorkoutPage() {
         const ex = byId.get(le.exerciseId);
         const info = prev.get(le.exerciseId);
         const last = info?.history[0];
-        const s = finished ? suggestionFor(le, finished, byId, settings, w.id) : null;
+        const s = finished && !le.scheme ? suggestionFor(le, finished, byId, settings, w.id) : null;
         const hasHistory = (info?.history.length ?? 0) > 0;
         let workingIndex = 0;
         const prsBySet = info ? sessionPrs(le.sets, info.records, hasHistory) : [];
@@ -140,7 +141,7 @@ export function WorkoutPage() {
               <div className="grow">
                 <strong>{exerciseName(byId, le.exerciseId)}</strong>
                 <small className="muted">
-                  Target {le.repMin}–{le.repMax} reps
+                  {le.scheme ? SCHEME_LABEL[le.scheme] : `Target ${le.repMin}–${le.repMax} reps`}
                   {last && <> · Last: {countedSets(last.sets).map((x) => `${fmt(toDisplay(x.weight, units))}×${x.reps}`).join(', ')}</>}
                 </small>
               </div>
@@ -156,6 +157,7 @@ export function WorkoutPage() {
 
             {s && s.kind !== 'new' && <p className={`suggestion ${s.kind}`}>{s.kind === 'increase' ? '⬆️ ' : s.kind === 'deload' ? '⬇️ ' : '➡️ '}{s.message}</p>}
             {s && s.kind === 'new' && <p className="suggestion">{s.message}</p>}
+            {le.scheme && le.note && <p className="suggestion program">📋 {le.note}</p>}
 
             <div className="sets">
               <div className="set-row head">
@@ -188,7 +190,7 @@ export function WorkoutPage() {
                     <NumInput
                       ariaLabel={`Set ${si + 1} reps`}
                       value={set.reps}
-                      placeholder={String(s?.reps ?? le.repMin)}
+                      placeholder={set.target != null ? `${set.target}${set.amrap ? '+' : ''}` : String(s?.reps ?? le.repMin)}
                       onChange={(v) => mutate((d) => { d.exercises[ei].sets[si].reps = v; })}
                     />
                     <button
@@ -199,7 +201,7 @@ export function WorkoutPage() {
                         mutate((d) => {
                           const x = d.exercises[ei].sets[si];
                           x.done = done;
-                          if (done && x.reps == null) x.reps = s?.reps ?? le.repMin;
+                          if (done && x.reps == null) x.reps = x.target ?? s?.reps ?? le.repMin;
                           if (done && x.weight == null && s?.weight != null) x.weight = s.weight;
                         });
                         if (done) startRest(set.type === 'warmup' ? Math.min(60, le.rest) : le.rest);

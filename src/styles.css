@@ -142,6 +142,7 @@ textarea { min-height: 80px; resize: vertical; }
 .suggestion { font-size: 0.9rem; background: var(--surface-2); border-radius: 10px; padding: 8px 10px; margin: 10px 0 4px; }
 .suggestion.increase { border-left: 3px solid var(--accent); }
 .suggestion.deload { border-left: 3px solid var(--warn); }
+.suggestion.program { border-left: 3px solid #8ab4ff; }
 .sets { display: flex; flex-direction: column; gap: 6px; margin: 8px 0; }
 .set-row { display: grid; grid-template-columns: 44px 1fr 1fr 48px; gap: 8px; align-items: center; }
 .set-row.head { font-size: 0.75rem; color: var(--muted); text-align: center; }
@@ -201,3 +202,8 @@ textarea { min-height: 80px; resize: vertical; }
 .tabbar a span { font-size: 1.3rem; filter: grayscale(1); opacity: 0.7; }
 .tabbar a.active { color: var(--accent); }
 .tabbar a.active span { filter: none; opacity: 1; }
+.lift-row { display: flex; align-items: center; gap: 10px; border-top: 1px solid var(--border); padding-top: 10px; }
+.lift-row .grow { display: flex; flex-direction: column; }
+.lift-row .weight { width: 90px; flex-shrink: 0; text-align: center; }
+.segmented button { padding: 6px 16px; }
+.badge.subtle { background: var(--surface-2); color: var(--muted); margin-left: 6px; font-weight: 600; }
