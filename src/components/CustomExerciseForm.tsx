@@ -12,13 +12,16 @@ export function CustomExerciseForm({ initialName = '', initialMuscle = '', onSav
   const [name, setName] = useState(initialName);
   const [muscle, setMuscle] = useState(initialMuscle || 'chest');
   const [equipment, setEquipment] = useState('machine');
+  const [kind, setKind] = useState<'compound' | 'isolation' | 'cardio'>('isolation');
   const [videoUrl, setVideoUrl] = useState('');
   const [notes, setNotes] = useState('');
 
   const save = async () => {
     if (!name.trim()) return;
     const ex: Exercise = {
-      id: `custom-${uid()}`, name: name.trim(), category: 'custom', equipment,
+      id: `custom-${uid()}`, name: name.trim(), equipment,
+      // Drives the calorie estimate and the suggested starting weight.
+      category: kind === 'cardio' ? 'cardio' : 'custom', mechanic: kind === 'cardio' ? undefined : kind,
       primaryMuscles: [muscle], secondaryMuscles: [],
       instructions: notes.trim() ? notes.trim().split('\n').filter(Boolean) : [],
       images: [], videoUrl: videoUrl.trim() || undefined, custom: true,
@@ -38,6 +41,13 @@ export function CustomExerciseForm({ initialName = '', initialMuscle = '', onSav
       <label>Equipment
         <select value={equipment} onChange={(e) => setEquipment(e.target.value)}>
           {EQUIPMENT.map((m) => <option key={m} value={m}>{cap(m)}</option>)}
+        </select>
+      </label>
+      <label>Type
+        <select value={kind} onChange={(e) => setKind(e.target.value as typeof kind)}>
+          <option value="compound">Compound (several muscles, e.g. squat, row)</option>
+          <option value="isolation">Isolation (one muscle, e.g. curl, raise)</option>
+          <option value="cardio">Cardio</option>
         </select>
       </label>
       <label>Video link (optional)<input type="url" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="https://youtube.com/…" /></label>

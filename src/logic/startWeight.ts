@@ -12,7 +12,7 @@ export function bodyweightRatio(ex: Exercise): number | null {
   const muscle = ex.primaryMuscles[0] ?? '';
   const lower = LOWER_BODY.has(muscle);
   const compound = ex.mechanic === 'compound';
-  if (!['strength', 'powerlifting', 'custom'].includes(ex.category) && !ex.custom) return null;
+  if (ex.category === 'cardio' || (!['strength', 'powerlifting', 'custom'].includes(ex.category) && !ex.custom)) return null;
   if (eq === 'body only' || !eq) return null;
   const db = eq === 'dumbbell' || eq === 'kettlebells';
   if (/leg press/.test(n)) return 1.0;
