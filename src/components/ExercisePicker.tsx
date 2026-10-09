@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { EQUIPMENT, MUSCLES, cap, useExercises } from '../exercises';
-import { useSettings } from '../hooks';
+import { useFinished, useSettings } from '../hooks';
 import { hasGear } from '../logic/equipment';
+import { freshAlternatives } from '../logic/variety';
 import type { Exercise } from '../types';
 import { ExerciseImage } from './ExerciseImage';
 
@@ -62,7 +63,8 @@ export function ExercisePicker({ onPick, onClose, title = 'Add exercise', initia
   initialMuscle?: string;
   excludeId?: string;
 }) {
-  const { all, loading } = useExercises();
+  const { all, byId, loading } = useExercises();
+  const finished = useFinished();
   const [q, setQ] = useState('');
   const [muscle, setMuscle] = useState(initialMuscle);
   const [equipment, setEquipment] = useState('');
@@ -77,6 +79,22 @@ export function ExercisePicker({ onPick, onClose, title = 'Add exercise', initia
     },
     [all, q, muscle, equipment, excludeId, mine, missingEquipment],
   );
+  const swapping = excludeId ? byId.get(excludeId) : undefined;
+  const fresh = useMemo(
+    () => (swapping ? freshAlternatives(swapping, all, finished ?? [], missingEquipment) : []),
+    [swapping, all, finished, missingEquipment],
+  );
+  const pickRow = (e: Exercise) => (
+    <li key={e.id}>
+      <button className="list-item" onClick={() => onPick(e)}>
+        <ExerciseImage exercise={e} />
+        <span>
+          <strong>{e.name}</strong>
+          <small className="muted">{cap(e.primaryMuscles[0] ?? '')} · {e.equipment}</small>
+        </span>
+      </button>
+    </li>
+  );
 
   return (
     <div className="modal" role="dialog" aria-modal="true">
@@ -85,21 +103,24 @@ export function ExercisePicker({ onPick, onClose, title = 'Add exercise', initia
         <button className="ghost" onClick={onClose}>Close</button>
       </div>
       <ExerciseFilters {...{ q, setQ, muscle, setMuscle, equipment, setEquipment }} />
+      {initialMuscle && (
+        <label className="toggle">
+          <input type="checkbox" checked={muscle === initialMuscle} onChange={(e) => setMuscle(e.target.checked ? initialMuscle : '')} />
+          Only {cap(initialMuscle)} exercises
+        </label>
+      )}
       <MyGearToggle missing={missingEquipment} on={mine} setOn={setMine} />
       <div className="modal-body">
         {loading && <p className="muted">Loading exercises…</p>}
+        {fresh.length > 0 && !q && (
+          <>
+            <h3 className="list-head">🔄 Something different</h3>
+            <ul className="list">{fresh.map(pickRow)}</ul>
+            <h3 className="list-head">All matches</h3>
+          </>
+        )}
         <ul className="list">
-          {results.slice(0, limit).map((e) => (
-            <li key={e.id}>
-              <button className="list-item" onClick={() => onPick(e)}>
-                <ExerciseImage exercise={e} />
-                <span>
-                  <strong>{e.name}</strong>
-                  <small className="muted">{cap(e.primaryMuscles[0] ?? '')} · {e.equipment}</small>
-                </span>
-              </button>
-            </li>
-          ))}
+          {results.slice(0, limit).map(pickRow)}
         </ul>
         {results.length > limit && (
           <button className="secondary wide" onClick={() => setLimit(limit + 40)}>Show more</button>
