@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { filterExercises } from '../components/ExercisePicker';
 import { MUSCLES, withExtras } from '../exercises';
 import type { Exercise } from '../types';
-import { ALIASES, EXTRA_EXERCISES } from './extraExercises';
+import { ALIASES, EXTRA_EXERCISES, SIMILAR_PHOTOS } from './extraExercises';
 
 const library = JSON.parse(readFileSync(new URL('../../public/exercises.json', import.meta.url), 'utf8')) as Exercise[];
 const all = withExtras(library);
@@ -26,6 +26,16 @@ describe('extra exercises', () => {
   it('alias every id that exists in the library', () => {
     const ids = new Set(library.map((e) => e.id));
     for (const id of Object.keys(ALIASES)) expect(ids.has(id), id).toBe(true);
+  });
+  it('borrow photos only from real library exercises that have them', () => {
+    const lib = new Map(library.map((e) => [e.name, e]));
+    for (const [extra, similar] of Object.entries(SIMILAR_PHOTOS)) {
+      expect(EXTRA_EXERCISES.some((e) => e.name === extra), extra).toBe(true);
+      expect(lib.get(similar)?.images.length, similar).toBeGreaterThan(0);
+    }
+    const lsp = all.find((e) => e.name === 'Landmine Squat to Press')!;
+    expect(lsp.similarTo).toBe('Landmine Linear Jammer');
+    expect(lsp.images.length).toBeGreaterThan(0);
   });
   it('are found by search, including everyday names', () => {
     const find = (q: string) => filterExercises(all, q, '', '', false).map((e) => e.name);

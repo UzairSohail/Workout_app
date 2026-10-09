@@ -17,6 +17,8 @@ export interface Exercise {
   custom?: boolean;
   /** Other names people use for it, matched by search. */
   aliases?: string[];
+  /** Set when the photos show a similar library movement rather than this exact one. */
+  similarTo?: string;
 }
 
 export interface Settings {
@@ -128,6 +130,13 @@ export interface BodyWeight {
 }
 
 /** Per-exercise preferences that stick across workouts. */
+/** A photo the user took for an exercise; stays on this phone. */
+export interface ExercisePhoto {
+  exerciseId: string;
+  photo: Blob;
+  updatedAt: number;
+}
+
 export interface ExerciseNote {
   exerciseId: string;
   note: string;

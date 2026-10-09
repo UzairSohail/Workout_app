@@ -3,6 +3,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { useNavigate, useParams } from 'react-router-dom';
 import { db } from '../db';
 import { ExerciseImage } from '../components/ExerciseImage';
+import { PhotoControls, useExercisePhoto } from '../components/ExercisePhoto';
 import { MuscleTags } from '../components/MuscleTags';
 import { StickyNote } from '../components/ExerciseNote';
 import { cap, useExercises } from '../exercises';
@@ -39,6 +40,7 @@ export function ExerciseDetail() {
   const finished = useFinished();
   const { units } = useSettings();
   const ex = byId.get(id!);
+  const ownPhoto = useExercisePhoto(ex?.id);
   const note = useLiveQuery(async () => (await db.exerciseNotes.get(id!))?.note ?? '', [id]) ?? '';
   const [editingNote, setEditingNote] = useState(false);
 
@@ -76,6 +78,8 @@ export function ExerciseDetail() {
       </header>
 
       <ExerciseImage exercise={ex} animate className="hero" />
+      {ex.similarTo && !ownPhoto && <p className="muted small similar-note">Photos show a similar movement: {ex.similarTo}.</p>}
+      <PhotoControls exerciseId={ex.id} hasPhoto={!!ownPhoto} />
       <a className="button secondary wide" href={video} target="_blank" rel="noreferrer">
         ▶ {ex.videoUrl ? 'Watch video' : 'Find a form video on YouTube'}
       </a>
@@ -136,8 +140,8 @@ export function ExerciseDetail() {
           navigate('/exercises', { replace: true });
         }}>Delete custom exercise</button>
       )}
-      {!ex.custom && ex.images.length > 0 && <p className="muted small credit">Images and instructions: free-exercise-db (public domain).</p>}
-      {!ex.custom && ex.images.length === 0 && <p className="muted small credit">No photos for this one yet. Use the form video link above.</p>}
+      {!ex.custom && ex.images.length > 0 && <p className="muted small credit">Library photos{ex.similarTo ? '' : ' and instructions'}: free-exercise-db (public domain).</p>}
+      {!ex.custom && ex.images.length === 0 && !ownPhoto && <p className="muted small credit">No photos for this one yet. Add your own above, or use the form video link.</p>}
     </>
   );
 }

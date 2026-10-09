@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import type { Exercise } from '../types';
 import { imageUrl } from '../exercises';
+import { useExercisePhoto } from './ExercisePhoto';
 
-/** Shows the exercise's start/end photos, flipping between them like a GIF when animate is on. */
+/** Shows the user's own photo if they added one, else the start/end photos flipping like a GIF when animate is on. */
 export function ExerciseImage({ exercise, animate = false, className = 'thumb' }: {
   exercise?: Exercise;
   animate?: boolean;
@@ -12,6 +13,7 @@ export function ExerciseImage({ exercise, animate = false, className = 'thumb' }
   const [fallback, setFallback] = useState(false);
   const [failed, setFailed] = useState(false);
   const images = exercise?.images ?? [];
+  const own = useExercisePhoto(exercise?.id);
 
   useEffect(() => {
     if (!animate || images.length < 2) return;
@@ -19,6 +21,9 @@ export function ExerciseImage({ exercise, animate = false, className = 'thumb' }
     return () => clearInterval(t);
   }, [animate, images.length]);
 
+  if (own) {
+    return <div className={className}><img src={own} alt={exercise?.name ?? ''} className="own" /></div>;
+  }
   if (!exercise || images.length === 0 || failed) {
     return <div className={`${className} placeholder`}>{exercise?.name.charAt(0) ?? '?'}</div>;
   }

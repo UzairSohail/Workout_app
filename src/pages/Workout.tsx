@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '../db';
+import { db, saveForLater } from '../db';
 import { ExerciseImage } from '../components/ExerciseImage';
 import { MuscleTags } from '../components/MuscleTags';
 import { ExercisePicker } from '../components/ExercisePicker';
@@ -136,12 +136,13 @@ export function WorkoutPage() {
   };
 
   const finish = async () => {
-    const pending = w.exercises.some((e) => e.sets.some((s) => !s.done));
-    if (pending && !confirm('Some sets are not ticked off. Unticked sets will be dropped. Finish anyway?')) return;
     if (!w.exercises.some((e) => e.sets.some((s) => s.done))) {
-      if (confirm('Nothing was logged. Discard this workout?')) await discard(true);
+      if (w.exercises.length && confirm('Nothing was logged yet. Save this workout to do later?')) await saveLater();
+      else if (confirm('Discard this workout?')) await discard(true);
       return;
     }
+    const pending = w.exercises.some((e) => e.sets.some((s) => !s.done));
+    if (pending && !confirm('Some sets are not ticked off. Unticked sets will be dropped. Finish anyway?')) return;
     stopRest();
     await finishWorkout(w);
     navigate(`/history/${w.id}?done=1`, { replace: true });
@@ -172,6 +173,19 @@ export function WorkoutPage() {
       : { ...fresh, note: undefined };
     if (done.length) d.exercises.splice(i + 1, 0, fresh);
   });
+
+  /** Keeps the plan for another day. With nothing logged yet, also closes this workout. */
+  const saveLater = async () => {
+    const replaced = await saveForLater(w);
+    const started = w.exercises.some((e) => e.sets.some((s) => s.done));
+    if (started) {
+      alert(`${replaced ? 'Updated' : 'Saved'} "${w.name.trim() || 'My workout'}" in your saved workouts. Keep going!`);
+      return;
+    }
+    stopRest();
+    await db.workouts.delete(w.id);
+    navigate('/', { replace: true });
+  };
 
   const discard = async (skipConfirm = false) => {
     if (!skipConfirm && !confirm('Discard this workout? Nothing will be saved.')) return;
@@ -377,6 +391,9 @@ export function WorkoutPage() {
 
       <button className="secondary wide" onClick={() => setPicker(true)}>+ Add exercise</button>
       <textarea placeholder="Workout notes" value={w.notes ?? ''} onChange={(e) => mutate((d) => { d.notes = e.target.value; })} />
+      {!editing && w.exercises.length > 0 && (
+        <button className="secondary wide" onClick={saveLater}>💾 Save workout for later</button>
+      )}
       {!editing && <button className="ghost danger wide" onClick={() => discard()}>Discard workout</button>}
 
       {!editing && <RestTimer />}
