@@ -1,16 +1,19 @@
 import { useMemo, useState } from 'react';
 import { EQUIPMENT, MUSCLES, cap, useExercises } from '../exercises';
+import { useSettings } from '../hooks';
+import { hasGear } from '../logic/equipment';
 import type { Exercise } from '../types';
 import { ExerciseImage } from './ExerciseImage';
 
 const STRENGTH = new Set(['strength', 'powerlifting', 'olympic weightlifting', 'strongman', 'custom']);
 
-export function filterExercises(all: Exercise[], q: string, muscle: string, equipment: string, strengthOnly: boolean) {
+export function filterExercises(all: Exercise[], q: string, muscle: string, equipment: string, strengthOnly: boolean, missing?: readonly string[]) {
   const words = q.toLowerCase().split(/\s+/).filter(Boolean);
   return all.filter((e) => {
     if (strengthOnly && !e.custom && !STRENGTH.has(e.category)) return false;
     if (muscle && !e.primaryMuscles.includes(muscle)) return false;
     if (equipment && e.equipment !== equipment) return false;
+    if (!hasGear(e, missing)) return false;
     const name = e.name.toLowerCase();
     return words.every((w) => name.includes(w));
   });
@@ -41,6 +44,17 @@ export function ExerciseFilters({ q, setQ, muscle, setMuscle, equipment, setEqui
   );
 }
 
+/** "Only equipment I have" switch; renders nothing until some equipment is marked missing in Settings. */
+export function MyGearToggle({ missing, on, setOn }: { missing?: string[]; on: boolean; setOn: (v: boolean) => void }) {
+  if (!missing?.length) return null;
+  return (
+    <label className="toggle">
+      <input type="checkbox" checked={on} onChange={(e) => setOn(e.target.checked)} />
+      Only equipment my gym has
+    </label>
+  );
+}
+
 export function ExercisePicker({ onPick, onClose, title = 'Add exercise', initialMuscle = '', excludeId }: {
   onPick: (e: Exercise) => void;
   onClose: () => void;
@@ -52,14 +66,16 @@ export function ExercisePicker({ onPick, onClose, title = 'Add exercise', initia
   const [q, setQ] = useState('');
   const [muscle, setMuscle] = useState(initialMuscle);
   const [equipment, setEquipment] = useState('');
+  const { missingEquipment } = useSettings();
+  const [mine, setMine] = useState(true);
   const [limit, setLimit] = useState(40);
   const results = useMemo(
     () => {
-      const list = filterExercises(all, q, muscle, equipment, true).filter((e) => e.id !== excludeId);
+      const list = filterExercises(all, q, muscle, equipment, true, mine ? missingEquipment : undefined).filter((e) => e.id !== excludeId);
       // When swapping, show common gym equipment first.
       return excludeId ? [...list].sort((a, b) => equipmentRank(a) - equipmentRank(b)) : list;
     },
-    [all, q, muscle, equipment, excludeId],
+    [all, q, muscle, equipment, excludeId, mine, missingEquipment],
   );
 
   return (
@@ -69,6 +85,7 @@ export function ExercisePicker({ onPick, onClose, title = 'Add exercise', initia
         <button className="ghost" onClick={onClose}>Close</button>
       </div>
       <ExerciseFilters {...{ q, setQ, muscle, setMuscle, equipment, setEquipment }} />
+      <MyGearToggle missing={missingEquipment} on={mine} setOn={setMine} />
       <div className="modal-body">
         {loading && <p className="muted">Loading exercises…</p>}
         <ul className="list">

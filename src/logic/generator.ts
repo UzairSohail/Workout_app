@@ -90,7 +90,7 @@ function prescription(goal: Goal, experience: Experience, compound: boolean) {
 }
 
 /** Builds a program from quiz answers. Pure and deterministic, so the same answers give the same routine. */
-export function generateProgram(input: GeneratorInput, id: string, now = Date.now()): Program {
+export function generateProgram(input: GeneratorInput, id: string, now = Date.now(), available: (exerciseId: string) => boolean = () => true): Program {
   const split = splitFor(input.days, input.experience);
   const allowed = new Set(ALLOWED[input.equipment]);
   const perSession = EXERCISES_PER_SESSION[input.minutes] ?? 6;
@@ -104,7 +104,7 @@ export function generateProgram(input: GeneratorInput, id: string, now = Date.no
     const exercises: PlannedExercise[] = [];
     for (const pattern of template) {
       if (exercises.length >= perSession) break;
-      const options = OPTIONS[pattern].filter(([ex, eq]) => allowed.has(eq) && !used.has(ex)).map(([ex]) => ex);
+      const options = OPTIONS[pattern].filter(([ex, eq]) => allowed.has(eq) && !used.has(ex) && available(ex)).map(([ex]) => ex);
       if (options.length === 0) continue;
       const exerciseId = options[variant % options.length];
       used.add(exerciseId);

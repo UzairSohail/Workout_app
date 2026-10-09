@@ -14,6 +14,7 @@ A free workout tracker for two, built as an installable web app (PWA). It works 
 - **Progress:** workouts per week, weekly volume, sets per muscle over the last 7 days, a week streak, and a body-weight log with a chart.
 - **History:** a calendar, per-workout detail, per-exercise history and an estimated-1RM trend. Repeat any past workout.
 - **Your data:** stored on your phone (IndexedDB). Export or import a JSON backup, or export a CSV.
+- **My gym's equipment:** untick what your gym lacks in Settings and exercise lists, swap suggestions and the routine builder leave those exercises out.
 - kg/lb, configurable increments and a plate calculator.
 
 ## Install on your phone
