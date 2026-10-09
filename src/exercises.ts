@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from './db';
+import { ALIASES, EXTRA_EXERCISES } from './data/extraExercises';
 import type { Exercise } from './types';
 
 /** Pinned commit of github.com/yuhonas/free-exercise-db (public domain). Keep in sync with scripts/build-exercises.mjs. */
@@ -18,11 +19,19 @@ export function loadLibrary(): Promise<Exercise[]> {
       if (!r.ok) throw new Error(`Failed to load exercises (${r.status})`);
       return r.json() as Promise<Exercise[]>;
     })
+    .then(withExtras)
     .catch((e) => {
       libraryPromise = null;
       throw e;
     });
   return libraryPromise;
+}
+
+/** Adds the app's own exercises and everyday-name aliases to the free-exercise-db list. */
+export function withExtras(library: Exercise[]): Exercise[] {
+  return [...library, ...EXTRA_EXERCISES]
+    .map((e) => (ALIASES[e.id] ? { ...e, aliases: ALIASES[e.id] } : e))
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 /** Built-in library merged with the user's custom exercises, plus an id lookup. */

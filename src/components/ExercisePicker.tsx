@@ -4,20 +4,25 @@ import { useFinished, useSettings } from '../hooks';
 import { hasGear } from '../logic/equipment';
 import { freshAlternatives } from '../logic/variety';
 import type { Exercise } from '../types';
+import { CustomExerciseForm, nameFromQuery } from './CustomExerciseForm';
 import { ExerciseImage } from './ExerciseImage';
 import { MuscleTags } from './MuscleTags';
 
 const STRENGTH = new Set(['strength', 'powerlifting', 'olympic weightlifting', 'strongman', 'custom']);
 
 export function filterExercises(all: Exercise[], q: string, muscle: string, equipment: string, strengthOnly: boolean, missing?: readonly string[]) {
-  const words = q.toLowerCase().split(/\s+/).filter(Boolean);
+  const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ');
+  const words = norm(q).split(' ').filter(Boolean);
   return all.filter((e) => {
     if (strengthOnly && !e.custom && !STRENGTH.has(e.category)) return false;
     if (muscle && !e.primaryMuscles.includes(muscle)) return false;
     if (equipment && e.equipment !== equipment) return false;
     if (!hasGear(e, missing)) return false;
-    const name = e.name.toLowerCase();
-    return words.every((w) => name.includes(w));
+    // Search the official name and everyday aliases ("pec deck", "rdl").
+    return [e.name, ...(e.aliases ?? [])].some((n) => {
+      const text = norm(n);
+      return words.every((w) => text.includes(w));
+    });
   });
 }
 
@@ -72,6 +77,7 @@ export function ExercisePicker({ onPick, onClose, title = 'Add exercise', initia
   const { missingEquipment } = useSettings();
   const [mine, setMine] = useState(true);
   const [limit, setLimit] = useState(40);
+  const [creating, setCreating] = useState(false);
   const results = useMemo(
     () => {
       const list = filterExercises(all, q, muscle, equipment, true, mine ? missingEquipment : undefined).filter((e) => e.id !== excludeId);
@@ -96,6 +102,20 @@ export function ExercisePicker({ onPick, onClose, title = 'Add exercise', initia
       </button>
     </li>
   );
+
+  if (creating) {
+    return (
+      <div className="modal" role="dialog" aria-modal="true">
+        <div className="modal-head">
+          <h2>New exercise</h2>
+          <button className="ghost" onClick={() => setCreating(false)}>Back</button>
+        </div>
+        <div className="modal-body">
+          <CustomExerciseForm initialName={nameFromQuery(q)} initialMuscle={muscle} onSaved={onPick} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="modal" role="dialog" aria-modal="true">
@@ -127,6 +147,11 @@ export function ExercisePicker({ onPick, onClose, title = 'Add exercise', initia
           <button className="secondary wide" onClick={() => setLimit(limit + 40)}>Show more</button>
         )}
         {!loading && results.length === 0 && <p className="muted">No matches.</p>}
+        {!loading && q.trim() && (
+          <button className="secondary wide create-it" onClick={() => setCreating(true)}>
+            Can't find it? Create “{nameFromQuery(q)}”
+          </button>
+        )}
       </div>
     </div>
   );

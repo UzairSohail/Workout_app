@@ -136,7 +136,8 @@ export function ExerciseDetail() {
           navigate('/exercises', { replace: true });
         }}>Delete custom exercise</button>
       )}
-      {!ex.custom && <p className="muted small credit">Images and instructions: free-exercise-db (public domain).</p>}
+      {!ex.custom && ex.images.length > 0 && <p className="muted small credit">Images and instructions: free-exercise-db (public domain).</p>}
+      {!ex.custom && ex.images.length === 0 && <p className="muted small credit">No photos for this one yet. Use the form video link above.</p>}
     </>
   );
 }

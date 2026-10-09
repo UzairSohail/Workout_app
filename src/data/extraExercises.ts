@@ -1,0 +1,700 @@
+import type { Exercise } from '../types';
+
+/**
+ * Common gym exercises missing from free-exercise-db, written for this app. No photos yet,
+ * so they show a placeholder and a link to a form video.
+ */
+type Row = [
+  name: string,
+  equipment: string,
+  mechanic: 'compound' | 'isolation',
+  primary: string[],
+  secondary: string[],
+  instructions: string[],
+  category?: string,
+];
+
+const ROWS: Row[] = [
+  // Legs and glutes
+  ['Machine Hip Thrust', 'machine', 'compound', ['glutes'], ['hamstrings'], [
+    'Sit with your upper back against the pad and the belt across your hips, feet flat and shoulder-width apart.',
+    'Drive through your heels to lift your hips until your body is straight from shoulders to knees.',
+    'Squeeze your glutes for a second at the top, then lower under control.',
+  ]],
+  ['Dumbbell Hip Thrust', 'dumbbell', 'compound', ['glutes'], ['hamstrings'], [
+    'Sit with your upper back against a bench and a dumbbell resting on your hips.',
+    'Plant your feet and drive your hips up until your thighs and torso are level.',
+    'Pause and squeeze your glutes, then lower slowly.',
+  ]],
+  ['Bulgarian Split Squat', 'dumbbell', 'compound', ['quadriceps'], ['glutes', 'hamstrings'], [
+    'Hold a dumbbell in each hand and stand a stride in front of a bench, resting the top of your back foot on it.',
+    'Lower straight down until your front thigh is about parallel to the floor.',
+    'Push through your front foot to stand back up. Finish all reps, then switch legs.',
+  ]],
+  ['Hack Squat Machine', 'machine', 'compound', ['quadriceps'], ['glutes'], [
+    'Stand on the platform with your back and shoulders against the pads, feet shoulder-width apart.',
+    'Release the safety handles and bend your knees to lower until your thighs are at least parallel to the platform.',
+    'Drive through your whole foot to straighten your legs without locking your knees.',
+  ]],
+  ['Pendulum Squat', 'machine', 'compound', ['quadriceps'], ['glutes'], [
+    'Set your shoulders under the pads and feet in the middle of the platform.',
+    'Unlock the machine and sit down as deep as you can while keeping your heels down.',
+    'Press back up to just short of locking your knees.',
+  ]],
+  ['Belt Squat', 'machine', 'compound', ['quadriceps'], ['glutes', 'adductors'], [
+    'Attach the belt around your hips and stand on the platform with feet a little wider than shoulder-width.',
+    'Squat down while keeping your chest up, letting the belt pull your hips straight down.',
+    'Stand back up by driving through your feet.',
+  ]],
+  ['Single-Leg Leg Press', 'machine', 'compound', ['quadriceps'], ['glutes', 'hamstrings'], [
+    'Sit in the leg press and place one foot in the middle of the platform.',
+    'Release the safeties and lower until your knee is bent to about 90 degrees.',
+    'Press back up without locking your knee. Finish all reps, then switch legs.',
+  ]],
+  ['Pause Squat', 'barbell', 'compound', ['quadriceps'], ['glutes', 'hamstrings', 'lower back'], [
+    'Set up as for a normal back squat with the bar on your upper back.',
+    'Squat down to your usual depth and hold the bottom position still for 2–3 seconds while staying tight.',
+    'Drive back up without bouncing.',
+  ]],
+  ['Heel-Elevated Goblet Squat', 'dumbbell', 'compound', ['quadriceps'], ['glutes'], [
+    'Stand with your heels on a small plate or wedge, holding a dumbbell vertically against your chest.',
+    'Squat down with your knees travelling forward over your toes, keeping your chest tall.',
+    'Stand back up by pushing through the middle of your feet.',
+  ]],
+  ['Cossack Squat', 'body only', 'compound', ['adductors'], ['quadriceps', 'glutes'], [
+    'Stand with your feet very wide and toes slightly out.',
+    'Shift your weight to one side and squat down on that leg while the other stays straight with its toes up.',
+    'Push back to the middle and repeat on the other side.',
+  ]],
+  ['Curtsy Lunge', 'dumbbell', 'compound', ['glutes'], ['quadriceps', 'adductors'], [
+    'Stand tall holding dumbbells at your sides.',
+    'Step one foot diagonally behind the other, as if curtsying, and lower until your front thigh is near parallel.',
+    'Push through your front foot to return to standing. Alternate sides.',
+  ]],
+  ['Dumbbell Romanian Deadlift', 'dumbbell', 'compound', ['hamstrings'], ['glutes', 'lower back'], [
+    'Stand holding dumbbells in front of your thighs, knees slightly bent.',
+    'Push your hips back and slide the dumbbells down your legs, keeping your back flat, until you feel a strong stretch in your hamstrings.',
+    'Drive your hips forward to stand back up and squeeze your glutes.',
+  ]],
+  ['Single-Leg Romanian Deadlift', 'dumbbell', 'compound', ['hamstrings'], ['glutes', 'lower back'], [
+    'Stand on one leg holding a dumbbell in the opposite hand.',
+    'Hinge at the hip, letting your free leg extend behind you, until your torso is close to parallel with the floor.',
+    'Return to standing by driving your hips forward. Finish all reps, then switch sides.',
+  ]],
+  ['Nordic Hamstring Curl', 'body only', 'isolation', ['hamstrings'], ['glutes'], [
+    'Kneel on a pad with your ankles anchored under something solid or held by a partner.',
+    'Keeping your body straight from knees to head, lower yourself toward the floor as slowly as you can.',
+    'Catch yourself with your hands, then push off lightly and pull back up with your hamstrings.',
+  ]],
+  ['Glute Kickback Machine', 'machine', 'isolation', ['glutes'], ['hamstrings'], [
+    'Set up on the machine with your forearms or chest on the pad and one foot against the lever.',
+    'Push the lever back and up by extending your hip until your leg is in line with your body.',
+    'Squeeze your glute, then return slowly. Finish all reps, then switch legs.',
+  ]],
+  ['Tibialis Raise', 'body only', 'isolation', ['calves'], [], [
+    'Lean your back against a wall with your heels about a foot in front of you.',
+    'Lift your toes as high as you can toward your shins, keeping your heels on the floor.',
+    'Lower slowly and repeat.',
+  ]],
+  ['Seated Calf Raise Machine', 'machine', 'isolation', ['calves'], [], [
+    'Sit with the balls of your feet on the platform and the pad on your lower thighs.',
+    'Release the safety and lower your heels as far as they go for a full stretch.',
+    'Push up onto your toes as high as you can, pause, and lower slowly.',
+  ]],
+  // Chest
+  ['Low-to-High Cable Fly', 'cable', 'isolation', ['chest'], ['shoulders'], [
+    'Set both pulleys at the bottom and hold a handle in each hand, palms facing forward.',
+    'With a slight bend in your elbows, sweep your hands up and together to chin height.',
+    'Lower back to the start under control.',
+  ]],
+  ['High-to-Low Cable Fly', 'cable', 'isolation', ['chest'], ['shoulders'], [
+    'Set both pulleys high, take a handle in each hand and step forward into a split stance.',
+    'With a slight bend in your elbows, bring your hands down and together in front of your hips.',
+    'Return slowly until you feel a stretch across your chest.',
+  ]],
+  ['Dumbbell Squeeze Press', 'dumbbell', 'compound', ['chest'], ['triceps'], [
+    'Lie on a flat bench and press two dumbbells together over your chest, palms facing each other.',
+    'Keep squeezing them together as you lower them to your chest.',
+    'Press back up while keeping the dumbbells touching.',
+  ]],
+  ['Assisted Dip', 'machine', 'compound', ['triceps'], ['chest', 'shoulders'], [
+    'Set the assistance weight, kneel or stand on the platform and grip the dip handles.',
+    'Lower yourself until your elbows are bent to about 90 degrees, leaning slightly forward.',
+    'Press back up to straight arms. More assistance weight makes it easier.',
+  ]],
+  // Back
+  ['Assisted Pull-Up', 'machine', 'compound', ['lats'], ['biceps', 'middle back'], [
+    'Set the assistance weight, kneel or stand on the platform and grip the bar a little wider than your shoulders.',
+    'Pull yourself up until your chin clears the bar, driving your elbows down.',
+    'Lower all the way down with control. More assistance weight makes it easier.',
+  ]],
+  ['Neutral-Grip Lat Pulldown', 'cable', 'compound', ['lats'], ['biceps', 'middle back'], [
+    'Attach a close neutral-grip handle and sit with your thighs under the pads.',
+    'Pull the handle to your upper chest, leaning back slightly and driving your elbows down.',
+    'Let it rise slowly until your arms are straight.',
+  ]],
+  ['Single-Arm Cable Row', 'cable', 'compound', ['middle back'], ['lats', 'biceps'], [
+    'Attach a single handle to a low or mid pulley and sit or stand facing it.',
+    'Row the handle to your side, keeping your elbow close and your torso still.',
+    'Reach forward slowly for a stretch. Finish all reps, then switch arms.',
+  ]],
+  ['Chest-Supported Machine Row', 'machine', 'compound', ['middle back'], ['lats', 'biceps', 'shoulders'], [
+    'Set the seat so the pad supports your chest and you can just reach the handles.',
+    'Pull the handles back, squeezing your shoulder blades together.',
+    'Return slowly until your arms are straight.',
+  ]],
+  ['T-Bar Row', 'barbell', 'compound', ['middle back'], ['lats', 'biceps', 'lower back'], [
+    'Straddle a landmine or T-bar row machine and grab the handles with your back flat and hips hinged.',
+    'Row the weight to your chest, squeezing your shoulder blades.',
+    'Lower until your arms are straight without rounding your back.',
+  ]],
+  ['Pendlay Row', 'barbell', 'compound', ['middle back'], ['lats', 'biceps', 'lower back'], [
+    'Hinge until your torso is close to parallel with the floor, the bar resting on the ground.',
+    'Pull the bar explosively to your lower chest.',
+    'Lower it back to the floor and reset before each rep.',
+  ]],
+  ['Seal Row', 'barbell', 'compound', ['middle back'], ['lats', 'biceps'], [
+    'Lie face down on a raised bench with the bar or dumbbells hanging below you.',
+    'Row the weight up until it touches the bench, keeping your chest on the pad.',
+    'Lower all the way down for a full stretch.',
+  ]],
+  ['Meadows Row', 'barbell', 'compound', ['middle back'], ['lats', 'biceps'], [
+    'Stand side-on to a landmine bar, stagger your stance and grab the end of the bar with an overhand grip.',
+    'Row the bar up and back toward your hip, keeping your torso still.',
+    'Lower with control. Finish all reps, then switch sides.',
+  ]],
+  ['Kroc Row', 'dumbbell', 'compound', ['middle back'], ['lats', 'biceps', 'forearms'], [
+    'Brace one hand on a bench and hold a heavy dumbbell in the other.',
+    'Row it hard to your hip, allowing a little body movement, for high reps.',
+    'Lower all the way down each rep. Switch arms when done.',
+  ]],
+  // Shoulders
+  ['Machine Lateral Raise', 'machine', 'isolation', ['shoulders'], [], [
+    'Sit with the pads against the outside of your upper arms.',
+    'Raise your arms out to the sides until they reach shoulder height.',
+    'Lower slowly.',
+  ]],
+  ['Single-Arm Cable Lateral Raise', 'cable', 'isolation', ['shoulders'], [], [
+    'Stand side-on to a low pulley and take the handle in your far hand.',
+    'Raise your arm out to the side to shoulder height with a slight bend in the elbow.',
+    'Lower slowly. Finish all reps, then switch arms.',
+  ]],
+  ['Cable Y Raise', 'cable', 'isolation', ['shoulders'], ['traps'], [
+    'Set both pulleys low and cross the cables, holding the left handle in your right hand and vice versa.',
+    'Raise your arms up and out into a Y shape, thumbs up.',
+    'Lower under control.',
+  ]],
+  ['Landmine Press', 'barbell', 'compound', ['shoulders'], ['chest', 'triceps'], [
+    'Hold the end of a landmine bar at shoulder height in one hand, staggered stance.',
+    'Press the bar up and forward until your arm is straight.',
+    'Lower back to your shoulder. Finish all reps, then switch sides.',
+  ]],
+  ['Z Press', 'barbell', 'compound', ['shoulders'], ['triceps', 'abdominals'], [
+    'Sit on the floor with your legs straight out and the bar racked at shoulder height.',
+    'Press the bar overhead without leaning back.',
+    'Lower it back to your upper chest.',
+  ]],
+  ['Landmine Squat to Press', 'barbell', 'compound', ['quadriceps'], ['shoulders', 'glutes', 'triceps'], [
+    'Hold the end of a landmine bar with both hands at your chest, feet shoulder-width apart.',
+    'Squat down, keeping your chest up and the bar close.',
+    'Drive up out of the squat and use that momentum to press the bar up and forward until your arms are straight.',
+    'Lower the bar back to your chest and go straight into the next squat.',
+  ]],
+  ['Landmine Squat', 'barbell', 'compound', ['quadriceps'], ['glutes'], [
+    'Hold the end of a landmine bar at your chest with both hands, feet shoulder-width apart.',
+    'Squat down between your knees, keeping your torso upright.',
+    'Stand back up by driving through your feet.',
+  ]],
+  // Arms
+  ['Bayesian Cable Curl', 'cable', 'isolation', ['biceps'], [], [
+    'Stand facing away from a low pulley holding the handle behind you, arm stretched back.',
+    'Curl the handle forward and up while keeping your elbow back.',
+    'Lower slowly into the stretch. Finish all reps, then switch arms.',
+  ]],
+  ['Cable Triceps Kickback', 'cable', 'isolation', ['triceps'], [], [
+    'Hinge forward next to a low pulley and hold the cable with your upper arm tucked by your side.',
+    'Straighten your elbow until your arm points straight back.',
+    'Return slowly without moving your upper arm.',
+  ]],
+  ['Single-Arm Cable Pushdown', 'cable', 'isolation', ['triceps'], [], [
+    'Attach a single handle to a high pulley and keep your elbow tight to your side.',
+    'Push the handle down until your arm is straight.',
+    'Let it rise slowly to about 90 degrees. Finish all reps, then switch arms.',
+  ]],
+  // Core
+  ["Captain's Chair Knee Raise", 'body only', 'isolation', ['abdominals'], [], [
+    'Support yourself on the forearm pads of the captain\'s chair with your back against the pad.',
+    'Lift your knees toward your chest, curling your pelvis up.',
+    'Lower slowly without swinging.',
+  ]],
+  ['Hanging Knee Raise', 'body only', 'isolation', ['abdominals'], [], [
+    'Hang from a pull-up bar with straight arms.',
+    'Bring your knees up toward your chest, tilting your pelvis.',
+    'Lower slowly without swinging.',
+  ]],
+  ['Hollow Body Hold', 'body only', 'isolation', ['abdominals'], [], [
+    'Lie on your back with arms overhead and legs straight.',
+    'Press your lower back into the floor and lift your shoulders and legs a few inches.',
+    'Hold the position while breathing steadily.',
+  ]],
+  ['Bird Dog', 'body only', 'isolation', ['lower back'], ['abdominals', 'glutes'], [
+    'Start on hands and knees with a flat back.',
+    'Extend one arm forward and the opposite leg back until both are level with your body.',
+    'Pause, return, and switch sides.',
+  ]],
+  ['Decline Sit-Up', 'body only', 'isolation', ['abdominals'], [], [
+    'Lie on a decline bench with your feet hooked under the pads.',
+    'Curl up until your torso is upright.',
+    'Lower slowly back down.',
+  ]],
+  ['Copenhagen Plank', 'body only', 'isolation', ['adductors'], ['abdominals'], [
+    'Lie on your side with your top leg resting on a bench and your forearm on the floor.',
+    'Lift your hips so your body is in a straight line, held up by your top leg.',
+    'Hold, then switch sides.',
+  ]],
+  ['Suitcase Carry', 'dumbbell', 'compound', ['abdominals'], ['forearms', 'traps'], [
+    'Pick up a heavy dumbbell or kettlebell in one hand.',
+    'Walk with it at your side, staying tall without leaning toward the weight.',
+    'Switch hands and repeat.',
+  ]],
+  // Conditioning
+  ['Burpee', 'body only', 'compound', ['quadriceps'], ['chest', 'shoulders', 'abdominals'], [
+    'From standing, squat down and place your hands on the floor.',
+    'Jump your feet back to a push-up position, do a push-up if you like, then jump your feet back in.',
+    'Jump up with your arms overhead.',
+  ], 'cardio'],
+  ['Ski Erg', 'machine', 'compound', ['lats'], ['triceps', 'abdominals'], [
+    'Stand facing the machine holding both handles overhead.',
+    'Pull the handles down to your thighs, hinging at the hips.',
+    'Return to the top and repeat at a steady rhythm.',
+  ], 'cardio'],
+  ['Incline Treadmill Walk', 'machine', 'compound', ['glutes'], ['calves', 'hamstrings'], [
+    'Set the treadmill to a steep incline and a brisk walking pace.',
+    'Walk without holding the rails, standing tall.',
+  ], 'cardio'],
+  ['Jumping Jacks', 'body only', 'compound', ['calves'], ['shoulders'], [
+    'Stand with your feet together and arms at your sides.',
+    'Jump your feet out while raising your arms overhead.',
+    'Jump back to the start and repeat quickly.',
+  ], 'cardio'],
+  // Batch 2: variations people commonly ask for
+  ['Landmine Row', 'barbell', 'compound', ['middle back'], ['lats', 'biceps'], [
+    'Straddle a landmine bar, hinge forward with a flat back and hold the bar just behind the plates with both hands.',
+    'Row the bar to your chest, squeezing your shoulder blades.',
+    'Lower until your arms are straight.',
+  ]],
+  ['Landmine Romanian Deadlift', 'barbell', 'compound', ['hamstrings'], ['glutes', 'lower back'], [
+    'Stand facing the end of a landmine bar and hold it with both hands at your hips.',
+    'Push your hips back and lower the bar along your legs with a flat back.',
+    'Drive your hips forward to stand tall.',
+  ]],
+  ['Landmine Reverse Lunge', 'barbell', 'compound', ['quadriceps'], ['glutes'], [
+    'Hold the end of a landmine bar at your chest with both hands.',
+    'Step one foot back and lower until both knees are bent to about 90 degrees.',
+    'Push through your front foot to return. Alternate legs.',
+  ]],
+  ['Landmine Thruster', 'barbell', 'compound', ['quadriceps'], ['shoulders', 'glutes', 'triceps'], [
+    'Hold the end of a landmine bar at your chest with both hands.',
+    'Squat down, then drive up and press the bar overhead and forward in one movement.',
+    'Lower the bar to your chest as you go into the next squat.',
+  ]],
+  ['Barbell Thruster', 'barbell', 'compound', ['quadriceps'], ['shoulders', 'glutes', 'triceps'], [
+    'Hold a barbell in the front rack position on your shoulders.',
+    'Front squat down, then drive up and use the momentum to press the bar overhead.',
+    'Bring the bar back to your shoulders as you squat into the next rep.',
+  ]],
+  ['Dumbbell Thruster', 'dumbbell', 'compound', ['quadriceps'], ['shoulders', 'glutes', 'triceps'], [
+    'Hold dumbbells at your shoulders.',
+    'Squat down, then drive up and press the dumbbells overhead in one movement.',
+    'Lower them to your shoulders as you go into the next squat.',
+  ]],
+  ['Dumbbell Clean and Press', 'dumbbell', 'compound', ['shoulders'], ['quadriceps', 'glutes', 'traps'], [
+    'Start with dumbbells hanging at your sides.',
+    'Hinge and explosively pull the dumbbells up to your shoulders, dipping your knees to catch them.',
+    'Press them overhead, then lower back down to your sides.',
+  ]],
+  ['Dumbbell Snatch', 'dumbbell', 'compound', ['shoulders'], ['glutes', 'hamstrings', 'traps'], [
+    'Stand over a dumbbell, squat down and grab it with one hand.',
+    'Explode up through your hips and pull the dumbbell straight overhead in one motion, locking your arm out.',
+    'Lower it to the floor under control. Alternate arms or finish one side first.',
+  ]],
+  ['Kettlebell Romanian Deadlift', 'kettlebells', 'compound', ['hamstrings'], ['glutes', 'lower back'], [
+    'Hold a kettlebell in both hands in front of your thighs.',
+    'Push your hips back and lower the bell along your legs with a flat back.',
+    'Stand back up by driving your hips forward.',
+  ]],
+  ['Kettlebell Sumo Deadlift', 'kettlebells', 'compound', ['glutes'], ['quadriceps', 'adductors', 'hamstrings'], [
+    'Stand wide with toes out and a kettlebell between your feet.',
+    'Squat down, grab the handle with both hands and keep your chest up.',
+    'Stand up by pushing through your feet and squeezing your glutes.',
+  ]],
+  ['Smith Machine Reverse Lunge', 'machine', 'compound', ['quadriceps'], ['glutes'], [
+    'Set the bar on your upper back in the Smith machine and unrack it.',
+    'Step one foot back and lower until both knees are at about 90 degrees.',
+    'Push through your front foot to return. Finish one side, then switch.',
+  ]],
+  ['Smith Machine Hip Thrust', 'machine', 'compound', ['glutes'], ['hamstrings'], [
+    'Sit with your upper back against a bench placed inside the Smith machine and the bar padded across your hips.',
+    'Drive through your heels to lift your hips until your body is straight from shoulders to knees.',
+    'Squeeze, then lower under control.',
+  ]],
+  ['Lateral Lunge', 'dumbbell', 'compound', ['adductors'], ['quadriceps', 'glutes'], [
+    'Stand holding a dumbbell at your chest.',
+    'Take a big step to the side and sit back into that hip, keeping the other leg straight.',
+    'Push back to the start and repeat on the other side.',
+  ]],
+  ['Barbell Reverse Lunge', 'barbell', 'compound', ['quadriceps'], ['glutes', 'hamstrings'], [
+    'Hold a barbell on your upper back.',
+    'Step one foot back and lower until your back knee nearly touches the floor.',
+    'Drive through your front foot to return. Alternate legs.',
+  ]],
+  ['Deficit Reverse Lunge', 'dumbbell', 'compound', ['glutes'], ['quadriceps', 'hamstrings'], [
+    'Stand on a low step or plate holding dumbbells.',
+    'Step back off the platform and lower deeper than a normal lunge.',
+    'Push through your front foot to step back up.',
+  ]],
+  ['Front-Foot-Elevated Split Squat', 'dumbbell', 'compound', ['quadriceps'], ['glutes'], [
+    'Put your front foot on a low step and the back foot behind you, holding dumbbells.',
+    'Lower straight down as far as you comfortably can.',
+    'Push through your front foot to stand back up. Finish one side, then switch.',
+  ]],
+  ['Lateral Step-Up', 'dumbbell', 'compound', ['quadriceps'], ['glutes'], [
+    'Stand side-on to a box holding dumbbells.',
+    'Step up sideways with the near foot and stand tall on the box.',
+    'Lower slowly back down. Finish one side, then switch.',
+  ]],
+  ['Wall Sit', 'body only', 'isolation', ['quadriceps'], ['glutes'], [
+    'Lean your back against a wall and slide down until your thighs are parallel to the floor.',
+    'Hold the position with your knees over your ankles.',
+  ]],
+  ['Spanish Squat', 'bands', 'isolation', ['quadriceps'], [], [
+    'Loop a heavy band around a rack and behind your knees, then step back so it is tight.',
+    'Sit back and down with your shins vertical, letting the band hold your knees.',
+    'Stand back up, keeping tension on the band.',
+  ]],
+  ['Wide-Stance Leg Press', 'machine', 'compound', ['glutes'], ['quadriceps', 'adductors'], [
+    'Place your feet wide and high on the leg press platform, toes slightly out.',
+    'Lower until your knees are bent to about 90 degrees.',
+    'Press back up without locking your knees.',
+  ]],
+  ['Single-Leg Lying Leg Curl', 'machine', 'isolation', ['hamstrings'], [], [
+    'Lie face down on the leg curl machine with one ankle under the pad.',
+    'Curl the pad toward your glutes.',
+    'Lower slowly. Finish one side, then switch.',
+  ]],
+  ['Single-Leg Seated Leg Curl', 'machine', 'isolation', ['hamstrings'], [], [
+    'Sit in the leg curl machine with one leg on the pad.',
+    'Curl your heel down and back as far as you can.',
+    'Return slowly. Finish one side, then switch.',
+  ]],
+  ['Kneeling Leg Curl Machine', 'machine', 'isolation', ['hamstrings'], [], [
+    'Kneel on the machine with one leg under the roller pad.',
+    'Curl your heel toward your glutes.',
+    'Lower slowly. Finish one side, then switch.',
+  ]],
+  ['Slider Hamstring Curl', 'body only', 'isolation', ['hamstrings'], ['glutes'], [
+    'Lie on your back with your heels on sliders or towels and lift your hips.',
+    'Slide your heels out until your legs are almost straight, keeping your hips up.',
+    'Pull your heels back in.',
+  ]],
+  ['Frog Pump', 'body only', 'isolation', ['glutes'], [], [
+    'Lie on your back with the soles of your feet together and knees out wide.',
+    'Squeeze your glutes to lift your hips.',
+    'Lower and repeat for high reps.',
+  ]],
+  ['Banded Lateral Walk', 'bands', 'isolation', ['abductors'], ['glutes'], [
+    'Put a mini band around your legs just above the knees or at the ankles and get into a quarter squat.',
+    'Step sideways, keeping tension on the band.',
+    'Take the set number of steps one way, then come back.',
+  ]],
+  ['Clamshell', 'bands', 'isolation', ['abductors'], ['glutes'], [
+    'Lie on your side with knees bent and a band around your thighs.',
+    'Keeping your feet together, open your top knee as far as you can.',
+    'Close slowly. Finish one side, then switch.',
+  ]],
+  ['Fire Hydrant', 'body only', 'isolation', ['abductors'], ['glutes'], [
+    'Start on hands and knees.',
+    'Lift one knee out to the side, keeping it bent, until your thigh is level with your hip.',
+    'Lower slowly. Finish one side, then switch.',
+  ]],
+  ['Donkey Kick', 'body only', 'isolation', ['glutes'], ['hamstrings'], [
+    'Start on hands and knees.',
+    'Keeping your knee bent, push one foot up toward the ceiling until your thigh is level with your body.',
+    'Lower slowly. Finish one side, then switch.',
+  ]],
+  ['Cable Hip Abduction', 'cable', 'isolation', ['abductors'], ['glutes'], [
+    'Attach an ankle strap to a low pulley and stand side-on with the strap on your outside ankle.',
+    'Raise your leg out to the side, keeping your body upright.',
+    'Return slowly. Finish one side, then switch.',
+  ]],
+  ['Standing Hip Abduction Machine', 'machine', 'isolation', ['abductors'], ['glutes'], [
+    'Stand in the machine with the pad on the outside of your working leg.',
+    'Push the leg out to the side as far as you comfortably can.',
+    'Return slowly. Finish one side, then switch.',
+  ]],
+  ['Snatch-Grip Deadlift', 'barbell', 'compound', ['hamstrings'], ['lower back', 'traps', 'glutes'], [
+    'Set up for a deadlift with a very wide grip, hands near the ends of the bar.',
+    'Push the floor away, keeping your back flat and the bar close.',
+    'Stand tall, then lower the bar with control.',
+  ]],
+  ['Block Pull', 'barbell', 'compound', ['lower back'], ['glutes', 'hamstrings', 'traps'], [
+    'Set the bar on blocks or plates so it starts around knee height.',
+    'Grip it like a deadlift and stand up, driving your hips forward.',
+    'Lower back to the blocks.',
+  ]],
+  ['B-Stance Romanian Deadlift', 'dumbbell', 'compound', ['hamstrings'], ['glutes'], [
+    'Stand with most of your weight on one leg and the other foot slightly back on its toes for balance.',
+    'Hinge at the hips with dumbbells in your hands until you feel a stretch in the front leg.',
+    'Stand back up. Finish one side, then switch.',
+  ]],
+  ['Hex Press', 'dumbbell', 'compound', ['chest'], ['triceps'], [
+    'Lie on a bench and press two hex dumbbells together over your chest.',
+    'Lower them to your chest while squeezing them together.',
+    'Press back up, still squeezing.',
+  ]],
+  ['Single-Arm Cable Chest Press', 'cable', 'compound', ['chest'], ['triceps', 'shoulders'], [
+    'Stand facing away from a cable set at chest height, holding the handle beside your chest.',
+    'Press it forward until your arm is straight, keeping your torso still.',
+    'Return slowly. Finish one side, then switch.',
+  ]],
+  ['Single-Arm Cable Fly', 'cable', 'isolation', ['chest'], ['shoulders'], [
+    'Stand side-on to a cable at chest height and hold the handle with your arm out to the side.',
+    'Sweep the handle across your body with a slight bend in the elbow.',
+    'Return slowly for a stretch. Finish one side, then switch.',
+  ]],
+  ['Decline Cable Fly', 'cable', 'isolation', ['chest'], [], [
+    'Lie on a decline bench between two low cables and hold a handle in each hand.',
+    'With a slight bend in your elbows, bring your hands together over your chest.',
+    'Lower slowly.',
+  ]],
+  ['Deficit Push-Up', 'body only', 'compound', ['chest'], ['triceps', 'shoulders'], [
+    'Place your hands on two plates or push-up handles.',
+    'Lower your chest below hand level for a deeper stretch.',
+    'Push back up to straight arms.',
+  ]],
+  ['Weighted Push-Up', 'other', 'compound', ['chest'], ['triceps', 'shoulders'], [
+    'Get into a push-up position with a plate on your upper back or wearing a weight vest.',
+    'Lower your chest to the floor with a tight core.',
+    'Push back up.',
+  ]],
+  ['Archer Push-Up', 'body only', 'compound', ['chest'], ['triceps', 'shoulders'], [
+    'Start in a wide push-up position.',
+    'Lower toward one hand while the other arm stays straight out to the side.',
+    'Push back up and alternate sides.',
+  ]],
+  ['Pike Push-Up', 'body only', 'compound', ['shoulders'], ['triceps'], [
+    'Start in a push-up position and walk your feet in until your hips are high.',
+    'Bend your elbows to lower the top of your head toward the floor.',
+    'Push back up.',
+  ]],
+  ['Neutral-Grip Pull-Up', 'body only', 'compound', ['lats'], ['biceps', 'middle back'], [
+    'Hang from parallel handles with palms facing each other.',
+    'Pull yourself up until your chin clears the handles.',
+    'Lower all the way down.',
+  ]],
+  ['Weighted Chin-Up', 'other', 'compound', ['lats'], ['biceps'], [
+    'Attach weight with a dip belt or hold a dumbbell between your feet.',
+    'Hang with palms facing you and pull until your chin clears the bar.',
+    'Lower all the way down.',
+  ]],
+  ['Negative Pull-Up', 'body only', 'compound', ['lats'], ['biceps', 'middle back'], [
+    'Jump or step up so your chin is over the bar.',
+    'Lower yourself as slowly as you can, 3 to 5 seconds, until your arms are straight.',
+    'Step back up and repeat.',
+  ]],
+  ['Kneeling Lat Pulldown', 'cable', 'compound', ['lats'], ['biceps'], [
+    'Kneel facing a high pulley holding a bar or rope.',
+    'Pull down to your upper chest, driving your elbows to your sides.',
+    'Let it rise slowly.',
+  ]],
+  ['Machine Pullover', 'machine', 'isolation', ['lats'], ['chest'], [
+    'Sit in the pullover machine with your elbows on the pads and arms overhead.',
+    'Pull your elbows down and forward toward your hips.',
+    'Return slowly for a full stretch.',
+  ]],
+  ['Wide-Grip Seated Cable Row', 'cable', 'compound', ['middle back'], ['lats', 'shoulders', 'biceps'], [
+    'Sit at a cable row with a wide bar and slightly bent knees.',
+    'Row the bar to your lower chest, elbows flaring out.',
+    'Return slowly until your arms are straight.',
+  ]],
+  ['Incline Y Raise', 'dumbbell', 'isolation', ['shoulders'], ['traps'], [
+    'Lie face down on an incline bench holding light dumbbells.',
+    'Raise your arms up and out into a Y shape, thumbs up.',
+    'Lower slowly.',
+  ]],
+  ['Leaning Lateral Raise', 'dumbbell', 'isolation', ['shoulders'], [], [
+    'Hold a sturdy post with one hand and lean away from it, a dumbbell in the other hand.',
+    'Raise the dumbbell out to the side to shoulder height.',
+    'Lower slowly. Finish one side, then switch.',
+  ]],
+  ['Trap Bar Shrug', 'other', 'isolation', ['traps'], ['forearms'], [
+    'Stand inside a trap bar holding the handles at your sides.',
+    'Shrug your shoulders straight up toward your ears.',
+    'Pause, then lower slowly.',
+  ]],
+  ['Overhead Carry', 'dumbbell', 'compound', ['shoulders'], ['abdominals', 'traps'], [
+    'Press a dumbbell or kettlebell overhead and lock your arm out.',
+    'Walk with it overhead, keeping your ribs down.',
+    'Switch hands and repeat.',
+  ]],
+  ['Bicep 21s', 'barbell', 'isolation', ['biceps'], ['forearms'], [
+    'Hold a barbell or EZ bar with an underhand grip.',
+    'Do 7 half reps from the bottom to halfway, then 7 from halfway to the top.',
+    'Finish with 7 full reps.',
+  ]],
+  ['Dumbbell Skull Crusher', 'dumbbell', 'isolation', ['triceps'], [], [
+    'Lie on a bench holding dumbbells over your chest, palms facing each other.',
+    'Bend your elbows to lower the dumbbells beside your head, keeping your upper arms still.',
+    'Straighten your arms to press them back up.',
+  ]],
+  ['Seated EZ-Bar Overhead Triceps Extension', 'e-z curl bar', 'isolation', ['triceps'], [], [
+    'Sit on a bench with back support and hold an EZ bar overhead.',
+    'Lower it behind your head by bending your elbows.',
+    'Straighten your arms to lift it back up.',
+  ]],
+  ['Bicycle Crunch', 'body only', 'isolation', ['abdominals'], [], [
+    'Lie on your back with hands by your head and legs raised.',
+    'Bring one elbow toward the opposite knee while straightening the other leg.',
+    'Alternate sides in a pedalling motion.',
+  ]],
+  ['Toes to Bar', 'body only', 'isolation', ['abdominals'], ['lats'], [
+    'Hang from a pull-up bar.',
+    'Lift your legs and touch your toes to the bar.',
+    'Lower with control without swinging.',
+  ]],
+  ['Windshield Wiper', 'body only', 'isolation', ['abdominals'], [], [
+    'Lie on your back with arms out wide and legs raised straight up.',
+    'Lower your legs to one side, keeping your shoulders down.',
+    'Bring them back up and over to the other side.',
+  ]],
+  ['Plank Shoulder Tap', 'body only', 'isolation', ['abdominals'], ['shoulders'], [
+    'Hold a high plank with feet a little apart.',
+    'Tap one hand to the opposite shoulder without rocking your hips.',
+    'Alternate sides.',
+  ]],
+  ['Stir the Pot', 'exercise ball', 'isolation', ['abdominals'], [], [
+    'Hold a plank with your forearms on a stability ball.',
+    'Move your forearms in small circles, keeping your hips still.',
+    'Change direction halfway through.',
+  ]],
+  ['Dragon Flag', 'body only', 'isolation', ['abdominals'], [], [
+    'Lie on a bench and hold the bench behind your head.',
+    'Lift your whole body up so only your upper back touches the bench.',
+    'Lower your straight body slowly toward the bench without letting your hips sag.',
+  ]],
+  ['Dead Hang', 'body only', 'isolation', ['forearms'], ['lats'], [
+    'Hang from a pull-up bar with straight arms and a shoulder-width grip.',
+    'Hold for time, keeping your shoulders active.',
+  ]],
+  ['Wall Ball', 'medicine ball', 'compound', ['quadriceps'], ['shoulders', 'glutes'], [
+    'Stand facing a wall holding a medicine ball at your chest.',
+    'Squat down, then drive up and throw the ball to a target high on the wall.',
+    'Catch it and go straight into the next squat.',
+  ], 'cardio'],
+  ['Skater Jump', 'body only', 'compound', ['glutes'], ['quadriceps', 'abductors'], [
+    'Stand on one leg.',
+    'Leap sideways onto the other foot, swinging the trailing leg behind you.',
+    'Bound back and forth.',
+  ], 'cardio'],
+  ['Assault Bike', 'machine', 'compound', ['quadriceps'], ['shoulders', 'glutes'], [
+    'Sit on the fan bike holding the handles.',
+    'Push and pull the handles while pedalling.',
+    'Go steady or do hard intervals.',
+  ], 'cardio'],
+  ['Pigeon Stretch', 'body only', 'isolation', ['glutes'], ['abductors'], [
+    'From hands and knees, bring one knee forward behind your wrist and extend the other leg back.',
+    'Lower your hips toward the floor and lean forward.',
+    'Hold, then switch sides.',
+  ], 'stretching'],
+];
+
+const slug = (s: string) => s.replace(/[^A-Za-z0-9]+/g, '_').replace(/^_|_$/g, '');
+
+export const EXTRA_EXERCISES: Exercise[] = ROWS.map(([name, equipment, mechanic, primaryMuscles, secondaryMuscles, instructions, category]) => ({
+  id: `x_${slug(name)}`,
+  name,
+  category: category ?? 'strength',
+  equipment,
+  level: 'intermediate',
+  mechanic,
+  primaryMuscles,
+  secondaryMuscles,
+  instructions,
+  images: [],
+}));
+
+/** Everyday gym names for library exercises whose official names are different. Keys are exercise ids. */
+export const ALIASES: Record<string, string[]> = {
+  Butterfly: ['pec deck', 'chest fly machine', 'pec fly machine', 'machine fly'],
+  Reverse_Machine_Flyes: ['reverse pec deck', 'rear delt machine'],
+  Thigh_Abductor: ['hip abduction', 'abductor machine'],
+  Thigh_Adductor: ['hip adduction', 'adductor machine'],
+  Leverage_Chest_Press: ['chest press machine', 'machine chest press'],
+  Leverage_Incline_Chest_Press: ['incline chest press machine', 'incline machine press'],
+  Leverage_Shoulder_Press: ['shoulder press machine', 'machine shoulder press'],
+  Leverage_Iso_Row: ['machine row', 'iso row'],
+  Leverage_High_Row: ['high row machine'],
+  Romanian_Deadlift: ['rdl'],
+  'Stiff-Legged_Dumbbell_Deadlift': ['dumbbell rdl'],
+  Standing_Military_Press: ['ohp', 'overhead press', 'barbell shoulder press'],
+  Seated_Dumbbell_Press: ['seated dumbbell shoulder press'],
+  Tricep_Dumbbell_Kickback: ['triceps kickback', 'dumbbell kickback'],
+  Standing_Dumbbell_Triceps_Extension: ['dumbbell overhead triceps extension', 'overhead dumbbell extension'],
+  'Push-Ups_-_Close_Triceps_Position': ['diamond push up', 'close grip push up'],
+  Dip_Machine: ['triceps dip machine', 'seated dip machine'],
+  Dumbbell_Incline_Row: ['chest supported row', 'chest supported dumbbell row'],
+  'One-Legged_Cable_Kickback': ['cable glute kickback', 'cable kickback'],
+  Pull_Through: ['cable pull through'],
+  Hyperextensions_Back_Extensions: ['back extension', '45 degree hyperextension', 'roman chair'],
+  Calf_Press_On_The_Leg_Press_Machine: ['leg press calf raise'],
+  Standing_Calf_Raises: ['standing calf raise machine'],
+  Ab_Roller: ['ab wheel', 'ab wheel rollout'],
+  Standing_Cable_Wood_Chop: ['woodchopper', 'cable chop'],
+  Landmine_180s: ['landmine rotation', 'landmine twist'],
+  Battling_Ropes: ['battle ropes'],
+  Rowing_Stationary: ['rowing machine', 'rower', 'erg'],
+  Bicycling_Stationary: ['stationary bike', 'exercise bike', 'spin bike'],
+  Stairmaster: ['stair climber', 'stair machine'],
+  Rope_Jumping: ['jump rope', 'skipping'],
+  Goblet_Squat: ['kettlebell goblet squat'],
+  'EZ-Bar_Skullcrusher': ['skull crusher', 'lying triceps extension'],
+  'Triceps_Pushdown_-_Rope_Attachment': ['rope pushdown'],
+  Ab_Crunch_Machine: ['machine crunch'],
+  'Straight-Arm_Pulldown': ['lat prayer'],
+  'Band_Assisted_Pull-Up': ['band pull up'],
+  Dumbbell_Rear_Lunge: ['reverse lunge dumbbell', 'dumbbell reverse lunge', 'goblet reverse lunge'],
+  Plie_Dumbbell_Squat: ['sumo squat', 'dumbbell sumo squat'],
+  Dumbbell_Lunges: ['dumbbell walking lunge', 'walking lunge dumbbell'],
+  Farmers_Walk: ['farmers carry', 'farmer carry'],
+  'Reverse_Grip_Bent-Over_Rows': ['underhand barbell row', 'yates row', 'barbell row underhand'],
+  Underhand_Cable_Pulldowns: ['reverse grip lat pulldown', 'underhand lat pulldown'],
+  One_Arm_Lat_Pulldown: ['single arm lat pulldown'],
+  'Bent_Over_Two-Dumbbell_Row': ['two arm dumbbell row'],
+  'Lying_T-Bar_Row': ['chest supported t bar row'],
+  Inverted_Row_with_Straps: ['trx row', 'suspension row'],
+  Reverse_Flyes: ['reverse fly dumbbell', 'bent over reverse fly', 'rear delt fly dumbbell'],
+  Face_Pull: ['face pull rope'],
+  External_Rotation: ['dumbbell external rotation'],
+  Preacher_Curl: ['ez bar preacher curl'],
+  Reverse_Barbell_Curl: ['reverse grip ez bar curl', 'reverse curl'],
+  'Palms-Down_Wrist_Curl_Over_A_Bench': ['reverse wrist curl'],
+  Triceps_Pushdown: ['straight bar pushdown'],
+  'Dumbbell_One-Arm_Triceps_Extension': ['single arm overhead dumbbell extension'],
+  'One-Arm_Kettlebell_Swings': ['single arm kettlebell swing'],
+  'Sled_Drag_-_Harness': ['sled pull'],
+  Standing_Long_Jump: ['broad jump'],
+  Ball_Leg_Curl: ['stability ball hamstring curl'],
+  Barbell_Step_Ups: ['box step up'],
+  Dumbbell_Step_Ups: ['box step up'],
+  Hanging_Pike: ['toes to bar pike'],
+  Power_Jerk: ['push jerk'],
+  Intermediate_Hip_Flexor_and_Quad_Stretch: ['couch stretch', 'hip flexor stretch'],
+  Standing_Dumbbell_Press: ['dumbbell shoulder press standing', 'standing dumbbell shoulder press'],
+  Seated_Barbell_Military_Press: ['seated barbell shoulder press'],
+  'Smith_Single-Leg_Split_Squat': ['smith machine split squat'],
+  'Smith_Machine_Stiff-Legged_Deadlift': ['smith machine romanian deadlift', 'smith machine rdl'],
+  Dumbbell_Alternate_Bicep_Curl: ['alternating dumbbell curl'],
+  'Rope_Straight-Arm_Pulldown': ['cable pullover'],
+  Air_Bike: ['bicycle crunch'],
+  Weighted_Pull_Ups: ['weighted pull up'],
+};

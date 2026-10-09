@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { nameFromQuery } from '../components/CustomExerciseForm';
 import { ExerciseImage } from '../components/ExerciseImage';
 import { MuscleTags } from '../components/MuscleTags';
 import { ExerciseFilters, filterExercises, MyGearToggle } from '../components/ExercisePicker';
@@ -51,6 +52,12 @@ export function Exercises() {
         ))}
       </ul>
       {results.length > limit && <button className="secondary wide" onClick={() => setLimit(limit + 50)}>Show more</button>}
+      {!loading && q.trim() && (
+        <Link className="button secondary wide create-it"
+          to={`/exercises/new?${new URLSearchParams({ name: nameFromQuery(q), ...(muscle ? { muscle } : {}) })}`}>
+          Can't find it? Create “{nameFromQuery(q)}”
+        </Link>
+      )}
     </>
   );
 }

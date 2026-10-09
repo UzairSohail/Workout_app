@@ -20,6 +20,12 @@ describe('calories', () => {
     const plank = setCalories(set(60), le([], { mode: 'time', rest: 0 }), ex('plank', { mechanic: 'isolation' }), 80);
     expect(plank).toBeCloseTo((5 * 80 * 60) / 3600, 5);
   });
+  it('uses the type picked for a custom exercise', () => {
+    const custom = (extra: Partial<Exercise>) => setCalories(set(10), le([], { rest: 0 }), ex('c', { category: 'custom', custom: true, ...extra }), 80);
+    expect(custom({ mechanic: 'compound' })).toBeCloseTo((7 * 80 * 30) / 3600, 5);
+    expect(custom({ mechanic: 'isolation' })).toBeCloseTo((5 * 80 * 30) / 3600, 5);
+    expect(custom({ category: 'cardio', mechanic: undefined })).toBeCloseTo((8 * 80 * 30) / 3600, 5);
+  });
   it('grows with every set and falls back to 70 kg', () => {
     const byId = new Map([['bench', ex('bench')]]);
     const w = (n: number): Workout => ({ id: 'w', name: 'w', startedAt: 0, exercises: [le(Array.from({ length: 3 }, (_, i) => set(10, i < n)))] });

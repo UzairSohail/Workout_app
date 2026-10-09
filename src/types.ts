@@ -15,6 +15,8 @@ export interface Exercise {
   images: string[];
   videoUrl?: string;
   custom?: boolean;
+  /** Other names people use for it, matched by search. */
+  aliases?: string[];
 }
 
 export interface Settings {
