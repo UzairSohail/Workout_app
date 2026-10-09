@@ -1,5 +1,5 @@
 import Dexie, { type EntityTable } from 'dexie';
-import type { BodyWeight, Exercise, ExerciseNote, Program, ProgramState, Settings, Workout } from './types';
+import type { BodyWeight, Exercise, ExerciseNote, ExercisePhoto, Program, ProgramState, Settings, Workout } from './types';
 import { BUILT_IN_PROGRAMS } from './programs';
 
 export const db = new Dexie('workout-app') as Dexie & {
@@ -10,6 +10,7 @@ export const db = new Dexie('workout-app') as Dexie & {
   programState: EntityTable<ProgramState, 'programId'>;
   bodyWeight: EntityTable<BodyWeight, 'id'>;
   exerciseNotes: EntityTable<ExerciseNote, 'exerciseId'>;
+  exercisePhotos: EntityTable<ExercisePhoto, 'exerciseId'>;
 };
 
 db.version(1).stores({
@@ -24,6 +25,9 @@ db.version(2).stores({
 db.version(3).stores({
   bodyWeight: 'id, date',
   exerciseNotes: 'exerciseId',
+});
+db.version(4).stores({
+  exercisePhotos: 'exerciseId',
 });
 
 export const DEFAULT_SETTINGS: Settings = {
