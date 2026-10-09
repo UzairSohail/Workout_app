@@ -3,9 +3,11 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { useNavigate, useParams } from 'react-router-dom';
 import { db, uid, updateSettings } from '../db';
 import { ExercisePicker } from '../components/ExercisePicker';
+import { StartingWeights } from '../components/StartingWeights';
+import { SCHEME_LABEL } from '../logic/schemes';
 import { exerciseName, useExercises } from '../exercises';
 import { useSettings } from '../hooks';
-import type { Program } from '../types';
+import type { Program, SchemeKind } from '../types';
 import { copyProgram } from './Programs';
 
 function NumberField({ label, value, onChange, disabled }: {
@@ -71,6 +73,8 @@ export function ProgramEdit() {
         )}
       </header>
 
+      <StartingWeights program={p} />
+
       {p.days.map((day, di) => (
         <section key={day.id} className="card">
           <div className="section-head">
@@ -89,7 +93,10 @@ export function ProgramEdit() {
             {day.exercises.map((e, ei) => (
               <li key={ei}>
                 <div className="section-head">
-                  <strong>{exerciseName(byId, e.exerciseId)}</strong>
+                  <span>
+                    <strong>{exerciseName(byId, e.exerciseId)}</strong>
+                    {e.scheme && <span className="badge subtle">{SCHEME_LABEL[e.scheme]}</span>}
+                  </span>
                   {!ro && (
                     <span className="row tight">
                       <button className="ghost" disabled={ei === 0} onClick={() => mutate((d) => { const xs = d.days[di].exercises; [xs[ei - 1], xs[ei]] = [xs[ei], xs[ei - 1]]; })}>↑</button>
@@ -103,6 +110,22 @@ export function ProgramEdit() {
                   <NumberField label="Max reps" value={e.repMax} disabled={ro} onChange={(n) => mutate((d) => { d.days[di].exercises[ei].repMax = n; })} />
                   <NumberField label="Rest (s)" value={e.rest} disabled={ro} onChange={(n) => mutate((d) => { d.days[di].exercises[ei].rest = n; })} />
                 </div>
+                {!ro && (
+                  <label className="mini-field">
+                    <span>Progression</span>
+                    <select value={e.scheme ?? ''} onChange={(ev) => mutate((d) => {
+                      const v = ev.target.value as SchemeKind | '';
+                      d.days[di].exercises[ei].scheme = v || undefined;
+                    })}>
+                      <option value="">Rep range (add weight at max reps)</option>
+                      <option value="linear">Linear (add weight every session, uses Sets × Min reps)</option>
+                      <option value="531">5/3/1 (training max %)</option>
+                      <option value="gzcl-t1">GZCLP T1 (5×3+)</option>
+                      <option value="gzcl-t2">GZCLP T2 (3×10)</option>
+                      <option value="gzcl-t3">GZCLP T3 (3×15+)</option>
+                    </select>
+                  </label>
+                )}
               </li>
             ))}
           </ol>

@@ -1,9 +1,10 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Link, useNavigate } from 'react-router-dom';
-import { db } from '../db';
+import { db, getProgramState } from '../db';
 import { exerciseName, useExercises } from '../exercises';
 import { fmtDate, fmtDuration } from '../format';
 import { useActiveWorkout, useFinished, useSettings } from '../hooks';
+import { liftKey, SCHEME_LABEL, uses531, WEEKS_531 } from '../logic/schemes';
 import { startWorkout } from '../logic/session';
 import type { Day, Program } from '../types';
 
@@ -17,6 +18,14 @@ export function Home() {
     () => (settings.activeProgramId ? db.programs.get(settings.activeProgramId) : undefined),
     [settings.activeProgramId],
   );
+
+  const state = useLiveQuery(
+    () => (settings.activeProgramId ? getProgramState(settings.activeProgramId) : undefined),
+    [settings.activeProgramId],
+  );
+  const is531 = !!program && uses531(program.days);
+  const missingTm = is531 && !!state && program!.days.some((d) =>
+    d.exercises.some((e) => e.scheme === '531' && state.lifts[liftKey('531', e.exerciseId)]?.weight == null));
 
   const start = async (opts: { program?: Program; day?: Day }) => {
     await startWorkout(opts, byId);
@@ -44,11 +53,14 @@ export function Home() {
 
       {!active && program && next && (
         <section className="card">
-          <p className="eyebrow">{program.name} · next up</p>
+          <p className="eyebrow">{program.name}{is531 && state ? ` · week ${state.week + 1} (${WEEKS_531[state.week].name})` : ''} · next up</p>
+          {missingTm && (
+            <p className="notice">Set your training maxes first so the app can work out your weights. <Link to={`/programs/${program.id}`}>Set them</Link></p>
+          )}
           <h2>{next.name}</h2>
           <ul className="plain">
             {next.exercises.map((e, i) => (
-              <li key={i}>{exerciseName(byId, e.exerciseId)} <span className="muted">{e.sets} × {e.repMin}–{e.repMax}</span></li>
+              <li key={i}>{exerciseName(byId, e.exerciseId)} <span className="muted">{e.scheme ? SCHEME_LABEL[e.scheme] : `${e.sets} × ${e.repMin}–${e.repMax}`}</span></li>
             ))}
           </ul>
           <button className="wide" onClick={() => start({ program, day: next })}>Start {next.name}</button>

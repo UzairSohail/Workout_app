@@ -5,6 +5,7 @@ A free workout tracker for two, built as an installable web app (PWA). It works 
 ## Features
 
 - **Splits:** built-in Full Body, Upper/Lower, Push/Pull/Legs and Bro Split, or build your own (days, exercises, sets, rep range, rest).
+- **Ready-made programs:** 5×5 Linear (beginner), GZCLP and 5/3/1, each with its own progression: linear jumps with a deload after 3 misses, GZCLP T1/T2/T3 stage changes, and 5/3/1 training-max percentages over 4-week cycles. Set starting weights or training maxes on the program page. Custom splits can use any of these progressions per exercise.
 - **Exercise library:** 876 exercises with start/end photos that animate like a GIF, instructions, muscle and equipment filters, a YouTube form-video link, and custom exercises.
 - **Workout logging:** last session's numbers inline, warm-up and drop sets, an automatic rest timer with vibration and a beep, and the screen kept awake.
 - **Progressive overload:** double progression. Hit the top of the rep range on every set and the next session pre-fills the heavier weight. Fall short twice and it suggests a 10% deload.
