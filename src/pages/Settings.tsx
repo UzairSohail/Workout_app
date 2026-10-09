@@ -53,12 +53,13 @@ export function SettingsPage() {
 
   const exportCsv = async () => {
     const workouts = (await db.workouts.orderBy('startedAt').toArray()).filter((w) => w.finishedAt);
-    const rows = [['date', 'workout', 'exercise', 'set', 'type', `weight_${s.units}`, 'reps']];
+    const rows = [['date', 'workout', 'exercise', 'set', 'type', `weight_${s.units}`, 'reps', 'seconds']];
     for (const w of workouts) {
       for (const e of w.exercises) {
         e.sets.forEach((set, i) => rows.push([
           new Date(w.startedAt).toISOString(), w.name, exerciseName(byId, e.exerciseId), String(i + 1), set.type,
-          set.weight == null ? '' : String(toDisplay(set.weight, s.units)), String(set.reps ?? ''),
+          set.weight == null ? '' : String(toDisplay(set.weight, s.units)),
+          e.mode === 'time' ? '' : String(set.reps ?? ''), e.mode === 'time' ? String(set.reps ?? '') : '',
         ]));
       }
     }

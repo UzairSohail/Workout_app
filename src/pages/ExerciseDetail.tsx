@@ -1,9 +1,11 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { useLiveQuery } from 'dexie-react-hooks';
 import { useNavigate, useParams } from 'react-router-dom';
 import { db } from '../db';
 import { ExerciseImage } from '../components/ExerciseImage';
+import { StickyNote } from '../components/ExerciseNote';
 import { cap, useExercises } from '../exercises';
-import { fmtDate } from '../format';
+import { fmtDate, fmtSecs } from '../format';
 import { useFinished, useSettings } from '../hooks';
 import { countedSets, e1rm, recordsFor } from '../logic/stats';
 import { fmt, fmtWeight, toDisplay } from '../logic/units';
@@ -36,18 +38,21 @@ export function ExerciseDetail() {
   const finished = useFinished();
   const { units } = useSettings();
   const ex = byId.get(id!);
+  const note = useLiveQuery(async () => (await db.exerciseNotes.get(id!))?.note ?? '', [id]) ?? '';
+  const [editingNote, setEditingNote] = useState(false);
 
   const sessions = useMemo(() => {
-    const out: { t: number; workoutId: string; sets: { weight: number; reps: number }[] }[] = [];
+    const out: { t: number; workoutId: string; timed: boolean; sets: { weight: number; reps: number }[] }[] = [];
     for (const w of finished ?? []) {
       for (const e of w.exercises) {
         if (e.exerciseId !== id) continue;
         const sets = countedSets(e.sets);
-        if (sets.length) out.push({ t: w.startedAt, workoutId: w.id, sets });
+        if (sets.length) out.push({ t: w.startedAt, workoutId: w.id, timed: e.mode === 'time', sets });
       }
     }
     return out;
   }, [finished, id]);
+  const timed = sessions[0]?.timed ?? false;
   const records = useMemo(() => recordsFor(id!, finished ?? []), [finished, id]);
   const trend = useMemo(
     () => [...sessions].reverse()
@@ -73,7 +78,20 @@ export function ExerciseDetail() {
         ▶ {ex.videoUrl ? 'Watch video' : 'Find a form video on YouTube'}
       </a>
 
-      {sessions.length > 0 && (
+      <section className="card">
+        <h2>Your notes</h2>
+        <StickyNote exerciseId={ex.id} note={note} editing={editingNote} setEditing={setEditingNote} emptyLabel="+ Add a note (seat height, grip…)" />
+      </section>
+
+      {sessions.length > 0 && timed && (
+        <section className="card">
+          <h2>Personal records</h2>
+          <div className="stats">
+            <div><strong>{fmtSecs(records.maxReps)}</strong><small>Longest</small></div>
+          </div>
+        </section>
+      )}
+      {sessions.length > 0 && !timed && (
         <section className="card">
           <h2>Personal records</h2>
           <div className="stats">
@@ -99,7 +117,10 @@ export function ExerciseDetail() {
             {sessions.slice(0, 20).map((s) => (
               <li key={s.workoutId}>
                 <strong>{fmtDate(s.t)}</strong>{' '}
-                <span className="muted">{s.sets.map((x) => (x.weight ? `${fmt(toDisplay(x.weight, units))}×${x.reps}` : `${x.reps} reps`)).join(', ')}</span>
+                <span className="muted">{s.sets.map((x) => {
+                  const r = s.timed ? fmtSecs(x.reps) : `${x.reps}`;
+                  return x.weight ? `${fmt(toDisplay(x.weight, units))}×${r}` : s.timed ? r : `${r} reps`;
+                }).join(', ')}</span>
               </li>
             ))}
           </ul>

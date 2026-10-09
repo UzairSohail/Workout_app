@@ -1,5 +1,5 @@
 import { db, getProgramState, getSettings, uid } from '../db';
-import type { Day, Exercise, LoggedExercise, LoggedSet, PlannedExercise, Program, ProgramState, SchemeKind, Settings, Workout } from '../types';
+import type { Day, Exercise, ExerciseNote, LoggedExercise, LoggedSet, LogMode, PlannedExercise, Program, ProgramState, SchemeKind, Settings, Workout } from '../types';
 import { suggest } from './progression';
 import { advance, completeDay, emptyLift, GZCL_STAGES, liftKey, prescribe } from './schemes';
 import { countedSets, LOWER_BODY } from './stats';
@@ -39,6 +39,14 @@ export function suggestionFor(
 
 const blankSet = (weight: number | null = null): LoggedSet => ({ weight, reps: null, type: 'working', done: false });
 
+/** Holds, cardio and stretches are logged in seconds unless the user chose otherwise for that exercise. */
+export function defaultMode(ex: Exercise | undefined, pref?: LogMode): LogMode {
+  if (pref) return pref;
+  if (!ex) return 'reps';
+  if (ex.category === 'cardio' || ex.category === 'stretching') return 'time';
+  return /\bplank\b|\bhold\b|wall sit|dead hang/i.test(ex.name) ? 'time' : 'reps';
+}
+
 export function newLoggedExercise(
   exerciseId: string,
   sets: number,
@@ -48,11 +56,19 @@ export function newLoggedExercise(
   finished: Workout[],
   byId: Map<string, Exercise>,
   settings: Settings,
+  mode: LogMode = 'reps',
 ): LoggedExercise {
+  const n = Math.max(1, sets);
+  if (mode === 'time') {
+    // Seconds, not reps: a rep range like 8–12 makes no sense for a hold.
+    const timed = repMax >= 20 ? { repMin, repMax } : { repMin: 30, repMax: 60 };
+    const weight = lastTopWeight(exerciseId, finished);
+    return { exerciseId, ...timed, rest, mode, sets: Array.from({ length: n }, () => blankSet(weight)) };
+  }
   const s = suggestionFor({ exerciseId, repMin, repMax }, finished, byId, settings);
   return {
     exerciseId, repMin, repMax, rest,
-    sets: Array.from({ length: Math.max(1, sets) }, () => blankSet(s.weight)),
+    sets: Array.from({ length: n }, () => blankSet(s.weight)),
   };
 }
 
@@ -103,6 +119,8 @@ export async function startWorkout(
   if (existing) return existing.id;
   const settings = await getSettings();
   const finished = await allFinished();
+  const notes = new Map<string, ExerciseNote>((await db.exerciseNotes.toArray()).map((n) => [n.exerciseId, n]));
+  const modeFor = (id: string, fallback?: LogMode) => notes.get(id)?.mode ?? fallback ?? defaultMode(byId.get(id));
   let exercises: LoggedExercise[] = [];
   let name = 'Workout';
   if (opts.day) {
@@ -111,17 +129,18 @@ export async function startWorkout(
     exercises = opts.day.exercises.map((p) =>
       p.scheme && state
         ? schemeExercise(p as PlannedExercise & { scheme: SchemeKind }, state, finished, byId, settings)
-        : newLoggedExercise(p.exerciseId, p.sets, p.repMin, p.repMax, p.rest, finished, byId, settings),
+        : newLoggedExercise(p.exerciseId, p.sets, p.repMin, p.repMax, p.rest, finished, byId, settings, modeFor(p.exerciseId)),
     );
   } else if (opts.copyOf) {
     name = opts.copyOf.name;
-    exercises = opts.copyOf.exercises.map((e) =>
-      newLoggedExercise(
+    exercises = opts.copyOf.exercises.map((e) => ({
+      ...newLoggedExercise(
         e.exerciseId,
         e.sets.filter((s) => s.type !== 'warmup').length || 1,
-        e.repMin, e.repMax, e.rest, finished, byId, settings,
+        e.repMin, e.repMax, e.rest, finished, byId, settings, modeFor(e.exerciseId, e.mode),
       ),
-    );
+      ...(e.supersetWithNext ? { supersetWithNext: true } : {}),
+    }));
   }
   if (settings.warmups !== false) exercises = exercises.map((e, i) => withWarmups(e, byId.get(e.exerciseId), i === 0, settings));
   const w: Workout = {
@@ -184,7 +203,7 @@ async function advanceProgram(programId: string, dayId: string, logged: LoggedEx
 
 /** Prepends warm-up sets based on the first working set's weight (no-op if one is already there). */
 export function withWarmups(le: LoggedExercise, ex: Exercise | undefined, isFirst: boolean, settings: Settings): LoggedExercise {
-  if (!wantsWarmup(ex, isFirst) || le.sets.some((s) => s.type === 'warmup')) return le;
+  if (le.mode === 'time' || !wantsWarmup(ex, isFirst) || le.sets.some((s) => s.type === 'warmup')) return le;
   const work = le.sets.find((s) => s.type !== 'warmup')?.weight ?? null;
   const warm = warmupSets(work, ex!.equipment, settings.units);
   return warm.length ? { ...le, sets: [...warm, ...le.sets] } : le;

@@ -8,9 +8,10 @@ A free workout tracker for two, built as an installable web app (PWA). It works 
 - **Ready-made programs:** 5×5 Linear (beginner), GZCLP and 5/3/1, each with its own progression: linear jumps with a deload after 3 misses, GZCLP T1/T2/T3 stage changes, and 5/3/1 training-max percentages over 4-week cycles. Set starting weights or training maxes on the program page. Custom splits can use any of these progressions per exercise.
 - **Routine generator:** answer five questions (goal, days per week, time, experience, equipment) and get a ready-to-use split built from the exercise library.
 - **Exercise library:** 876 exercises with start/end photos that animate like a GIF, instructions, muscle and equipment filters, a YouTube form-video link, and custom exercises.
-- **Workout logging:** last session's numbers inline, automatic warm-up sets before heavy lifts (can be turned off in Settings), one-tap exercise swap when a machine is taken, drop sets, an automatic rest timer with vibration and a beep, and the screen kept awake.
+- **Workout logging:** last session's numbers inline, automatic warm-up sets before heavy lifts (can be turned off in Settings), one-tap exercise swap when a machine is taken, drop sets, supersets (rest only after the last exercise), timed sets with a stopwatch for planks, holds and cardio, sticky per-exercise notes like "seat on 4", plates per side for barbell lifts, an automatic rest timer with vibration and a beep, and the screen kept awake.
 - **Progressive overload:** double progression. Hit the top of the rep range on every set and the next session pre-fills the heavier weight. Fall short twice and it suggests a 10% deload.
 - **PRs:** heaviest weight, best estimated 1RM (Epley) and bodyweight rep records, flagged live with 🏆.
+- **Progress:** workouts per week, weekly volume, sets per muscle over the last 7 days, a week streak, and a body-weight log with a chart.
 - **History:** a calendar, per-workout detail, per-exercise history and an estimated-1RM trend. Repeat any past workout.
 - **Your data:** stored on your phone (IndexedDB). Export or import a JSON backup, or export a CSV.
 - kg/lb, configurable increments and a plate calculator.

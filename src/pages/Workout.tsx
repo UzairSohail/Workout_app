@@ -6,15 +6,18 @@ import { ExerciseImage } from '../components/ExerciseImage';
 import { ExercisePicker } from '../components/ExercisePicker';
 import { NumInput } from '../components/NumInput';
 import { RestTimer, startRest, stopRest } from '../components/RestTimer';
+import { saveExerciseNote, StickyNote } from '../components/ExerciseNote';
+import { SetTimer } from '../components/SetTimer';
 import { exerciseName, useExercises } from '../exercises';
-import { fmtDuration } from '../format';
+import { fmtDuration, fmtSecs } from '../format';
 import { useActiveWorkout, useFinished, useSettings } from '../hooks';
-import { finishWorkout, historyFor, newLoggedExercise, suggestionFor, withWarmups } from '../logic/session';
+import { defaultMode, finishWorkout, historyFor, newLoggedExercise, suggestionFor, withWarmups } from '../logic/session';
+import { plateText } from '../logic/plates';
 import { wantsWarmup } from '../logic/warmup';
 import { SCHEME_LABEL } from '../logic/schemes';
 import { countedSets, recordsFor, sessionPrs, type PrKind } from '../logic/stats';
 import { fmt, fromDisplay, toDisplay } from '../logic/units';
-import type { LoggedExercise, SetType, Workout } from '../types';
+import type { ExerciseNote, LoggedExercise, LogMode, SetType, Workout } from '../types';
 
 const TYPE_LABEL: Record<SetType, string> = { warmup: 'W', working: '', drop: 'D' };
 const NEXT_TYPE: Record<SetType, SetType> = { working: 'warmup', warmup: 'drop', drop: 'working' };
@@ -78,6 +81,12 @@ export function WorkoutPage() {
   const navigate = useNavigate();
   const [picker, setPicker] = useState(false);
   const [swapIndex, setSwapIndex] = useState<number | null>(null);
+  const [noteFor, setNoteFor] = useState<number | null>(null);
+  const notes = useLiveQuery(
+    async () => new Map<string, ExerciseNote>((await db.exerciseNotes.toArray()).map((n) => [n.exerciseId, n])),
+    [],
+  ) ?? new Map<string, ExerciseNote>();
+  const modeFor = (id: string) => defaultMode(byId.get(id), notes.get(id)?.mode);
   useWakeLock(!editing);
 
   useEffect(() => {
@@ -183,25 +192,65 @@ export function WorkoutPage() {
         const ex = byId.get(le.exerciseId);
         const info = prev.get(le.exerciseId);
         const last = info?.history[0];
-        const s = finished && !le.scheme ? suggestionFor(le, finished, byId, settings, w.id) : null;
+        const timed = le.mode === 'time';
+        const s = finished && !le.scheme && !timed ? suggestionFor(le, finished, byId, settings, w.id) : null;
+        const note = notes.get(le.exerciseId)?.note ?? '';
+        const inSuperset = !!le.supersetWithNext && ei < w.exercises.length - 1;
+        const afterSuperset = !!w.exercises[ei - 1]?.supersetWithNext;
+        const nextSet = le.sets.findIndex((x) => !x.done);
+        const plateSet = ex?.equipment === 'barbell' && !timed ? le.sets[nextSet] : undefined;
+        const fmtLast = (x: { weight: number; reps: number }) =>
+          timed ? (x.weight ? `${fmt(toDisplay(x.weight, units))}×${fmtSecs(x.reps)}` : fmtSecs(x.reps)) : `${fmt(toDisplay(x.weight, units))}×${x.reps}`;
+        const markDone = (si: number, reps?: number) => {
+          mutate((d) => {
+            const x = d.exercises[ei].sets[si];
+            x.done = true;
+            if (reps != null) x.reps = reps;
+            if (x.reps == null) x.reps = x.target ?? s?.reps ?? (timed ? le.repMax : le.repMin);
+            if (x.weight == null && s?.weight != null) x.weight = s.weight;
+          });
+          // In a superset, go straight to the next exercise; rest after the last one.
+          if (!editing && !inSuperset) startRest(le.sets[si].type === 'warmup' ? Math.min(60, le.rest) : le.rest);
+        };
+        const setMode = (mode: LogMode) => {
+          saveExerciseNote(le.exerciseId, { mode });
+          mutate((d) => {
+            const e = d.exercises[ei];
+            e.mode = mode;
+            if (mode === 'time' && e.repMax < 20) { e.repMin = 30; e.repMax = 60; }
+            if (mode === 'reps' && e.repMin >= 20) { e.repMin = 8; e.repMax = 12; }
+          });
+        };
         const hasHistory = (info?.history.length ?? 0) > 0;
         let workingIndex = 0;
         const prsBySet = info ? sessionPrs(le.sets, info.records, hasHistory) : [];
         return (
-          <section key={ei} className="card exercise">
+          <section key={ei} className={`card exercise ${inSuperset ? 'superset-start' : ''} ${afterSuperset ? 'superset-cont' : ''}`}>
+            {inSuperset && !afterSuperset && <span className="superset-tag">Superset</span>}
             <div className="exercise-head">
               <Link to={`/exercises/${le.exerciseId}`}><ExerciseImage exercise={ex} /></Link>
               <div className="grow">
                 <strong>{exerciseName(byId, le.exerciseId)}</strong>
                 <small className="muted">
-                  {le.scheme ? SCHEME_LABEL[le.scheme] : `Target ${le.repMin}–${le.repMax} reps`}
-                  {last && <> · Last: {countedSets(last.sets).map((x) => `${fmt(toDisplay(x.weight, units))}×${x.reps}`).join(', ')}</>}
+                  {le.scheme ? SCHEME_LABEL[le.scheme] : timed ? `Target ${le.repMin}–${le.repMax} sec` : `Target ${le.repMin}–${le.repMax} reps`}
+                  {last && <> · Last: {countedSets(last.sets).map(fmtLast).join(', ')}</>}
                 </small>
               </div>
               <details className="menu">
                 <summary aria-label="Exercise options">⋯</summary>
                 <div>
                   <button className="ghost" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); setSwapIndex(ei); }}>Swap exercise</button>
+                  <button className="ghost" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); setNoteFor(ei); }}>{note ? 'Edit note' : 'Add note'}</button>
+                  {!le.scheme && (
+                    <button className="ghost" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); setMode(timed ? 'reps' : 'time'); }}>
+                      {timed ? 'Log reps instead of time' : 'Log time instead of reps'}
+                    </button>
+                  )}
+                  {ei < w.exercises.length - 1 && (
+                    <button className="ghost" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); mutate((d) => { d.exercises[ei].supersetWithNext = !le.supersetWithNext || undefined; }); }}>
+                      {le.supersetWithNext ? 'Unlink superset' : 'Superset with next'}
+                    </button>
+                  )}
                   {wantsWarmup(ex, true) && !le.sets.some((x) => x.type === 'warmup') && (
                     <button className="ghost" disabled={!le.sets.some((x) => x.weight)} onClick={(ev) => {
                       ev.currentTarget.closest('details')?.removeAttribute('open');
@@ -218,14 +267,19 @@ export function WorkoutPage() {
             {s && s.kind !== 'new' && <p className={`suggestion ${s.kind}`}>{s.kind === 'increase' ? '⬆️ ' : s.kind === 'deload' ? '⬇️ ' : '➡️ '}{s.message}</p>}
             {s && s.kind === 'new' && <p className="suggestion">{s.message}</p>}
             {le.scheme && le.note && <p className="suggestion program">📋 {le.note}</p>}
+            <StickyNote exerciseId={le.exerciseId} note={note} editing={noteFor === ei} setEditing={(v) => setNoteFor(v ? ei : null)} />
+            {plateSet?.weight != null && plateSet.weight > 0 && (
+              <p className="plates muted small">🏋️ {fmt(toDisplay(plateSet.weight, units))} {units}: {plateText(toDisplay(plateSet.weight, units), units)}</p>
+            )}
 
             <div className="sets">
               <div className="set-row head">
-                <span>Set</span><span>{units}</span><span>Reps</span><span />
+                <span>Set</span><span>{units}</span><span>{timed ? 'Sec' : 'Reps'}</span><span />
               </div>
               {le.sets.map((set, si) => {
                 const label = TYPE_LABEL[set.type] || String(++workingIndex);
-                const prs = prsBySet[si] ?? [];
+                // A timed set's only meaningful record is the longest hold.
+                const prs = (prsBySet[si] ?? []).filter((p) => !timed || p === 'reps');
                 return (
                   <div key={si} className={`set-row ${set.done ? 'done' : ''}`}>
                     <button className={`set-type ${set.type}`} title="Tap to change: working / warm-up / drop set"
@@ -248,30 +302,24 @@ export function WorkoutPage() {
                       })}
                     />
                     <NumInput
-                      ariaLabel={`Set ${si + 1} reps`}
+                      ariaLabel={`Set ${si + 1} ${timed ? 'seconds' : 'reps'}`}
                       value={set.reps}
-                      placeholder={set.target != null ? `${set.target}${set.amrap ? '+' : ''}` : String(s?.reps ?? le.repMin)}
+                      placeholder={set.target != null ? `${set.target}${set.amrap ? '+' : ''}` : String(s?.reps ?? (timed ? le.repMax : le.repMin))}
                       onChange={(v) => mutate((d) => { d.exercises[ei].sets[si].reps = v; })}
                     />
                     <button
                       className={`check ${set.done ? 'on' : ''}`}
                       aria-label={set.done ? 'Mark set not done' : 'Mark set done'}
-                      onClick={() => {
-                        const done = !set.done;
-                        mutate((d) => {
-                          const x = d.exercises[ei].sets[si];
-                          x.done = done;
-                          if (done && x.reps == null) x.reps = x.target ?? s?.reps ?? le.repMin;
-                          if (done && x.weight == null && s?.weight != null) x.weight = s.weight;
-                        });
-                        if (done && !editing) startRest(set.type === 'warmup' ? Math.min(60, le.rest) : le.rest);
-                      }}
+                      onClick={() => (set.done ? mutate((d) => { d.exercises[ei].sets[si].done = false; }) : markDone(si))}
                     >✓</button>
-                    {prs.length > 0 && <span className="pr-badge">🏆 {prs.map((p) => PR_LABEL[p]).join(' · ')}</span>}
+                    {prs.length > 0 && <span className="pr-badge">🏆 {prs.map((p) => (timed ? 'Longest' : PR_LABEL[p])).join(' · ')}</span>}
                   </div>
                 );
               })}
             </div>
+            {timed && !editing && nextSet >= 0 && (
+              <SetTimer key={nextSet} label={`set ${nextSet + 1}`} target={le.sets[nextSet].reps ?? le.repMax} onStop={(sec) => markDone(nextSet, sec)} />
+            )}
             <div className="row">
               <button className="secondary grow" onClick={() => mutate((d) => {
                 const sets = d.exercises[ei].sets;
@@ -304,8 +352,11 @@ export function WorkoutPage() {
               const done = old.sets.filter((x) => x.done);
               const todo = old.sets.filter((x) => !x.done && x.type !== 'warmup').length || 1;
               // Keep anything already logged; fresh sets for the rest, weighted from the new exercise's history.
+              const mode = modeFor(ex.id);
+              const [repMin, repMax] = old.mode === 'time' && mode === 'reps' ? [8, 12] : [old.repMin, old.repMax];
               const fresh = newLoggedExercise(ex.id, done.length ? todo : old.sets.filter((x) => x.type !== 'warmup').length || 3,
-                old.repMin, old.repMax, old.rest, finished ?? [], byId, settings);
+                repMin, repMax, old.rest, finished ?? [], byId, settings, mode);
+              if (old.supersetWithNext) fresh.supersetWithNext = true;
               d.exercises[swapIndex] = done.length
                 ? { ...old, sets: done }
                 : { ...fresh, note: undefined };
@@ -321,7 +372,7 @@ export function WorkoutPage() {
           onClose={() => setPicker(false)}
           onPick={(ex) => {
             mutate((d) => {
-              d.exercises.push(newLoggedExercise(ex.id, 3, 8, 12, settings.defaultRest, finished ?? [], byId, settings));
+              d.exercises.push(newLoggedExercise(ex.id, 3, 8, 12, settings.defaultRest, finished ?? [], byId, settings, modeFor(ex.id)));
             });
             setPicker(false);
           }}

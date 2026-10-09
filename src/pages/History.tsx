@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
+import { ProgressView } from './Progress';
 import { fmtDate, fmtDuration } from '../format';
 import { useFinished, useSettings } from '../hooks';
 import { workoutVolume } from '../logic/stats';
@@ -40,15 +41,31 @@ function Calendar({ days }: { days: Set<string> }) {
 
 export function History() {
   const finished = useFinished();
-  const { units } = useSettings();
   const days = useMemo(() => new Set((finished ?? []).map((w) => dayKey(w.startedAt))), [finished]);
+
+  const [params, setParams] = useSearchParams();
+  const tab = params.get('tab') === 'progress' ? 'progress' : 'log';
 
   return (
     <>
       <header className="page-head">
-        <h1>History</h1>
-        <p className="muted">{finished?.length ?? 0} workouts logged</p>
+        <h1>{tab === 'progress' ? 'Progress' : 'History'}</h1>
+        <div className="segmented">
+          <button className={tab === 'log' ? 'on' : ''} onClick={() => setParams({}, { replace: true })}>Log</button>
+          <button className={tab === 'progress' ? 'on' : ''} onClick={() => setParams({ tab: 'progress' }, { replace: true })}>Progress</button>
+        </div>
       </header>
+      {tab === 'progress' ? <ProgressView /> : <HistoryLog days={days} />}
+    </>
+  );
+}
+
+function HistoryLog({ days }: { days: Set<string> }) {
+  const finished = useFinished();
+  const { units } = useSettings();
+  return (
+    <>
+      <p className="muted">{finished?.length ?? 0} workouts logged</p>
       <Calendar days={days} />
       {finished?.length === 0 && <p className="muted">Finish your first workout and it will show up here.</p>}
       <ul className="list">

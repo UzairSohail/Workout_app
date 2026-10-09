@@ -19,3 +19,12 @@ export function platesPerSide(total: number, bar: number, units: Units) {
   }
   return { plates, remainder: side };
 }
+
+/** "20 + 10 + 2.5 per side" for a bar loaded to `total` (display units). */
+export function plateText(total: number, units: Units): string {
+  if (total < BAR[units]) return `Less than the ${BAR[units]} ${units} bar`;
+  const { plates, remainder } = platesPerSide(total, BAR[units], units);
+  if (!plates.length && !remainder) return 'Just the bar';
+  const text = plates.length ? `${plates.join(' + ')} per side` : 'Bar only';
+  return remainder > 0 ? `${text} (${remainder} ${units} short per side)` : text;
+}

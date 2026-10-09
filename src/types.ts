@@ -103,6 +103,26 @@ export interface LoggedExercise {
   sets: LoggedSet[];
   note?: string;
   scheme?: SchemeKind;
+  /** 'time' logs seconds in the reps field. */
+  mode?: LogMode;
+  /** Done back to back with the next exercise; rest only after the last one. */
+  supersetWithNext?: boolean;
+}
+
+export type LogMode = 'reps' | 'time';
+
+export interface BodyWeight {
+  id: string;
+  date: number;
+  /** kg */
+  weight: number;
+}
+
+/** Per-exercise preferences that stick across workouts. */
+export interface ExerciseNote {
+  exerciseId: string;
+  note: string;
+  mode?: LogMode;
 }
 
 export interface Workout {
