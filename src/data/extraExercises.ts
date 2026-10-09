@@ -46,6 +46,12 @@ const ROWS: Row[] = [
     'Squat down while keeping your chest up, letting the belt pull your hips straight down.',
     'Stand back up by driving through your feet.',
   ]],
+  ['Seated Leg Press Machine', 'machine', 'compound', ['quadriceps'], ['glutes', 'hamstrings'], [
+    'Set the weight with the pin in the stack and adjust the seat so your knees start bent to about 90 degrees.',
+    'Sit with your back against the pad and your feet flat on the platform, hip-width apart.',
+    'Push the platform away until your legs are almost straight, without locking your knees.',
+    'Let it come back slowly until the weight stack nearly touches down, then press again.',
+  ]],
   ['Single-Leg Leg Press', 'machine', 'compound', ['quadriceps'], ['glutes', 'hamstrings'], [
     'Sit in the leg press and place one foot in the middle of the platform.',
     'Release the safeties and lower until your knee is bent to about 90 degrees.',
@@ -601,6 +607,35 @@ const ROWS: Row[] = [
     'Push and pull the handles while pedalling.',
     'Go steady or do hard intervals.',
   ], 'cardio'],
+  ['Devil\'s Press', 'dumbbell', 'compound', ['shoulders'], ['glutes', 'hamstrings', 'chest'], [
+    'Stand with a dumbbell in each hand, drop into a burpee with your hands on the dumbbells and do a push-up.',
+    'Jump your feet in, then swing both dumbbells from between your legs straight up overhead in one motion.',
+    'Lower them under control and go into the next rep.',
+  ], 'cardio'],
+  ['Reverse Nordic Curl', 'body only', 'isolation', ['quadriceps'], [], [
+    'Kneel on a pad with your feet anchored or under something heavy, body upright.',
+    'Keeping a straight line from knees to head, lean back as far as you can control.',
+    'Squeeze your thighs to pull yourself back up.',
+  ]],
+  ['Jefferson Curl', 'barbell', 'isolation', ['lower back'], ['hamstrings'], [
+    'Stand on a box or bench holding a light barbell or dumbbell with straight arms.',
+    'Tuck your chin and roll down one vertebra at a time, letting the weight sink below your feet.',
+    'Roll back up slowly, stacking your spine from the bottom up. Go light.',
+  ]],
+  ['Pin Squat', 'barbell', 'compound', ['quadriceps'], ['glutes', 'hamstrings'], [
+    'Set the safety pins in a squat rack at the depth you want to start from.',
+    'Squat the bar down until it rests on the pins and pause there with your body tight.',
+    'Drive up from a dead stop.',
+  ]],
+  ['Larsen Press', 'barbell', 'compound', ['chest'], ['triceps', 'shoulders'], [
+    'Lie on a flat bench and lift your legs so your feet do not touch the floor.',
+    'Unrack the bar and lower it to your chest without any leg drive.',
+    'Press it back up, keeping your upper back tight on the bench.',
+  ]],
+  ['Swimming', 'other', 'compound', ['lats'], ['shoulders', 'quadriceps'], [
+    'Swim laps at a steady pace, or alternate fast and easy lengths.',
+    'Log the time you swam.',
+  ], 'cardio'],
   ['Pigeon Stretch', 'body only', 'isolation', ['glutes'], ['abductors'], [
     'From hands and knees, bring one knee forward behind your wrist and extend the other leg back.',
     'Lower your hips toward the floor and lean forward.',
@@ -697,6 +732,15 @@ export const ALIASES: Record<string, string[]> = {
   'Rope_Straight-Arm_Pulldown': ['cable pullover'],
   Air_Bike: ['bicycle crunch'],
   Weighted_Pull_Ups: ['weighted pull up'],
+  Barbell_Squat: ['back squat', 'barbell back squat'],
+  Side_Bridge: ['side plank'],
+  Leg_Press: ['sled leg press', 'plate loaded leg press', '45 degree leg press'],
+  x_Seated_Leg_Press_Machine: ['machine leg press', 'leg press machine', 'pin loaded leg press', 'selectorized leg press', 'stack leg press'],
+  Leg_Extensions: ['quad extension'],
+  'Barbell_Bench_Press_-_Medium_Grip': ['bench press', 'barbell bench press', 'flat bench press'],
+  'Barbell_Incline_Bench_Press_-_Medium_Grip': ['incline bench press', 'incline barbell bench press'],
+  Side_Lateral_Raise: ['lateral raise', 'dumbbell lateral raise', 'side raise'],
+  Barbell_Deadlift: ['deadlift', 'conventional deadlift'],
 };
 
 /**
@@ -711,8 +755,12 @@ export const SIMILAR_PHOTOS: Record<string, string> = {
   "Front-Foot-Elevated Split Squat": "Split Squat with Dumbbells",
   "Hack Squat Machine": "Hack Squat",
   "Pendulum Squat": "Hack Squat",
+  "Seated Leg Press Machine": "Leg Press",
   "Single-Leg Leg Press": "Leg Press",
   "Wide-Stance Leg Press": "Leg Press",
+  "Devil's Press": "Dumbbell Clean",
+  "Pin Squat": "Barbell Full Squat",
+  "Larsen Press": "Barbell Bench Press - Medium Grip",
   "Pause Squat": "Barbell Full Squat",
   "Heel-Elevated Goblet Squat": "Goblet Squat",
   "Spanish Squat": "Bodyweight Squat",

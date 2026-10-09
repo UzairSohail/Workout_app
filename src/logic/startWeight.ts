@@ -15,6 +15,8 @@ export function bodyweightRatio(ex: Exercise): number | null {
   if (ex.category === 'cardio' || (!['strength', 'powerlifting', 'custom'].includes(ex.category) && !ex.custom)) return null;
   if (eq === 'body only' || !eq) return null;
   const db = eq === 'dumbbell' || eq === 'kettlebells';
+  // A pin-loaded seated leg press has no heavy sled, so the stack number reads lower.
+  if (/seated leg press/.test(n)) return 0.7;
   if (/leg press/.test(n)) return 1.0;
   if (/deadlift/.test(n)) return db ? 0.2 : 0.75;
   if (/calf/.test(n)) return db ? 0.15 : 0.5;

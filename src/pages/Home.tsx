@@ -1,16 +1,42 @@
 import { useLiveQuery } from 'dexie-react-hooks';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { backupDue, backupNow } from '../backup';
-import { db, getProgramState } from '../db';
+import { db, getProgramState, logBodyWeight, updateSettings } from '../db';
 import { exerciseName, useExercises } from '../exercises';
 import { fmtDate, fmtDuration } from '../format';
 import { useActiveWorkout, useFinished, useSettings } from '../hooks';
 import { liftKey, SCHEME_LABEL, uses531, WEEKS_531 } from '../logic/schemes';
 import { startWorkout } from '../logic/session';
-import type { Day, Program, Workout } from '../types';
+import { fmt, fromDisplay, toDisplay } from '../logic/units';
+import { weighInDue } from '../logic/weighIn';
+import { NumInput } from '../components/NumInput';
+import type { BodyWeight, Day, Program, Settings, Workout } from '../types';
 import { CalendarIcon, DumbbellIcon, HistoryIcon, PlusIcon } from '../components/Icons';
 
 const greeting = (h = new Date().getHours()) => (h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening');
+
+function WeighInCard({ settings, entries }: { settings: Settings; entries: BodyWeight[] }) {
+  const [value, setValue] = useState<number | null>(null);
+  const last = entries.reduce<BodyWeight | undefined>((a, e) => (!a || e.date > a.date ? e : a), undefined);
+  const units = settings.units;
+  return (
+    <section className="card accent">
+      <h2>⚖️ Weigh-in day</h2>
+      <p className="muted small">
+        Log your weight to keep track of how it changes week to week.
+        {last ? ` Last time: ${fmt(Math.round(toDisplay(last.weight, units) * 10) / 10)} ${units} on ${fmtDate(last.date)}.` : ''}
+      </p>
+      <div className="row">
+        <label className="mini-field"><span>Weight ({units})</span>
+          <NumInput decimal ariaLabel="Weekly weigh-in" value={value} onChange={setValue} />
+        </label>
+      </div>
+      <button className="wide" disabled={!value || value <= 0} onClick={() => value && logBodyWeight(fromDisplay(value, units))}>Save weight</button>
+      <button className="ghost wide" onClick={() => updateSettings({ weighInSkippedAt: Date.now() })}>Skip this week</button>
+    </section>
+  );
+}
 
 export function Home() {
   const settings = useSettings();
@@ -32,6 +58,7 @@ export function Home() {
     d.exercises.some((e) => e.scheme === '531' && state.lifts[liftKey('531', e.exerciseId)]?.weight == null));
 
   const saved = useLiveQuery(() => db.savedWorkouts.orderBy('name').toArray(), []);
+  const weights = useLiveQuery(() => db.bodyWeight.toArray(), []);
 
   const start = async (opts: { program?: Program; day?: Day; copyOf?: Workout }) => {
     await startWorkout(opts, byId);
@@ -66,6 +93,8 @@ export function Home() {
           <Link className="button wide" to="/workout">Resume</Link>
         </section>
       )}
+
+      {!active && weights && weighInDue(weights, settings) && <WeighInCard settings={settings} entries={weights} />}
 
       {!active && program && next && (
         <section className="card hero-card">

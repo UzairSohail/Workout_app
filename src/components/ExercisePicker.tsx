@@ -10,20 +10,47 @@ import { MuscleTags } from './MuscleTags';
 
 const STRENGTH = new Set(['strength', 'powerlifting', 'olympic weightlifting', 'strongman', 'custom']);
 
+const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+/** Everyday shorthand people type, mapped to the words the library uses. */
+const SYNONYMS: Record<string, string> = { db: 'dumbbell', bb: 'barbell', kb: 'kettlebell' };
+// "presses" -> "press", "crunches" -> "crunch", "curls" -> "curl", so plurals still match.
+const stem = (w: string) => {
+  if (w.length < 4) return w;
+  if (/(ss|sh|ch|x)es$/.test(w)) return w.slice(0, -2);
+  return w.endsWith('s') && !w.endsWith('ss') ? w.slice(0, -1) : w;
+};
+const queryWords = (q: string) => norm(q).split(' ').filter(Boolean).flatMap((w) => (SYNONYMS[w] ?? stem(w)).split(' '));
+
+/**
+ * Every query word must appear in the exercise's name, an everyday alias, or its equipment, so
+ * "machine leg press" finds "Leg Press" (a machine) and "db curls" finds "Dumbbell Bicep Curl".
+ * Best matches first: exact name, then names starting with the query, then the rest.
+ */
 export function filterExercises(all: Exercise[], q: string, muscle: string, equipment: string, strengthOnly: boolean, missing?: readonly string[]) {
-  const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ');
-  const words = norm(q).split(' ').filter(Boolean);
-  return all.filter((e) => {
+  const words = queryWords(q);
+  const phrase = words.join(' ');
+  const rank = (e: Exercise) => {
+    const names = [e.name, ...(e.aliases ?? [])].map(norm);
+    if (names.some((n) => n === phrase)) return 0;
+    if (names.some((n) => n.startsWith(phrase))) return 1;
+    if (names.some((n) => words.every((w) => n.includes(w)))) return 2;
+    return 3;
+  };
+  const list = all.filter((e) => {
     if (strengthOnly && !e.custom && !STRENGTH.has(e.category)) return false;
     if (muscle && !e.primaryMuscles.includes(muscle)) return false;
     if (equipment && e.equipment !== equipment) return false;
     if (!hasGear(e, missing)) return false;
-    // Search the official name and everyday aliases ("pec deck", "rdl").
+    if (!words.length) return true;
+    const gear = e.equipment === 'cable' ? 'cable machine' : norm(e.equipment);
     return [e.name, ...(e.aliases ?? [])].some((n) => {
-      const text = norm(n);
+      const text = `${norm(n)} ${gear}`;
       return words.every((w) => text.includes(w));
     });
   });
+  if (!words.length) return list;
+  const ranks = new Map(list.map((e) => [e, rank(e)]));
+  return list.sort((a, b) => ranks.get(a)! - ranks.get(b)!);
 }
 
 const COMMON = new Set(['barbell', 'dumbbell', 'cable', 'machine']);

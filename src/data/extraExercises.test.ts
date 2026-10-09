@@ -23,8 +23,8 @@ describe('extra exercises', () => {
       expect(e.instructions.length).toBeGreaterThan(1);
     }
   });
-  it('alias every id that exists in the library', () => {
-    const ids = new Set(library.map((e) => e.id));
+  it('alias every id that exists', () => {
+    const ids = new Set([...library, ...EXTRA_EXERCISES].map((e) => e.id));
     for (const id of Object.keys(ALIASES)) expect(ids.has(id), id).toBe(true);
   });
   it('borrow photos only from real library exercises that have them', () => {
@@ -47,5 +47,16 @@ describe('extra exercises', () => {
     expect(find('rdl')).toContain('Romanian Deadlift');
     expect(find('pull up')).toContain('Assisted Pull-Up');
     expect(find('hip abduction')).toContain('Thigh Abductor');
+  });
+  it('match equipment words, plurals and gym shorthand', () => {
+    const find = (q: string) => filterExercises(all, q, '', '', false).map((e) => e.name);
+    expect(find('machine leg press')[0]).toBe('Seated Leg Press Machine');
+    expect(find('leg press')[0]).toBe('Leg Press');
+    expect(find('leg presses')).toContain('Leg Press');
+    expect(find('seated row machine')).toContain('Seated Cable Rows');
+    expect(find('db curls')).toContain('Dumbbell Bicep Curl');
+    expect(find('back squat')).toContain('Barbell Squat');
+    expect(find('side plank')).toContain('Side Bridge');
+    expect(find('crunches')).toContain('Cable Crunch');
   });
 });
