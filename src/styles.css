@@ -250,3 +250,10 @@ textarea { min-height: 80px; resize: vertical; }
 /* Gym equipment checklist */
 .gear-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; }
 .form .gear-list label.toggle { flex-direction: row; align-items: center; gap: 8px; color: inherit; font-size: 0.95rem; }
+
+/* Target muscles and variety */
+.exercise-head .muscles { font-size: 0.85rem; color: var(--accent); }
+.suggestion.variety { border-left: 3px solid #b28cff; }
+.suggestion.variety .chips { margin-top: 8px; }
+.list-head { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin: 12px 0 6px; }
+.suggestion.variety .chip { background: var(--surface); border: 1px solid var(--border); font-weight: 600; }

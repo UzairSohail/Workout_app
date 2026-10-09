@@ -8,16 +8,17 @@ import { NumInput } from '../components/NumInput';
 import { RestTimer, startRest, stopRest } from '../components/RestTimer';
 import { saveExerciseNote, StickyNote } from '../components/ExerciseNote';
 import { SetTimer } from '../components/SetTimer';
-import { exerciseName, useExercises } from '../exercises';
+import { cap, exerciseName, useExercises } from '../exercises';
 import { fmtDuration, fmtSecs } from '../format';
 import { useActiveWorkout, useFinished, useSettings } from '../hooks';
 import { defaultMode, finishWorkout, historyFor, newLoggedExercise, suggestionFor, withWarmups } from '../logic/session';
 import { plateText } from '../logic/plates';
+import { freshAlternatives, isStale } from '../logic/variety';
 import { wantsWarmup } from '../logic/warmup';
 import { SCHEME_LABEL } from '../logic/schemes';
 import { countedSets, recordsFor, sessionPrs, type PrKind } from '../logic/stats';
 import { fmt, fromDisplay, toDisplay } from '../logic/units';
-import type { ExerciseNote, LoggedExercise, LogMode, SetType, Workout } from '../types';
+import type { Exercise, ExerciseNote, LoggedExercise, LogMode, SetType, Workout } from '../types';
 
 const TYPE_LABEL: Record<SetType, string> = { warmup: 'W', working: '', drop: 'D' };
 const NEXT_TYPE: Record<SetType, SetType> = { working: 'warmup', warmup: 'drop', drop: 'working' };
@@ -77,7 +78,7 @@ export function WorkoutPage() {
     [allFinished, w?.id, w?.startedAt],
   );
   const settings = useSettings();
-  const { byId } = useExercises();
+  const { all, byId } = useExercises();
   const navigate = useNavigate();
   const [picker, setPicker] = useState(false);
   const [swapIndex, setSwapIndex] = useState<number | null>(null);
@@ -151,6 +152,23 @@ export function WorkoutPage() {
     navigate(`/history/${w.id}`, { replace: true });
   };
 
+  /** Replaces exercise `i`, keeping any sets already done under the old one. */
+  const swapTo = (i: number, ex: Exercise) => mutate((d) => {
+    const old = d.exercises[i];
+    const done = old.sets.filter((x) => x.done);
+    const todo = old.sets.filter((x) => !x.done && x.type !== 'warmup').length || 1;
+    // Keep anything already logged; fresh sets for the rest, weighted from the new exercise's history.
+    const mode = modeFor(ex.id);
+    const [repMin, repMax] = old.mode === 'time' && mode === 'reps' ? [8, 12] : [old.repMin, old.repMax];
+    const fresh = newLoggedExercise(ex.id, done.length ? todo : old.sets.filter((x) => x.type !== 'warmup').length || 3,
+      repMin, repMax, old.rest, finished ?? [], byId, settings, mode);
+    if (old.supersetWithNext) fresh.supersetWithNext = true;
+    d.exercises[i] = done.length
+      ? { ...old, sets: done }
+      : { ...fresh, note: undefined };
+    if (done.length) d.exercises.splice(i + 1, 0, fresh);
+  });
+
   const discard = async (skipConfirm = false) => {
     if (!skipConfirm && !confirm('Discard this workout? Nothing will be saved.')) return;
     stopRest();
@@ -199,6 +217,10 @@ export function WorkoutPage() {
         const afterSuperset = !!w.exercises[ei - 1]?.supersetWithNext;
         const nextSet = le.sets.findIndex((x) => !x.done);
         const plateSet = ex?.equipment === 'barbell' && !timed ? le.sets[nextSet] : undefined;
+        // Same lift every time this muscle was trained lately: offer a change before the first set.
+        const ideas = !editing && ex && finished && !le.sets.some((x) => x.done) && isStale(ex, finished, byId)
+          ? freshAlternatives(ex, all, finished, settings.missingEquipment, 2)
+          : [];
         const fmtLast = (x: { weight: number; reps: number }) =>
           timed ? (x.weight ? `${fmt(toDisplay(x.weight, units))}×${fmtSecs(x.reps)}` : fmtSecs(x.reps)) : `${fmt(toDisplay(x.weight, units))}×${x.reps}`;
         const markDone = (si: number, reps?: number) => {
@@ -231,6 +253,12 @@ export function WorkoutPage() {
               <Link to={`/exercises/${le.exerciseId}`}><ExerciseImage exercise={ex} /></Link>
               <div className="grow">
                 <strong>{exerciseName(byId, le.exerciseId)}</strong>
+                {ex && ex.primaryMuscles.length > 0 && (
+                  <small className="muscles">
+                    🎯 {ex.primaryMuscles.map(cap).join(', ')}
+                    {ex.secondaryMuscles.length > 0 && <span className="muted"> · also {ex.secondaryMuscles.join(', ')}</span>}
+                  </small>
+                )}
                 <small className="muted">
                   {le.scheme ? SCHEME_LABEL[le.scheme] : timed ? `Target ${le.repMin}–${le.repMax} sec` : `Target ${le.repMin}–${le.repMax} reps`}
                   {last && <> · Last: {countedSets(last.sets).map(fmtLast).join(', ')}</>}
@@ -267,6 +295,14 @@ export function WorkoutPage() {
             {s && s.kind !== 'new' && <p className={`suggestion ${s.kind}`}>{s.kind === 'increase' ? '⬆️ ' : s.kind === 'deload' ? '⬇️ ' : '➡️ '}{s.message}</p>}
             {s && s.kind === 'new' && <p className="suggestion">{s.message}</p>}
             {le.scheme && le.note && <p className="suggestion program">📋 {le.note}</p>}
+            {ideas.length > 0 && (
+              <div className="suggestion variety">
+                🔄 You've done this the last 4 times you trained {ex!.primaryMuscles[0]}. Mix it up with:
+                <div className="chips">
+                  {ideas.map((alt) => <button key={alt.id} className="chip" onClick={() => swapTo(ei, alt)}>{alt.name}</button>)}
+                </div>
+              </div>
+            )}
             <StickyNote exerciseId={le.exerciseId} note={note} editing={noteFor === ei} setEditing={(v) => setNoteFor(v ? ei : null)} />
             {plateSet?.weight != null && plateSet.weight > 0 && (
               <p className="plates muted small">🏋️ {fmt(toDisplay(plateSet.weight, units))} {units}: {plateText(toDisplay(plateSet.weight, units), units)}</p>
@@ -347,21 +383,7 @@ export function WorkoutPage() {
           excludeId={w.exercises[swapIndex].exerciseId}
           onClose={() => setSwapIndex(null)}
           onPick={(ex) => {
-            mutate((d) => {
-              const old = d.exercises[swapIndex];
-              const done = old.sets.filter((x) => x.done);
-              const todo = old.sets.filter((x) => !x.done && x.type !== 'warmup').length || 1;
-              // Keep anything already logged; fresh sets for the rest, weighted from the new exercise's history.
-              const mode = modeFor(ex.id);
-              const [repMin, repMax] = old.mode === 'time' && mode === 'reps' ? [8, 12] : [old.repMin, old.repMax];
-              const fresh = newLoggedExercise(ex.id, done.length ? todo : old.sets.filter((x) => x.type !== 'warmup').length || 3,
-                repMin, repMax, old.rest, finished ?? [], byId, settings, mode);
-              if (old.supersetWithNext) fresh.supersetWithNext = true;
-              d.exercises[swapIndex] = done.length
-                ? { ...old, sets: done }
-                : { ...fresh, note: undefined };
-              if (done.length) d.exercises.splice(swapIndex + 1, 0, fresh);
-            });
+            swapTo(swapIndex, ex);
             setSwapIndex(null);
           }}
         />
