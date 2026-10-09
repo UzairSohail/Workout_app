@@ -30,6 +30,8 @@ export interface Settings {
   lastBackupAt?: number;
   /** Add ramp-up warm-up sets before heavy compound lifts. Defaults to on. */
   warmups?: boolean;
+  /** Library equipment types the user's gym doesn't have; hidden from pickers and the generator. */
+  missingEquipment?: string[];
 }
 
 /**

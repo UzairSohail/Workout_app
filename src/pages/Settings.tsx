@@ -8,6 +8,7 @@ import { useSettings } from '../hooks';
 import { BAR, platesPerSide } from '../logic/plates';
 import { fmt, toDisplay } from '../logic/units';
 import type { Units } from '../types';
+import { GEAR } from '../logic/equipment';
 
 
 const csvCell = (v: string | number) => (typeof v === 'string' && /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : String(v));
@@ -116,6 +117,25 @@ export function SettingsPage() {
             <small className="muted">Add lighter ramp-up sets before heavy barbell lifts and the first exercise of each workout.</small>
           </span>
         </label>
+      </section>
+
+      <section className="card form">
+        <h2>My gym's equipment</h2>
+        <p className="muted small">Untick anything your gym doesn't have. Exercise lists, swap suggestions and the routine builder will leave those exercises out.</p>
+        <div className="gear-list">
+          {GEAR.map(([key, label]) => {
+            const missing = s.missingEquipment ?? [];
+            const have = !missing.includes(key);
+            return (
+              <label key={key} className="toggle">
+                <input type="checkbox" checked={have} onChange={(e) => updateSettings({
+                  missingEquipment: e.target.checked ? missing.filter((m) => m !== key) : [...missing, key],
+                })} />
+                {label}
+              </label>
+            );
+          })}
+        </div>
       </section>
 
       <PlateCalculator key={s.units} units={s.units} />

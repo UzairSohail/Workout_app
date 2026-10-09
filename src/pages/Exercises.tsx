@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ExerciseImage } from '../components/ExerciseImage';
-import { ExerciseFilters, filterExercises } from '../components/ExercisePicker';
+import { ExerciseFilters, filterExercises, MyGearToggle } from '../components/ExercisePicker';
+import { useSettings } from '../hooks';
 import { cap, useExercises } from '../exercises';
 
 export function Exercises() {
@@ -10,10 +11,12 @@ export function Exercises() {
   const [muscle, setMuscle] = useState('');
   const [equipment, setEquipment] = useState('');
   const [strengthOnly, setStrengthOnly] = useState(true);
+  const { missingEquipment } = useSettings();
+  const [mine, setMine] = useState(true);
   const [limit, setLimit] = useState(50);
   const results = useMemo(
-    () => filterExercises(all, q, muscle, equipment, strengthOnly),
-    [all, q, muscle, equipment, strengthOnly],
+    () => filterExercises(all, q, muscle, equipment, strengthOnly, mine ? missingEquipment : undefined),
+    [all, q, muscle, equipment, strengthOnly, mine, missingEquipment],
   );
 
   return (
@@ -29,6 +32,7 @@ export function Exercises() {
         <input type="checkbox" checked={!strengthOnly} onChange={(e) => setStrengthOnly(!e.target.checked)} />
         Include stretches, cardio and plyometrics
       </label>
+      <MyGearToggle missing={missingEquipment} on={mine} setOn={setMine} />
       {loading && <p className="muted">Loading exercises…</p>}
       {error && <p className="error">{error}</p>}
       <p className="muted small">{results.length} exercises</p>

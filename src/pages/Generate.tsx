@@ -1,7 +1,9 @@
-import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { db, uid, updateSettings } from '../db';
 import { exerciseName, useExercises } from '../exercises';
+import { useSettings } from '../hooks';
+import { GEAR, generatorEquipment, hasGear } from '../logic/equipment';
 import { generateProgram, type Equipment, type Experience, type GeneratorInput, type Goal } from '../logic/generator';
 
 function Choice<T extends string | number>({ label, value, options, onChange }: {
@@ -25,9 +27,15 @@ function Choice<T extends string | number>({ label, value, options, onChange }: 
 export function Generate() {
   const navigate = useNavigate();
   const { byId } = useExercises();
+  const { missingEquipment } = useSettings();
   const [input, setInput] = useState<GeneratorInput>({ goal: 'muscle', days: 3, experience: 'beginner', equipment: 'gym', minutes: 60 });
+  // Start from what the gym has once settings load.
+  useEffect(() => setInput((i) => ({ ...i, equipment: generatorEquipment(missingEquipment) })), [missingEquipment]);
   const [id] = useState(uid);
-  const program = useMemo(() => generateProgram(input, id), [input, id]);
+  const program = useMemo(
+    () => generateProgram(input, id, Date.now(), (exId) => hasGear(byId.get(exId), missingEquipment)),
+    [input, id, byId, missingEquipment],
+  );
   const set = <K extends keyof GeneratorInput>(k: K) => (v: GeneratorInput[K]) => setInput({ ...input, [k]: v });
 
   const save = async () => {
@@ -55,6 +63,12 @@ export function Generate() {
           options={[['beginner', 'New / under 1 year'], ['intermediate', '1+ years']]} />
         <Choice<Equipment> label="Equipment" value={input.equipment} onChange={set('equipment')}
           options={[['gym', 'Full gym'], ['dumbbells', 'Dumbbells'], ['bodyweight', 'Bodyweight']]} />
+        <p className="muted small">
+          {missingEquipment?.length
+            ? <>Leaving out {missingEquipment.map((m) => (GEAR.find(([k]) => k === m)?.[1] ?? m).toLowerCase()).join(', ')}. </>
+            : <>Missing something, like a cable machine? </>}
+          <Link to="/settings">Set your gym's equipment in Settings</Link>.
+        </p>
       </section>
 
       <section className="card">

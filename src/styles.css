@@ -246,3 +246,7 @@ textarea { min-height: 80px; resize: vertical; }
 .set-timer { margin-top: 10px; font-variant-numeric: tabular-nums; }
 .set-timer.running { background: var(--warn); color: #111; }
 .set-timer.running.hit { background: var(--accent); color: var(--accent-ink); }
+
+/* Gym equipment checklist */
+.gear-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; }
+.form .gear-list label.toggle { flex-direction: row; align-items: center; gap: 8px; color: inherit; font-size: 0.95rem; }
