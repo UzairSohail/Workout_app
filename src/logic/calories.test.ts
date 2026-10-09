@@ -14,10 +14,10 @@ describe('calories', () => {
   it('is zero before any set is done', () => {
     expect(workoutCalories(workout([le('bench', [set(), set()])]), byId, 80)).toBe(0);
   });
-  it('counts the whole hour of a compound session at MET 5', () => {
-    // 20 sets, one every 3 minutes, for 80 kg: 5 × 80 × 1 h = 400
+  it('counts the whole hour of a compound session, minus resting burn', () => {
+    // 20 sets, one every 3 minutes, for 80 kg: (4.5 − 1) × 80 × 1 h = 280
     const sets = Array.from({ length: 20 }, (_, i) => set((i + 1) * 3 * MIN));
-    expect(workoutCalories(workout([le('bench', sets)]), byId, 80)).toBe(400);
+    expect(workoutCalories(workout([le('bench', sets)]), byId, 80)).toBe(280);
   });
   it('grows after each set', () => {
     const w = (n: number) => workout([le('bench', Array.from({ length: 4 }, (_, i) => (i < n ? set((i + 1) * 3 * MIN) : set())))]);
@@ -26,15 +26,15 @@ describe('calories', () => {
     expect(totals[3]).toBeGreaterThan(totals[2]);
   });
   it('averages compound, isolation and cardio sets', () => {
-    const w = workout([le('bench', [set(10 * MIN)]), le('curl', [set(20 * MIN)]), le('bike', [set(30 * MIN)])]);
-    expect(workoutCalories(w, byId, 70)).toBe(Math.round(((5 + 3.5 + 7) / 3) * 70 * 0.5));
+    const w = workout([le('bench', [set(5 * MIN)]), le('curl', [set(10 * MIN)]), le('bike', [set(15 * MIN)])]);
+    expect(workoutCalories(w, byId, 70)).toBe(Math.round(((4.5 + 3.5 + 7) / 3 - 1) * 70 * 0.25));
   });
-  it('trims long pauses between sets to 10 minutes', () => {
-    expect(activeMs(workout([le('bench', [set(5 * MIN), set(65 * MIN)])]))).toBe(15 * MIN);
+  it('trims long pauses between sets to 5 minutes', () => {
+    expect(activeMs(workout([le('bench', [set(5 * MIN), set(65 * MIN)])]))).toBe(10 * MIN);
   });
-  it('uses the session length for workouts logged before set times existed', () => {
+  it('assumes 3 minutes a set for workouts logged before set times existed', () => {
     const old = workout([le('bench', [{ weight: 60, reps: 10, type: 'working', done: true }])], 45 * MIN);
-    expect(activeMs(old)).toBe(45 * MIN);
-    expect(workoutCalories(old, byId, undefined)).toBe(Math.round(5 * 70 * 0.75));
+    expect(activeMs(old)).toBe(3 * MIN);
+    expect(workoutCalories(old, byId, undefined)).toBe(Math.round(3.5 * 70 * 0.05));
   });
 });
