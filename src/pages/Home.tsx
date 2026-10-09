@@ -7,7 +7,7 @@ import { fmtDate, fmtDuration } from '../format';
 import { useActiveWorkout, useFinished, useSettings } from '../hooks';
 import { liftKey, SCHEME_LABEL, uses531, WEEKS_531 } from '../logic/schemes';
 import { startWorkout } from '../logic/session';
-import type { Day, Program } from '../types';
+import type { Day, Program, Workout } from '../types';
 import { CalendarIcon, DumbbellIcon, HistoryIcon, PlusIcon } from '../components/Icons';
 
 const greeting = (h = new Date().getHours()) => (h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening');
@@ -31,7 +31,9 @@ export function Home() {
   const missingTm = is531 && !!state && program!.days.some((d) =>
     d.exercises.some((e) => e.scheme === '531' && state.lifts[liftKey('531', e.exerciseId)]?.weight == null));
 
-  const start = async (opts: { program?: Program; day?: Day }) => {
+  const saved = useLiveQuery(() => db.savedWorkouts.orderBy('name').toArray(), []);
+
+  const start = async (opts: { program?: Program; day?: Day; copyOf?: Workout }) => {
     await startWorkout(opts, byId);
     navigate('/workout');
   };
@@ -94,6 +96,26 @@ export function Home() {
           <p className="muted">Choose a built-in program or build your own, and the app will line up each day for you.</p>
           <Link className="button wide" to="/programs/generate">✨ Build a routine for me</Link>
           <Link className="button secondary wide" to="/programs">Choose a split</Link>
+        </section>
+      )}
+
+      {!active && saved && saved.length > 0 && (
+        <section>
+          <h2>Saved workouts</h2>
+          <ul className="list">
+            {saved.map((t) => (
+              <li key={t.id} className="saved-row">
+                <button className="list-item" onClick={() => start({ copyOf: t })} aria-label={`Start ${t.name}`}>
+                  <span>
+                    <strong>{t.name}</strong>
+                    <small className="muted">{t.exercises.length} exercise{t.exercises.length === 1 ? '' : 's'} · {t.exercises.slice(0, 3).map((e) => exerciseName(byId, e.exerciseId)).join(', ')}{t.exercises.length > 3 ? '…' : ''}</small>
+                  </span>
+                </button>
+                <button className="ghost danger" aria-label={`Delete ${t.name}`}
+                  onClick={() => confirm(`Delete the saved workout "${t.name}"?`) && db.savedWorkouts.delete(t.id)}>✕</button>
+              </li>
+            ))}
+          </ul>
         </section>
       )}
 

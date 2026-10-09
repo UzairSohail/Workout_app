@@ -11,6 +11,8 @@ export const db = new Dexie('workout-app') as Dexie & {
   bodyWeight: EntityTable<BodyWeight, 'id'>;
   exerciseNotes: EntityTable<ExerciseNote, 'exerciseId'>;
   exercisePhotos: EntityTable<ExercisePhoto, 'exerciseId'>;
+  /** Workouts built for later: same shape as a workout, started as a copy. */
+  savedWorkouts: EntityTable<Workout, 'id'>;
 };
 
 db.version(1).stores({
@@ -28,6 +30,9 @@ db.version(3).stores({
 });
 db.version(4).stores({
   exercisePhotos: 'exerciseId',
+});
+db.version(5).stores({
+  savedWorkouts: 'id, name',
 });
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -101,6 +106,7 @@ export interface Backup {
   programState?: ProgramState[];
   bodyWeight?: BodyWeight[];
   exerciseNotes?: ExerciseNote[];
+  savedWorkouts?: Workout[];
 }
 
 export async function exportBackup(): Promise<Backup> {
@@ -115,13 +121,14 @@ export async function exportBackup(): Promise<Backup> {
     programState: await db.programState.toArray(),
     bodyWeight: await db.bodyWeight.toArray(),
     exerciseNotes: await db.exerciseNotes.toArray(),
+    savedWorkouts: await db.savedWorkouts.toArray(),
   };
 }
 
 /** Merges a backup into the database; existing rows with the same id are replaced. */
 export async function importBackup(data: Backup) {
   if (data?.app !== 'workout-app') throw new Error('This file is not a workout app backup.');
-  await db.transaction('rw', [db.settings, db.programs, db.workouts, db.customExercises, db.programState, db.bodyWeight, db.exerciseNotes], async () => {
+  await db.transaction('rw', [db.settings, db.programs, db.workouts, db.customExercises, db.programState, db.bodyWeight, db.exerciseNotes, db.savedWorkouts], async () => {
     await db.settings.bulkPut(data.settings ?? []);
     await db.programs.bulkPut(data.programs ?? []);
     await db.workouts.bulkPut(data.workouts ?? []);
@@ -129,9 +136,26 @@ export async function importBackup(data: Backup) {
     await db.programState.bulkPut(data.programState ?? []);
     await db.bodyWeight.bulkPut(data.bodyWeight ?? []);
     await db.exerciseNotes.bulkPut(data.exerciseNotes ?? []);
+    await db.savedWorkouts.bulkPut(data.savedWorkouts ?? []);
   });
 }
 
 export async function getProgramState(programId: string): Promise<ProgramState> {
   return (await db.programState.get(programId)) ?? { programId, week: 0, doneDays: [], lifts: {} };
+}
+
+/**
+ * Keeps a workout's exercises, set counts, rep targets, rests and supersets to start again later.
+ * Replaces an earlier saved workout with the same name. Returns true if it replaced one.
+ */
+export async function saveForLater(w: Workout): Promise<boolean> {
+  const name = w.name.trim() || 'My workout';
+  const existing = (await db.savedWorkouts.toArray()).find((t) => t.name.toLowerCase() === name.toLowerCase());
+  const exercises = w.exercises.map((e) => ({
+    ...e,
+    note: undefined,
+    sets: e.sets.filter((s) => s.type !== 'warmup').map((s) => ({ ...s, reps: null, done: false })),
+  }));
+  await db.savedWorkouts.put({ id: existing?.id ?? uid(), name, startedAt: Date.now(), exercises });
+  return !!existing;
 }

@@ -276,3 +276,6 @@ a.list-item::after, button.list-item::after { content: '›'; margin-left: auto;
 .quick .ico svg { width: 22px; height: 22px; }
 .thumb img.own, .hero img.own { object-fit: cover; }
 .similar-note { margin-top: -4px; }
+.saved-row { display: flex; align-items: center; gap: 4px; }
+.saved-row .list-item { flex: 1; min-width: 0; }
+.saved-row .list-item strong, .saved-row .list-item small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
