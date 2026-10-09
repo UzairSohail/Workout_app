@@ -1,38 +1,40 @@
 import { describe, expect, it } from 'vitest';
 import type { Exercise, LoggedExercise, LoggedSet, Workout } from '../types';
-import { setCalories, workoutCalories } from './calories';
+import { activeMs, workoutCalories } from './calories';
 
 const ex = (id: string, extra: Partial<Exercise> = {}) =>
   ({ id, name: id, category: 'strength', equipment: 'barbell', mechanic: 'compound', primaryMuscles: ['chest'], secondaryMuscles: [], instructions: [], images: [], ...extra }) as Exercise;
-const set = (reps: number, done = true, type: LoggedSet['type'] = 'working'): LoggedSet => ({ weight: 60, reps, type, done });
-const le = (sets: LoggedSet[], extra: Partial<LoggedExercise> = {}): LoggedExercise => ({ exerciseId: 'bench', repMin: 8, repMax: 12, rest: 90, sets, ...extra });
+const MIN = 60_000;
+const set = (doneAt?: number, type: LoggedSet['type'] = 'working'): LoggedSet => ({ weight: 60, reps: 10, type, done: doneAt !== undefined, doneAt });
+const le = (exerciseId: string, sets: LoggedSet[]): LoggedExercise => ({ exerciseId, repMin: 8, repMax: 12, rest: 90, sets });
+const workout = (exercises: LoggedExercise[], finishedAt?: number): Workout => ({ id: 'w', name: 'w', startedAt: 0, finishedAt, exercises });
+const byId = new Map([['bench', ex('bench')], ['curl', ex('curl', { mechanic: 'isolation' })], ['bike', ex('bike', { category: 'cardio', mechanic: undefined })]]);
 
 describe('calories', () => {
-  it('counts work at a lifting MET plus the rest after the set', () => {
-    // 10 reps × 3 s at MET 7 + 90 s rest at MET 2.5, for 80 kg
-    expect(setCalories(set(10), le([]), ex('bench'), 80)).toBeCloseTo((7 * 80 * 30 + 2.5 * 80 * 90) / 3600, 5);
+  it('is zero before any set is done', () => {
+    expect(workoutCalories(workout([le('bench', [set(), set()])]), byId, 80)).toBe(0);
   });
-  it('ignores sets not done, and skips rest inside a superset', () => {
-    expect(setCalories(set(10, false), le([]), ex('bench'), 80)).toBe(0);
-    expect(setCalories(set(10), le([], { supersetWithNext: true }), ex('bench'), 80)).toBeCloseTo((7 * 80 * 30) / 3600, 5);
+  it('counts the whole hour of a compound session at MET 5', () => {
+    // 20 sets, one every 3 minutes, for 80 kg: 5 × 80 × 1 h = 400
+    const sets = Array.from({ length: 20 }, (_, i) => set((i + 1) * 3 * MIN));
+    expect(workoutCalories(workout([le('bench', sets)]), byId, 80)).toBe(400);
   });
-  it('uses seconds directly for timed sets', () => {
-    const plank = setCalories(set(60), le([], { mode: 'time', rest: 0 }), ex('plank', { mechanic: 'isolation' }), 80);
-    expect(plank).toBeCloseTo((5 * 80 * 60) / 3600, 5);
-  });
-  it('uses the type picked for a custom exercise', () => {
-    const custom = (extra: Partial<Exercise>) => setCalories(set(10), le([], { rest: 0 }), ex('c', { category: 'custom', custom: true, ...extra }), 80);
-    expect(custom({ mechanic: 'compound' })).toBeCloseTo((7 * 80 * 30) / 3600, 5);
-    expect(custom({ mechanic: 'isolation' })).toBeCloseTo((5 * 80 * 30) / 3600, 5);
-    expect(custom({ category: 'cardio', mechanic: undefined })).toBeCloseTo((8 * 80 * 30) / 3600, 5);
-  });
-  it('grows with every set and falls back to 70 kg', () => {
-    const byId = new Map([['bench', ex('bench')]]);
-    const w = (n: number): Workout => ({ id: 'w', name: 'w', startedAt: 0, exercises: [le(Array.from({ length: 3 }, (_, i) => set(10, i < n)))] });
-    const totals = [0, 1, 2, 3].map((n) => workoutCalories(w(n), byId, 80));
-    expect(totals[0]).toBe(0);
-    expect(totals[1]).toBeGreaterThan(0);
+  it('grows after each set', () => {
+    const w = (n: number) => workout([le('bench', Array.from({ length: 4 }, (_, i) => (i < n ? set((i + 1) * 3 * MIN) : set())))]);
+    const totals = [1, 2, 3, 4].map((n) => workoutCalories(w(n), byId, 80));
+    expect(totals[1]).toBeGreaterThan(totals[0]);
     expect(totals[3]).toBeGreaterThan(totals[2]);
-    expect(workoutCalories(w(3), byId, undefined)).toBe(workoutCalories(w(3), byId, 70));
+  });
+  it('averages compound, isolation and cardio sets', () => {
+    const w = workout([le('bench', [set(10 * MIN)]), le('curl', [set(20 * MIN)]), le('bike', [set(30 * MIN)])]);
+    expect(workoutCalories(w, byId, 70)).toBe(Math.round(((5 + 3.5 + 7) / 3) * 70 * 0.5));
+  });
+  it('trims long pauses between sets to 10 minutes', () => {
+    expect(activeMs(workout([le('bench', [set(5 * MIN), set(65 * MIN)])]))).toBe(15 * MIN);
+  });
+  it('uses the session length for workouts logged before set times existed', () => {
+    const old = workout([le('bench', [{ weight: 60, reps: 10, type: 'working', done: true }])], 45 * MIN);
+    expect(activeMs(old)).toBe(45 * MIN);
+    expect(workoutCalories(old, byId, undefined)).toBe(Math.round(5 * 70 * 0.75));
   });
 });

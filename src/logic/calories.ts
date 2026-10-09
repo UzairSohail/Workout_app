@@ -1,30 +1,58 @@
-import type { Exercise, LoggedExercise, LoggedSet, Workout } from '../types';
+import type { Exercise, LoggedSet, Workout } from '../types';
 
 /** Used when no body weight is set in Settings. */
 export const DEFAULT_BODY_KG = 70;
 
-// MET values from the Compendium of Physical Activities: vigorous lifting ~6, light effort between sets ~2.5.
-const MET = { compound: 7, isolation: 5, cardio: 8, rest: 2.5 } as const;
-const SECONDS_PER_REP = 3;
-/** Rest beyond this isn't counted, so a long chat between sets doesn't inflate the total. */
-const MAX_REST = 180;
+/**
+ * MET values from the 2024 Compendium of Physical Activities. Like Fitbod and Hevy, they're applied to the
+ * whole session including rests (that's how the Compendium measured them), not just the seconds under load:
+ * resistance training, multiple exercises 8–15 reps ≈ 3.5; squats/deadlifts/heavy compound work ≈ 5;
+ * circuit-style cardio ≈ 7.
+ */
+const MET = { compound: 5, isolation: 3.5, cardio: 7 } as const;
+/** A gap longer than this between ticked sets (a chat, a phone call) only counts up to this much. */
+const MAX_GAP = 10 * 60_000;
+/** Without per-set times (older workouts), the whole session counts, up to this long. */
+const MAX_SESSION = 3 * 3600_000;
 
-const kcal = (met: number, kg: number, seconds: number) => (met * kg * seconds) / 3600;
-
-/** Estimated calories for one finished set, including the rest that follows it. */
-export function setCalories(set: LoggedSet, le: LoggedExercise, ex: Exercise | undefined, kg: number): number {
-  if (!set.done || !set.reps) return 0;
-  const timed = le.mode === 'time';
-  const work = timed ? set.reps : set.reps * SECONDS_PER_REP;
-  const met = ex?.category === 'cardio' ? MET.cardio : ex?.mechanic === 'compound' ? MET.compound : MET.isolation;
-  // Superset partners go straight to the next exercise, so there's no rest after them.
-  const rest = le.supersetWithNext ? 0 : Math.min(MAX_REST, set.type === 'warmup' ? Math.min(60, le.rest) : le.rest);
-  return kcal(set.type === 'warmup' ? met * 0.7 : met, kg, work) + kcal(MET.rest, kg, rest);
+export function exerciseMet(ex: Exercise | undefined): number {
+  if (ex?.category === 'cardio') return MET.cardio;
+  return ex?.mechanic === 'compound' ? MET.compound : MET.isolation;
 }
 
-export function workoutCalories(w: Workout, byId: Map<string, Exercise>, kg: number | undefined): number {
-  const body = kg || DEFAULT_BODY_KG;
+/** Training time so far: from the start to the last ticked set, with long pauses trimmed. */
+export function activeMs(w: Workout, now = Date.now()): number {
+  const sets = w.exercises.flatMap((e) => e.sets).filter((s) => s.done);
+  if (!sets.length) return 0;
+  const times = sets.map((s) => s.doneAt).filter((t): t is number => t != null).sort((a, b) => a - b);
+  if (!times.length) return Math.max(0, Math.min(MAX_SESSION, (w.finishedAt ?? now) - w.startedAt));
   let total = 0;
-  for (const le of w.exercises) for (const s of le.sets) total += setCalories(s, le, byId.get(le.exerciseId), body);
-  return Math.round(total);
+  let prev = w.startedAt;
+  for (const t of times) {
+    total += Math.min(MAX_GAP, Math.max(0, t - prev));
+    prev = t;
+  }
+  return total;
+}
+
+/** Average intensity of the sets done, warm-ups counting half. */
+function sessionMet(w: Workout, byId: Map<string, Exercise>): number {
+  let sum = 0;
+  let n = 0;
+  for (const e of w.exercises) {
+    const met = exerciseMet(byId.get(e.exerciseId));
+    for (const s of e.sets as LoggedSet[]) {
+      if (!s.done) continue;
+      const weight = s.type === 'warmup' ? 0.5 : 1;
+      sum += met * weight;
+      n += weight;
+    }
+  }
+  return n ? sum / n : 0;
+}
+
+/** Estimated calories: MET × body weight (kg) × hours of training. Grows each time a set is ticked off. */
+export function workoutCalories(w: Workout, byId: Map<string, Exercise>, kg: number | undefined, now = Date.now()): number {
+  const hours = activeMs(w, now) / 3600_000;
+  return Math.round(sessionMet(w, byId) * (kg || DEFAULT_BODY_KG) * hours);
 }
