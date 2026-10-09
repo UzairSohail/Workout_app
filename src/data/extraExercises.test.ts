@@ -48,4 +48,14 @@ describe('extra exercises', () => {
     expect(find('pull up')).toContain('Assisted Pull-Up');
     expect(find('hip abduction')).toContain('Thigh Abductor');
   });
+  it('match equipment words, plurals and gym shorthand', () => {
+    const find = (q: string) => filterExercises(all, q, '', '', false).map((e) => e.name);
+    expect(find('machine leg press')[0]).toBe('Leg Press');
+    expect(find('leg presses')).toContain('Leg Press');
+    expect(find('seated row machine')).toContain('Seated Cable Rows');
+    expect(find('db curls')).toContain('Dumbbell Bicep Curl');
+    expect(find('back squat')).toContain('Barbell Squat');
+    expect(find('side plank')).toContain('Side Bridge');
+    expect(find('crunches')).toContain('Cable Crunch');
+  });
 });
