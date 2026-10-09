@@ -14,6 +14,7 @@ import { fmtDuration, fmtSecs } from '../format';
 import { useActiveWorkout, useFinished, useSettings } from '../hooks';
 import { defaultMode, finishWorkout, historyFor, newLoggedExercise, suggestionFor, withWarmups } from '../logic/session';
 import { plateText } from '../logic/plates';
+import { workoutCalories } from '../logic/calories';
 import { freshAlternatives, isStale } from '../logic/variety';
 import { wantsWarmup } from '../logic/warmup';
 import { SCHEME_LABEL } from '../logic/schemes';
@@ -203,7 +204,10 @@ export function WorkoutPage() {
             </label>
           </div>
         ) : (
-          <p className="muted small"><Elapsed since={w.startedAt} /></p>
+          <p className="muted small">
+            <Elapsed since={w.startedAt} /> · <span className="kcal" aria-label="Calories burned">🔥 {workoutCalories(w, byId, settings.bodyWeight)} kcal</span>
+            {!settings.bodyWeight && <> · <Link to="/settings">add your weight</Link> for accuracy</>}
+          </p>
         )}
       </header>
 

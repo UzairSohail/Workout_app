@@ -5,6 +5,7 @@ import { db } from '../db';
 import { exerciseName, useExercises } from '../exercises';
 import { fmtDateLong, fmtDuration, fmtSecs } from '../format';
 import { useFinished, useSettings } from '../hooks';
+import { workoutCalories } from '../logic/calories';
 import { startWorkout } from '../logic/session';
 import { recordsFor, sessionPrs, workoutVolume, type PrKind } from '../logic/stats';
 import { fmt, fmtWeight, toDisplay } from '../logic/units';
@@ -13,7 +14,7 @@ export function WorkoutDetail() {
   const { id } = useParams();
   const [params] = useSearchParams();
   const navigate = useNavigate();
-  const { units } = useSettings();
+  const { units, bodyWeight } = useSettings();
   const { byId } = useExercises();
   const w = useLiveQuery(() => db.workouts.get(id!), [id]);
   const finished = useFinished();
@@ -65,6 +66,7 @@ export function WorkoutDetail() {
         <div><strong>{w.finishedAt ? fmtDuration(w.finishedAt - w.startedAt) : '–'}</strong><small>Duration</small></div>
         <div><strong>{fmtWeight(workoutVolume(w), units)}</strong><small>Volume</small></div>
         <div><strong>{w.exercises.reduce((a, e) => a + e.sets.length, 0)}</strong><small>Sets</small></div>
+        <div><strong>{workoutCalories(w, byId, bodyWeight)}</strong><small>kcal (est.)</small></div>
       </div>
 
       {w.exercises.map((e, i) => (
