@@ -33,10 +33,10 @@ npm run build    # static site in dist/
 
 ## Free hosting
 
-The build is a static folder (`dist/`) with relative paths, so any static host works. The repo is private, and GitHub Pages needs a public repo on the free plan, so use one of these instead:
+The build is a static folder (`dist/`) with relative paths, so any static host works.
 
-- **Cloudflare Pages** (recommended): Create project → Connect to Git → pick this repo → build command `npm run build`, output `dist`. Every push to `master` then redeploys.
-- **Netlify** or **Vercel**: same settings.
+- **GitHub Pages** (set up): make the repo public, then go to Settings → Pages → Source: **GitHub Actions**. `.github/workflows/deploy.yml` deploys every push to `master` to `https://<owner>.github.io/Workout_app/`. While the repo is private, the deploy job is skipped.
+- **Cloudflare Pages**, **Netlify** or **Vercel** (works with a private repo): connect the repo with build command `npm run build` and output `dist`.
 
 ## Credits
 
