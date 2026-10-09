@@ -248,6 +248,7 @@ export function WorkoutPage() {
           mutate((d) => {
             const x = d.exercises[ei].sets[si];
             x.done = true;
+            if (!editing) x.doneAt = Date.now();
             if (reps != null) x.reps = reps;
             if (x.reps == null) x.reps = x.target ?? s?.reps ?? (timed ? le.repMax : le.repMin);
             if (x.weight == null && s?.weight != null) x.weight = s.weight;

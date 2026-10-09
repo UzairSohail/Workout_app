@@ -104,6 +104,8 @@ export interface LoggedSet {
   target?: number;
   /** As many reps as possible (target is the minimum). */
   amrap?: boolean;
+  /** When the set was ticked off (ms), for the calorie estimate. */
+  doneAt?: number;
 }
 
 export interface LoggedExercise {
