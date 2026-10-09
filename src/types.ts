@@ -41,6 +41,10 @@ export interface Settings {
   height?: number;
   sex?: 'male' | 'female';
   experience?: 'beginner' | 'intermediate' | 'advanced';
+  /** Weekly weigh-in reminder day, 0 = Sunday … 6 = Saturday, -1 = off. Defaults to Sunday. */
+  weighInDay?: number;
+  /** When the user last tapped "Skip this week" on the reminder. */
+  weighInSkippedAt?: number;
 }
 
 /**
