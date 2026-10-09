@@ -8,6 +8,9 @@ import { useActiveWorkout, useFinished, useSettings } from '../hooks';
 import { liftKey, SCHEME_LABEL, uses531, WEEKS_531 } from '../logic/schemes';
 import { startWorkout } from '../logic/session';
 import type { Day, Program } from '../types';
+import { CalendarIcon, DumbbellIcon, HistoryIcon, PlusIcon } from '../components/Icons';
+
+const greeting = (h = new Date().getHours()) => (h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening');
 
 export function Home() {
   const settings = useSettings();
@@ -35,14 +38,24 @@ export function Home() {
 
   const weekAgo = Date.now() - 7 * 864e5;
   const thisWeek = finished?.filter((w) => w.startedAt > weekAgo).length ?? 0;
+  const weekTarget = Math.max(1, program?.days.length ?? 3);
   const next = program?.days[settings.nextDayIndex % Math.max(1, program.days.length)];
 
   return (
     <>
       <header className="page-head">
-        <h1>{settings.name ? `Hey ${settings.name}` : 'Today'}</h1>
-        <p className="muted">{thisWeek} workout{thisWeek === 1 ? '' : 's'} in the last 7 days</p>
+        <p className="greeting">{greeting()}{settings.name ? ',' : ''}</p>
+        <h1>{settings.name || 'Ready to train?'}</h1>
+        <p className="muted small">{new Date().toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short' })}</p>
       </header>
+
+      <section className="card week-card">
+        <div className="section-head">
+          <strong>This week</strong>
+          <span className="muted small">{thisWeek} / {weekTarget} workouts</span>
+        </div>
+        <div className="meter"><span style={{ width: `${Math.min(100, (thisWeek / weekTarget) * 100)}%` }} /></div>
+      </section>
 
       {active && (
         <section className="card accent">
@@ -53,7 +66,7 @@ export function Home() {
       )}
 
       {!active && program && next && (
-        <section className="card">
+        <section className="card hero-card">
           <p className="eyebrow">{program.name}{is531 && state ? ` · week ${state.week + 1} (${WEEKS_531[state.week].name})` : ''} · next up</p>
           {missingTm && (
             <p className="notice">Set your training maxes first so the app can work out your weights. <Link to={`/programs/${program.id}`}>Set them</Link></p>
@@ -84,9 +97,17 @@ export function Home() {
         </section>
       )}
 
-      {!active && (
-        <button className="secondary wide" onClick={() => start({})}>Start an empty workout</button>
-      )}
+      <section>
+        <h2>Quick actions</h2>
+        <div className="quick">
+          {!active && (
+            <button onClick={() => start({})}><span className="ico"><PlusIcon /></span>Empty workout</button>
+          )}
+          <Link to="/exercises"><span className="ico"><DumbbellIcon /></span>Exercises</Link>
+          <Link to="/programs"><span className="ico"><CalendarIcon /></span>Splits</Link>
+          <Link to="/history?tab=progress"><span className="ico"><HistoryIcon /></span>Progress</Link>
+        </div>
+      </section>
 
       {!active && finished && backupDue(settings.lastBackupAt, finished.length) && (
         <section className="card">

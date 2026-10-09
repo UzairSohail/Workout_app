@@ -10,13 +10,14 @@ import { Exercises } from './pages/Exercises';
 import { ExerciseDetail } from './pages/ExerciseDetail';
 import { CustomExercise } from './pages/CustomExercise';
 import { SettingsPage } from './pages/Settings';
+import { CalendarIcon, DumbbellIcon, GearIcon, HistoryIcon, HomeIcon } from './components/Icons';
 
 const tabs = [
-  { to: '/', label: 'Today', icon: '🏠' },
-  { to: '/programs', label: 'Splits', icon: '🗓️' },
-  { to: '/history', label: 'History', icon: '📈' },
-  { to: '/exercises', label: 'Exercises', icon: '🏋️' },
-  { to: '/settings', label: 'Settings', icon: '⚙️' },
+  { to: '/', label: 'Today', icon: <HomeIcon /> },
+  { to: '/programs', label: 'Splits', icon: <CalendarIcon /> },
+  { to: '/history', label: 'History', icon: <HistoryIcon /> },
+  { to: '/exercises', label: 'Exercises', icon: <DumbbellIcon /> },
+  { to: '/settings', label: 'Settings', icon: <GearIcon /> },
 ];
 
 export function App() {
@@ -41,7 +42,7 @@ export function App() {
       <nav className="tabbar">
         {tabs.map((t) => (
           <NavLink key={t.to} to={t.to} end={t.to === '/'}>
-            <span aria-hidden>{t.icon}</span>
+            {t.icon}
             {t.label}
           </NavLink>
         ))}
