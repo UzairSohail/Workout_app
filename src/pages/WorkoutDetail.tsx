@@ -87,6 +87,7 @@ export function WorkoutDetail() {
       {w.notes && <section className="card"><p>{w.notes}</p></section>}
 
       <button className="wide" onClick={repeat}>Repeat this workout</button>
+      <Link className="button secondary wide" to={`/history/${w.id}/edit`}>Edit workout</Link>
       <button className="ghost danger wide" onClick={remove}>Delete workout</button>
     </>
   );

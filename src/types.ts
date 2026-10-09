@@ -27,6 +27,7 @@ export interface Settings {
   defaultRest: number;
   activeProgramId?: string;
   nextDayIndex: number;
+  lastBackupAt?: number;
 }
 
 /**

@@ -1,5 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Link, useNavigate } from 'react-router-dom';
+import { backupDue, backupNow } from '../backup';
 import { db, getProgramState } from '../db';
 import { exerciseName, useExercises } from '../exercises';
 import { fmtDate, fmtDuration } from '../format';
@@ -84,6 +85,14 @@ export function Home() {
 
       {!active && (
         <button className="secondary wide" onClick={() => start({})}>Start an empty workout</button>
+      )}
+
+      {!active && finished && backupDue(settings.lastBackupAt, finished.length) && (
+        <section className="card">
+          <h2>💾 Back up your workouts</h2>
+          <p className="muted small">Your history only lives on this phone. Save a backup file (to Files, Drive or email) so a lost or reset phone doesn't wipe it.</p>
+          <button className="secondary wide" onClick={() => backupNow().catch(() => {})}>Save backup</button>
+        </section>
       )}
 
       <section>
