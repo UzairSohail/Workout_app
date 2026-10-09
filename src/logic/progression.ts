@@ -27,9 +27,17 @@ export function suggest(
   repMax: number,
   increment: number,
   units: Units,
+  /** kg estimate for a first session, from the user's profile. */
+  start?: number | null,
 ): Suggestion {
   const sessions = history.map((h) => countedSets(h.sets)).filter((s) => s.length > 0);
   if (sessions.length === 0) {
+    if (start) {
+      return {
+        kind: 'new', weight: start, reps: repMin,
+        message: `Suggested start: ${fmt(toDisplay(start, units))} ${units}, based on your profile. Too light or too heavy? Change it and the app adjusts next time.`,
+      };
+    }
     return { kind: 'new', weight: null, reps: repMin, message: `First time: pick a weight you can do for ${repMin}–${repMax} reps.` };
   }
   const last = sessions[0];
