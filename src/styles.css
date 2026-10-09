@@ -100,7 +100,7 @@ textarea { min-height: 80px; resize: vertical; }
 .stack { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
 .section-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: 0 10px 30px -18px rgba(0, 0, 0, 0.8); }
-.card.accent { border-color: var(--accent); background: linear-gradient(160deg, rgba(236, 72, 153, 0.22), rgba(236, 72, 153, 0.04) 60%), var(--surface); }
+.card.accent { border-color: var(--accent); background: var(--surface); }
 .card > .button, .card > button.wide { margin-top: 10px; }
 .notice { background: var(--accent-soft); border: 1px solid rgba(236, 72, 153, 0.35); border-radius: 12px; padding: 10px 12px; font-size: 0.9rem; }
 .plain { list-style: none; padding: 0; margin: 8px 0; display: flex; flex-direction: column; gap: 4px; }
@@ -265,7 +265,7 @@ a.list-item::after, button.list-item::after { content: '›'; margin-left: auto;
 .greeting { font-size: 0.95rem; color: var(--muted); margin: 0; }
 .week-card .meter { height: 8px; border-radius: 999px; background: var(--surface-2); overflow: hidden; margin-top: 10px; }
 .week-card .meter span { display: block; height: 100%; background: var(--grad); border-radius: 999px; transition: width 0.4s; }
-.hero-card { background: radial-gradient(140% 120% at 100% 0%, rgba(244, 114, 182, 0.35), transparent 55%), linear-gradient(160deg, #4a1638, #1c1330); border-color: rgba(236, 72, 153, 0.45); }
+.hero-card { background: var(--surface); border-color: rgba(236, 72, 153, 0.45); }
 .hero-card .eyebrow { color: #fbcfe8; }
 .quick { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 .quick a, .quick button {
