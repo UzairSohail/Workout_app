@@ -215,3 +215,34 @@ textarea { min-height: 80px; resize: vertical; }
 .toggle.big input { margin-top: 4px; width: 20px; height: 20px; flex-shrink: 0; }
 .toggle.big span { display: flex; flex-direction: column; }
 .card > .button + .button { margin-top: 8px; }
+.bars { margin: 8px 0 0; }
+.bar-row { display: flex; align-items: flex-end; gap: 4px; height: 140px; }
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; min-width: 0; }
+.bar { width: 100%; max-width: 28px; background: var(--accent); border-radius: 4px 4px 0 0; min-height: 2px; }
+.bar-value { font-size: 0.65rem; color: var(--muted); white-space: nowrap; }
+.bar-label { font-size: 0.65rem; color: var(--muted); margin-top: 4px; white-space: nowrap; }
+.hbars { list-style: none; padding: 0; margin: 8px 0 0; display: flex; flex-direction: column; gap: 6px; }
+.hbars li { display: grid; grid-template-columns: 96px 1fr 28px; gap: 8px; align-items: center; font-size: 0.9rem; }
+.hbar-name { text-transform: capitalize; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hbar-track { background: var(--surface-2); border-radius: 999px; height: 10px; overflow: hidden; }
+.hbar { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
+.hbar-value { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+.tabs { display: flex; }
+
+/* Supersets */
+.card.exercise { position: relative; }
+.card.exercise.superset-start, .card.exercise.superset-cont { border-left: 3px solid var(--accent); }
+.card.exercise.superset-start { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.card.exercise.superset-cont { margin-top: -10px; border-top-left-radius: 0; border-top-right-radius: 0; }
+.superset-tag { display: inline-block; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); margin-bottom: 6px; }
+
+/* Sticky exercise notes */
+.sticky-note { display: block; width: 100%; text-align: left; font-size: 0.9rem; background: color-mix(in srgb, #f5d76e 18%, var(--surface-2)); color: inherit; border-radius: 10px; padding: 8px 10px; margin: 10px 0 4px; white-space: pre-wrap; }
+.note-editor { margin: 10px 0 4px; }
+.note-editor textarea { width: 100%; min-height: 64px; }
+
+/* Plate loading and timed sets */
+.plates { margin: 8px 0 2px; }
+.set-timer { margin-top: 10px; font-variant-numeric: tabular-nums; }
+.set-timer.running { background: var(--warn); color: #111; }
+.set-timer.running.hit { background: var(--accent); color: var(--accent-ink); }

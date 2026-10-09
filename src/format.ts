@@ -14,3 +14,8 @@ export function fmtClock(sec: number) {
   const s = Math.max(0, Math.ceil(sec));
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 }
+
+/** Seconds as "45s" or "1:30". */
+export function fmtSecs(sec: number) {
+  return sec < 60 ? `${sec}s` : fmtClock(sec);
+}

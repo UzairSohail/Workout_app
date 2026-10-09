@@ -3,7 +3,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { db } from '../db';
 import { exerciseName, useExercises } from '../exercises';
-import { fmtDateLong, fmtDuration } from '../format';
+import { fmtDateLong, fmtDuration, fmtSecs } from '../format';
 import { useFinished, useSettings } from '../hooks';
 import { startWorkout } from '../logic/session';
 import { recordsFor, sessionPrs, workoutVolume, type PrKind } from '../logic/stats';
@@ -76,7 +76,7 @@ export function WorkoutDetail() {
               return (
                 <li key={si}>
                   {s.type === 'warmup' ? 'Warm-up: ' : s.type === 'drop' ? 'Drop set: ' : ''}
-                  {s.weight ? `${fmt(toDisplay(s.weight, units))} ${units} × ` : ''}{s.reps} reps
+                  {s.weight ? `${fmt(toDisplay(s.weight, units))} ${units} × ` : ''}{e.mode === 'time' ? fmtSecs(s.reps ?? 0) : `${s.reps} reps`}
                   {prs.length > 0 && <span className="pr-badge inline">🏆 PR</span>}
                 </li>
               );

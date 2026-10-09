@@ -1,5 +1,5 @@
 import Dexie, { type EntityTable } from 'dexie';
-import type { Exercise, Program, ProgramState, Settings, Workout } from './types';
+import type { BodyWeight, Exercise, ExerciseNote, Program, ProgramState, Settings, Workout } from './types';
 import { BUILT_IN_PROGRAMS } from './programs';
 
 export const db = new Dexie('workout-app') as Dexie & {
@@ -8,6 +8,8 @@ export const db = new Dexie('workout-app') as Dexie & {
   workouts: EntityTable<Workout, 'id'>;
   customExercises: EntityTable<Exercise, 'id'>;
   programState: EntityTable<ProgramState, 'programId'>;
+  bodyWeight: EntityTable<BodyWeight, 'id'>;
+  exerciseNotes: EntityTable<ExerciseNote, 'exerciseId'>;
 };
 
 db.version(1).stores({
@@ -18,6 +20,10 @@ db.version(1).stores({
 });
 db.version(2).stores({
   programState: 'programId',
+});
+db.version(3).stores({
+  bodyWeight: 'id, date',
+  exerciseNotes: 'exerciseId',
 });
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -77,6 +83,8 @@ export interface Backup {
   workouts: Workout[];
   customExercises: Exercise[];
   programState?: ProgramState[];
+  bodyWeight?: BodyWeight[];
+  exerciseNotes?: ExerciseNote[];
 }
 
 export async function exportBackup(): Promise<Backup> {
@@ -89,18 +97,22 @@ export async function exportBackup(): Promise<Backup> {
     workouts: await db.workouts.toArray(),
     customExercises: await db.customExercises.toArray(),
     programState: await db.programState.toArray(),
+    bodyWeight: await db.bodyWeight.toArray(),
+    exerciseNotes: await db.exerciseNotes.toArray(),
   };
 }
 
 /** Merges a backup into the database; existing rows with the same id are replaced. */
 export async function importBackup(data: Backup) {
   if (data?.app !== 'workout-app') throw new Error('This file is not a workout app backup.');
-  await db.transaction('rw', [db.settings, db.programs, db.workouts, db.customExercises, db.programState], async () => {
+  await db.transaction('rw', [db.settings, db.programs, db.workouts, db.customExercises, db.programState, db.bodyWeight, db.exerciseNotes], async () => {
     await db.settings.bulkPut(data.settings ?? []);
     await db.programs.bulkPut(data.programs ?? []);
     await db.workouts.bulkPut(data.workouts ?? []);
     await db.customExercises.bulkPut(data.customExercises ?? []);
     await db.programState.bulkPut(data.programState ?? []);
+    await db.bodyWeight.bulkPut(data.bodyWeight ?? []);
+    await db.exerciseNotes.bulkPut(data.exerciseNotes ?? []);
   });
 }
 
