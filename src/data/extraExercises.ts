@@ -194,6 +194,17 @@ const ROWS: Row[] = [
     'Press the bar overhead without leaning back.',
     'Lower it back to your upper chest.',
   ]],
+  ['Landmine Squat to Press', 'barbell', 'compound', ['quadriceps'], ['shoulders', 'glutes', 'triceps'], [
+    'Hold the end of a landmine bar with both hands at your chest, feet shoulder-width apart.',
+    'Squat down, keeping your chest up and the bar close.',
+    'Drive up out of the squat and use that momentum to press the bar up and forward until your arms are straight.',
+    'Lower the bar back to your chest and go straight into the next squat.',
+  ]],
+  ['Landmine Squat', 'barbell', 'compound', ['quadriceps'], ['glutes'], [
+    'Hold the end of a landmine bar at your chest with both hands, feet shoulder-width apart.',
+    'Squat down between your knees, keeping your torso upright.',
+    'Stand back up by driving through your feet.',
+  ]],
   // Arms
   ['Bayesian Cable Curl', 'cable', 'isolation', ['biceps'], [], [
     'Stand facing away from a low pulley holding the handle behind you, arm stretched back.',
