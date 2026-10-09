@@ -264,3 +264,4 @@ textarea { min-height: 80px; resize: vertical; }
 .tag { font-size: 0.78rem; line-height: 1.3; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); color: var(--text); white-space: nowrap; }
 .tag.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
 .kcal { color: var(--text); font-weight: 600; }
+.create-it { margin-top: 12px; text-align: center; }

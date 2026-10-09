@@ -4,6 +4,7 @@ import { useFinished, useSettings } from '../hooks';
 import { hasGear } from '../logic/equipment';
 import { freshAlternatives } from '../logic/variety';
 import type { Exercise } from '../types';
+import { CustomExerciseForm, nameFromQuery } from './CustomExerciseForm';
 import { ExerciseImage } from './ExerciseImage';
 import { MuscleTags } from './MuscleTags';
 
@@ -76,6 +77,7 @@ export function ExercisePicker({ onPick, onClose, title = 'Add exercise', initia
   const { missingEquipment } = useSettings();
   const [mine, setMine] = useState(true);
   const [limit, setLimit] = useState(40);
+  const [creating, setCreating] = useState(false);
   const results = useMemo(
     () => {
       const list = filterExercises(all, q, muscle, equipment, true, mine ? missingEquipment : undefined).filter((e) => e.id !== excludeId);
@@ -100,6 +102,20 @@ export function ExercisePicker({ onPick, onClose, title = 'Add exercise', initia
       </button>
     </li>
   );
+
+  if (creating) {
+    return (
+      <div className="modal" role="dialog" aria-modal="true">
+        <div className="modal-head">
+          <h2>New exercise</h2>
+          <button className="ghost" onClick={() => setCreating(false)}>Back</button>
+        </div>
+        <div className="modal-body">
+          <CustomExerciseForm initialName={nameFromQuery(q)} initialMuscle={muscle} onSaved={onPick} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="modal" role="dialog" aria-modal="true">
@@ -131,6 +147,11 @@ export function ExercisePicker({ onPick, onClose, title = 'Add exercise', initia
           <button className="secondary wide" onClick={() => setLimit(limit + 40)}>Show more</button>
         )}
         {!loading && results.length === 0 && <p className="muted">No matches.</p>}
+        {!loading && q.trim() && (
+          <button className="secondary wide create-it" onClick={() => setCreating(true)}>
+            Can't find it? Create “{nameFromQuery(q)}”
+          </button>
+        )}
       </div>
     </div>
   );

@@ -31,6 +31,9 @@ describe('extra exercises', () => {
     const find = (q: string) => filterExercises(all, q, '', '', false).map((e) => e.name);
     expect(find('bulgarian')).toContain('Bulgarian Split Squat');
     expect(find('pec deck')).toContain('Butterfly');
+    expect(find('landmine row')).toContain('Landmine Row');
+    expect(find('yates row').length).toBeGreaterThan(0);
+    expect(find('dumbbell thruster')).toContain('Dumbbell Thruster');
     expect(find('rdl')).toContain('Romanian Deadlift');
     expect(find('pull up')).toContain('Assisted Pull-Up');
     expect(find('hip abduction')).toContain('Thigh Abductor');
