@@ -79,7 +79,8 @@ export function Home() {
         <section className="card">
           <h2>Pick a split</h2>
           <p className="muted">Choose a built-in program or build your own, and the app will line up each day for you.</p>
-          <Link className="button wide" to="/programs">Choose a split</Link>
+          <Link className="button wide" to="/programs/generate">✨ Build a routine for me</Link>
+          <Link className="button secondary wide" to="/programs">Choose a split</Link>
         </section>
       )}
 

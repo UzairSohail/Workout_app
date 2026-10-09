@@ -16,6 +16,9 @@ export function filterExercises(all: Exercise[], q: string, muscle: string, equi
   });
 }
 
+const COMMON = new Set(['barbell', 'dumbbell', 'cable', 'machine']);
+const equipmentRank = (e: Exercise) => (e.custom ? -1 : COMMON.has(e.equipment) ? 0 : e.equipment === 'body only' ? 1 : 2);
+
 export function ExerciseFilters({ q, setQ, muscle, setMuscle, equipment, setEquipment }: {
   q: string; setQ: (v: string) => void;
   muscle: string; setMuscle: (v: string) => void;
@@ -38,18 +41,31 @@ export function ExerciseFilters({ q, setQ, muscle, setMuscle, equipment, setEqui
   );
 }
 
-export function ExercisePicker({ onPick, onClose }: { onPick: (e: Exercise) => void; onClose: () => void }) {
+export function ExercisePicker({ onPick, onClose, title = 'Add exercise', initialMuscle = '', excludeId }: {
+  onPick: (e: Exercise) => void;
+  onClose: () => void;
+  title?: string;
+  initialMuscle?: string;
+  excludeId?: string;
+}) {
   const { all, loading } = useExercises();
   const [q, setQ] = useState('');
-  const [muscle, setMuscle] = useState('');
+  const [muscle, setMuscle] = useState(initialMuscle);
   const [equipment, setEquipment] = useState('');
   const [limit, setLimit] = useState(40);
-  const results = useMemo(() => filterExercises(all, q, muscle, equipment, true), [all, q, muscle, equipment]);
+  const results = useMemo(
+    () => {
+      const list = filterExercises(all, q, muscle, equipment, true).filter((e) => e.id !== excludeId);
+      // When swapping, show common gym equipment first.
+      return excludeId ? [...list].sort((a, b) => equipmentRank(a) - equipmentRank(b)) : list;
+    },
+    [all, q, muscle, equipment, excludeId],
+  );
 
   return (
     <div className="modal" role="dialog" aria-modal="true">
       <div className="modal-head">
-        <h2>Add exercise</h2>
+        <h2>{title}</h2>
         <button className="ghost" onClick={onClose}>Close</button>
       </div>
       <ExerciseFilters {...{ q, setQ, muscle, setMuscle, equipment, setEquipment }} />

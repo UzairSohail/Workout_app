@@ -107,6 +107,16 @@ export function SettingsPage() {
         </div>
       </section>
 
+      <section className="card form">
+        <label className="toggle big">
+          <input type="checkbox" checked={s.warmups !== false} onChange={(e) => updateSettings({ warmups: e.target.checked })} />
+          <span>
+            <strong>Warm-up sets</strong>
+            <small className="muted">Add lighter ramp-up sets before heavy barbell lifts and the first exercise of each workout.</small>
+          </span>
+        </label>
+      </section>
+
       <PlateCalculator key={s.units} units={s.units} />
 
       <section className="card form">

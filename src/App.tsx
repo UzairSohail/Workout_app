@@ -2,6 +2,7 @@ import { HashRouter, NavLink, Route, Routes } from 'react-router-dom';
 import { Home } from './pages/Home';
 import { Programs } from './pages/Programs';
 import { ProgramEdit } from './pages/ProgramEdit';
+import { Generate } from './pages/Generate';
 import { WorkoutPage } from './pages/Workout';
 import { History } from './pages/History';
 import { WorkoutDetail } from './pages/WorkoutDetail';
@@ -25,6 +26,7 @@ export function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/programs" element={<Programs />} />
+          <Route path="/programs/generate" element={<Generate />} />
           <Route path="/programs/:id" element={<ProgramEdit />} />
           <Route path="/workout" element={<WorkoutPage />} />
           <Route path="/history" element={<History />} />
