@@ -10,14 +10,18 @@ import { MuscleTags } from './MuscleTags';
 const STRENGTH = new Set(['strength', 'powerlifting', 'olympic weightlifting', 'strongman', 'custom']);
 
 export function filterExercises(all: Exercise[], q: string, muscle: string, equipment: string, strengthOnly: boolean, missing?: readonly string[]) {
-  const words = q.toLowerCase().split(/\s+/).filter(Boolean);
+  const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ');
+  const words = norm(q).split(' ').filter(Boolean);
   return all.filter((e) => {
     if (strengthOnly && !e.custom && !STRENGTH.has(e.category)) return false;
     if (muscle && !e.primaryMuscles.includes(muscle)) return false;
     if (equipment && e.equipment !== equipment) return false;
     if (!hasGear(e, missing)) return false;
-    const name = e.name.toLowerCase();
-    return words.every((w) => name.includes(w));
+    // Search the official name and everyday aliases ("pec deck", "rdl").
+    return [e.name, ...(e.aliases ?? [])].some((n) => {
+      const text = norm(n);
+      return words.every((w) => text.includes(w));
+    });
   });
 }
 

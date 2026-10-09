@@ -83,6 +83,8 @@ export function WorkoutPage() {
   const { all, byId } = useExercises();
   const navigate = useNavigate();
   const [picker, setPicker] = useState(false);
+  /** Index of the exercise a new superset partner goes after. */
+  const [supersetAfter, setSupersetAfter] = useState<number | null>(null);
   const [swapIndex, setSwapIndex] = useState<number | null>(null);
   const [noteFor, setNoteFor] = useState<number | null>(null);
   const notes = useLiveQuery(
@@ -365,6 +367,9 @@ export function WorkoutPage() {
               {le.sets.length > 1 && (
                 <button className="ghost" onClick={() => mutate((d) => { d.exercises[ei].sets.pop(); })}>− Set</button>
               )}
+              {!le.supersetWithNext && (
+                <button className="ghost" onClick={() => setSupersetAfter(ei)} aria-label="Add a superset exercise">+ Superset</button>
+              )}
             </div>
           </section>
         );
@@ -385,6 +390,25 @@ export function WorkoutPage() {
           onPick={(ex) => {
             swapTo(swapIndex, ex);
             setSwapIndex(null);
+          }}
+        />
+      )}
+
+      {supersetAfter !== null && w.exercises[supersetAfter] && (
+        <ExercisePicker
+          title="Superset with…"
+          onClose={() => setSupersetAfter(null)}
+          onPick={(ex) => {
+            mutate((d) => {
+              const prev = d.exercises[supersetAfter];
+              const next = newLoggedExercise(ex.id, prev.sets.filter((x) => x.type !== 'warmup').length || 3, 8, 12, prev.rest,
+                finished ?? [], byId, settings, modeFor(ex.id));
+              // Keep the chain intact when inserting into the middle of an existing superset.
+              if (prev.supersetWithNext) next.supersetWithNext = true;
+              prev.supersetWithNext = true;
+              d.exercises.splice(supersetAfter + 1, 0, next);
+            });
+            setSupersetAfter(null);
           }}
         />
       )}
