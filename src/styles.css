@@ -207,3 +207,11 @@ textarea { min-height: 80px; resize: vertical; }
 .lift-row .weight { width: 90px; flex-shrink: 0; text-align: center; }
 .segmented button { padding: 6px 16px; }
 .badge.subtle { background: var(--surface-2); color: var(--muted); margin-left: 6px; font-weight: 600; }
+.choice { display: flex; flex-direction: column; gap: 6px; }
+.segmented.wrap { display: flex; flex-wrap: wrap; align-self: stretch; }
+.segmented.wrap button { flex: 1 1 auto; padding: 6px 12px; }
+.preview-day { border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px; }
+.toggle.big { align-items: flex-start; color: var(--text); }
+.toggle.big input { margin-top: 4px; width: 20px; height: 20px; flex-shrink: 0; }
+.toggle.big span { display: flex; flex-direction: column; }
+.card > .button + .button { margin-top: 8px; }

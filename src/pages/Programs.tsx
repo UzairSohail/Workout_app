@@ -44,7 +44,8 @@ export function Programs() {
         <h1>Splits</h1>
         <p className="muted">Pick the program you're running. Copy a built-in one to change it.</p>
       </header>
-      <button className="wide" onClick={create}>+ Build your own split</button>
+      <Link className="button wide" to="/programs/generate">✨ Build a routine for me</Link>
+      <button className="secondary wide" onClick={create}>+ Build your own split</button>
       <ul className="stack">
         {programs?.map((p) => {
           const active = p.id === settings.activeProgramId;

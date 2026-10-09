@@ -28,6 +28,8 @@ export interface Settings {
   activeProgramId?: string;
   nextDayIndex: number;
   lastBackupAt?: number;
+  /** Add ramp-up warm-up sets before heavy compound lifts. Defaults to on. */
+  warmups?: boolean;
 }
 
 /**

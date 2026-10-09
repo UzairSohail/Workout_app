@@ -3,6 +3,7 @@ import type { Day, Exercise, LoggedExercise, LoggedSet, PlannedExercise, Program
 import { suggest } from './progression';
 import { advance, completeDay, emptyLift, GZCL_STAGES, liftKey, prescribe } from './schemes';
 import { countedSets, LOWER_BODY } from './stats';
+import { wantsWarmup, warmupSets } from './warmup';
 
 /** Previous sessions of one exercise, most recent first. */
 export function historyFor(exerciseId: string, finished: Workout[], excludeId?: string): LoggedExercise[] {
@@ -122,6 +123,7 @@ export async function startWorkout(
       ),
     );
   }
+  if (settings.warmups !== false) exercises = exercises.map((e, i) => withWarmups(e, byId.get(e.exerciseId), i === 0, settings));
   const w: Workout = {
     id: uid(),
     name,
@@ -178,4 +180,12 @@ async function advanceProgram(programId: string, dayId: string, logged: LoggedEx
     state = completeDay(state, dayId, program.days.map((d) => d.id), inc, settings.units);
   }
   await db.programState.put(state);
+}
+
+/** Prepends warm-up sets based on the first working set's weight (no-op if one is already there). */
+export function withWarmups(le: LoggedExercise, ex: Exercise | undefined, isFirst: boolean, settings: Settings): LoggedExercise {
+  if (!wantsWarmup(ex, isFirst) || le.sets.some((s) => s.type === 'warmup')) return le;
+  const work = le.sets.find((s) => s.type !== 'warmup')?.weight ?? null;
+  const warm = warmupSets(work, ex!.equipment, settings.units);
+  return warm.length ? { ...le, sets: [...warm, ...le.sets] } : le;
 }

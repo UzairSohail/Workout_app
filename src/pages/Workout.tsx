@@ -9,7 +9,8 @@ import { RestTimer, startRest, stopRest } from '../components/RestTimer';
 import { exerciseName, useExercises } from '../exercises';
 import { fmtDuration } from '../format';
 import { useActiveWorkout, useFinished, useSettings } from '../hooks';
-import { finishWorkout, historyFor, newLoggedExercise, suggestionFor } from '../logic/session';
+import { finishWorkout, historyFor, newLoggedExercise, suggestionFor, withWarmups } from '../logic/session';
+import { wantsWarmup } from '../logic/warmup';
 import { SCHEME_LABEL } from '../logic/schemes';
 import { countedSets, recordsFor, sessionPrs, type PrKind } from '../logic/stats';
 import { fmt, fromDisplay, toDisplay } from '../logic/units';
@@ -76,6 +77,7 @@ export function WorkoutPage() {
   const { byId } = useExercises();
   const navigate = useNavigate();
   const [picker, setPicker] = useState(false);
+  const [swapIndex, setSwapIndex] = useState<number | null>(null);
   useWakeLock(!editing);
 
   useEffect(() => {
@@ -199,6 +201,13 @@ export function WorkoutPage() {
               <details className="menu">
                 <summary aria-label="Exercise options">⋯</summary>
                 <div>
+                  <button className="ghost" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); setSwapIndex(ei); }}>Swap exercise</button>
+                  {wantsWarmup(ex, true) && !le.sets.some((x) => x.type === 'warmup') && (
+                    <button className="ghost" disabled={!le.sets.some((x) => x.weight)} onClick={(ev) => {
+                      ev.currentTarget.closest('details')?.removeAttribute('open');
+                      mutate((d) => { d.exercises[ei] = withWarmups(d.exercises[ei], ex, true, settings); });
+                    }}>Add warm-up sets</button>
+                  )}
                   <button className="ghost" disabled={ei === 0} onClick={() => mutate((d) => { [d.exercises[ei - 1], d.exercises[ei]] = [d.exercises[ei], d.exercises[ei - 1]]; })}>Move up</button>
                   <button className="ghost" disabled={ei === w.exercises.length - 1} onClick={() => mutate((d) => { [d.exercises[ei + 1], d.exercises[ei]] = [d.exercises[ei], d.exercises[ei + 1]]; })}>Move down</button>
                   <button className="ghost danger" onClick={() => confirm('Remove this exercise?') && mutate((d) => { d.exercises.splice(ei, 1); })}>Remove</button>
@@ -282,6 +291,30 @@ export function WorkoutPage() {
       {!editing && <button className="ghost danger wide" onClick={() => discard()}>Discard workout</button>}
 
       {!editing && <RestTimer />}
+
+      {swapIndex !== null && w.exercises[swapIndex] && (
+        <ExercisePicker
+          title="Swap for…"
+          initialMuscle={byId.get(w.exercises[swapIndex].exerciseId)?.primaryMuscles[0] ?? ''}
+          excludeId={w.exercises[swapIndex].exerciseId}
+          onClose={() => setSwapIndex(null)}
+          onPick={(ex) => {
+            mutate((d) => {
+              const old = d.exercises[swapIndex];
+              const done = old.sets.filter((x) => x.done);
+              const todo = old.sets.filter((x) => !x.done && x.type !== 'warmup').length || 1;
+              // Keep anything already logged; fresh sets for the rest, weighted from the new exercise's history.
+              const fresh = newLoggedExercise(ex.id, done.length ? todo : old.sets.filter((x) => x.type !== 'warmup').length || 3,
+                old.repMin, old.repMax, old.rest, finished ?? [], byId, settings);
+              d.exercises[swapIndex] = done.length
+                ? { ...old, sets: done }
+                : { ...fresh, note: undefined };
+              if (done.length) d.exercises.splice(swapIndex + 1, 0, fresh);
+            });
+            setSwapIndex(null);
+          }}
+        />
+      )}
 
       {picker && (
         <ExercisePicker
