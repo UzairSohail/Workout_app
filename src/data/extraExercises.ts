@@ -46,7 +46,7 @@ const ROWS: Row[] = [
     'Squat down while keeping your chest up, letting the belt pull your hips straight down.',
     'Stand back up by driving through your feet.',
   ]],
-  ['Seated Leg Press Machine', 'machine', 'compound', ['quadriceps'], ['glutes', 'hamstrings'], [
+  ['Seated Leg Press (Pin-Loaded)', 'machine', 'compound', ['quadriceps'], ['glutes', 'hamstrings'], [
     'Set the weight with the pin in the stack and adjust the seat so your knees start bent to about 90 degrees.',
     'Sit with your back against the pad and your feet flat on the platform, hip-width apart.',
     'Push the platform away until your legs are almost straight, without locking your knees.',
@@ -636,6 +636,78 @@ const ROWS: Row[] = [
     'Swim laps at a steady pace, or alternate fast and easy lengths.',
     'Log the time you swam.',
   ], 'cardio'],
+  // Plate-loaded and pin-loaded versions of common machines. Gyms usually have both, and the
+  // numbers you log are not comparable between them, so they are separate exercises.
+  ['Incline Chest Press Machine (Pin-Loaded)', 'machine', 'compound', ['chest'], ['shoulders', 'triceps'], [
+    'Set the weight with the pin and adjust the seat so the handles line up with your upper chest.',
+    'Press the handles up and away until your arms are almost straight.',
+    'Lower slowly until you feel a stretch across your chest.',
+  ]],
+  ['Seated Row Machine (Pin-Loaded)', 'machine', 'compound', ['middle back'], ['lats', 'biceps'], [
+    'Set the weight with the pin and adjust the seat and chest pad so the handles are at chest height.',
+    'Pull the handles toward you, squeezing your shoulder blades together.',
+    'Let your arms straighten slowly for a full stretch.',
+  ]],
+  ['Back Extension Machine (Pin-Loaded)', 'machine', 'isolation', ['lower back'], ['glutes', 'hamstrings'], [
+    'Set the weight with the pin and sit with the pad across your upper back.',
+    'Push back until your body is upright or slightly past it.',
+    'Return slowly, keeping your back straight.',
+  ]],
+  ['Rotary Torso Machine', 'machine', 'isolation', ['abdominals'], [], [
+    'Set the weight with the pin and sit with your chest against the pad and knees locked in.',
+    'Rotate your torso to one side under control, then return.',
+    'Do all reps, then switch the machine to the other side.',
+  ]],
+  ['Multi-Hip Machine', 'machine', 'isolation', ['glutes'], ['abductors', 'adductors'], [
+    'Set the weight with the pin and adjust the pad height to just above your knee.',
+    'Standing on one leg, push the pad back, out to the side or across, depending on the muscle you want.',
+    'Return slowly and switch legs after your reps.',
+  ]],
+  ['Lat Pulldown (Plate-Loaded)', 'machine', 'compound', ['lats'], ['biceps', 'middle back'], [
+    'Load plates on the horns, sit down and lock your thighs under the pads.',
+    'Pull the handles down toward your shoulders, driving your elbows down.',
+    'Let the handles rise slowly until your arms are straight.',
+  ]],
+  ['Low Row (Plate-Loaded)', 'machine', 'compound', ['middle back'], ['lats', 'biceps'], [
+    'Load plates on the horns and sit with your chest against the pad.',
+    'Pull the handles low toward your hips, squeezing your shoulder blades together.',
+    'Return slowly until your arms are straight.',
+  ]],
+  ['Leg Extension (Plate-Loaded)', 'machine', 'isolation', ['quadriceps'], [], [
+    'Load plates on the horn and sit with the pad on your lower shins.',
+    'Straighten your legs fully and squeeze your thighs.',
+    'Lower slowly.',
+  ]],
+  ['Lying Leg Curl (Plate-Loaded)', 'machine', 'isolation', ['hamstrings'], ['calves'], [
+    'Load plates on the horn and lie face down with the pad just above your heels.',
+    'Curl your heels toward your glutes, keeping your hips on the pad.',
+    'Lower slowly.',
+  ]],
+  ['Lateral Raise (Plate-Loaded)', 'machine', 'isolation', ['shoulders'], [], [
+    'Load plates on the horns and sit with the pads against the outside of your arms.',
+    'Raise your arms out to the sides until they reach shoulder height.',
+    'Lower slowly.',
+  ]],
+  ['Preacher Curl (Plate-Loaded)', 'machine', 'isolation', ['biceps'], [], [
+    'Load plates on the horns and sit with the backs of your upper arms on the pad.',
+    'Curl the handles up toward your shoulders.',
+    'Lower slowly until your arms are almost straight.',
+  ]],
+  ['Seated Dip (Plate-Loaded)', 'machine', 'compound', ['triceps'], ['chest', 'shoulders'], [
+    'Load plates on the horns and sit with the handles beside your hips.',
+    'Push the handles down until your arms are straight.',
+    'Let them rise slowly until your elbows are bent to about 90 degrees.',
+  ]],
+  ['Hip Thrust (Plate-Loaded)', 'machine', 'compound', ['glutes'], ['hamstrings'], [
+    'Load plates on the machine, sit with your upper back on the pad and the pad across your hips.',
+    'Drive through your heels to lift your hips until your body is straight from shoulders to knees.',
+    'Squeeze your glutes at the top, then lower under control.',
+  ]],
+  ['V-Squat (Plate-Loaded)', 'machine', 'compound', ['quadriceps'], ['glutes'], [
+    'Load plates, stand on the platform with your shoulders under the pads, facing the machine.',
+    'Release the safety and squat down until your thighs are at least parallel.',
+    'Drive back up without locking your knees.',
+  ]],
   ['Pigeon Stretch', 'body only', 'isolation', ['glutes'], ['abductors'], [
     'From hands and knees, bring one knee forward behind your wrist and extend the other leg back.',
     'Lower your hips toward the floor and lean forward.',
@@ -664,10 +736,12 @@ export const ALIASES: Record<string, string[]> = {
   Reverse_Machine_Flyes: ['reverse pec deck', 'rear delt machine'],
   Thigh_Abductor: ['hip abduction', 'abductor machine'],
   Thigh_Adductor: ['hip adduction', 'adductor machine'],
-  Leverage_Chest_Press: ['chest press machine', 'machine chest press'],
-  Leverage_Incline_Chest_Press: ['incline chest press machine', 'incline machine press'],
-  Leverage_Shoulder_Press: ['shoulder press machine', 'machine shoulder press'],
-  Leverage_Iso_Row: ['machine row', 'iso row'],
+  Leverage_Chest_Press: ['hammer strength chest press'],
+  Machine_Bench_Press: ['chest press machine', 'machine chest press', 'selectorized chest press'],
+  Leverage_Incline_Chest_Press: ['hammer strength incline press'],
+  Leverage_Shoulder_Press: ['hammer strength shoulder press'],
+  Machine_Shoulder_Military_Press: ['shoulder press machine', 'machine shoulder press'],
+  Leverage_Iso_Row: ['iso row', 'hammer strength row'],
   Leverage_High_Row: ['high row machine'],
   Romanian_Deadlift: ['rdl'],
   'Stiff-Legged_Dumbbell_Deadlift': ['dumbbell rdl'],
@@ -734,8 +808,9 @@ export const ALIASES: Record<string, string[]> = {
   Weighted_Pull_Ups: ['weighted pull up'],
   Barbell_Squat: ['back squat', 'barbell back squat'],
   Side_Bridge: ['side plank'],
-  Leg_Press: ['sled leg press', 'plate loaded leg press', '45 degree leg press'],
-  x_Seated_Leg_Press_Machine: ['machine leg press', 'leg press machine', 'pin loaded leg press', 'selectorized leg press', 'stack leg press'],
+  Leg_Press: ['sled leg press', '45 degree leg press'],
+  x_Hip_Thrust_Plate_Loaded: ['glute drive', 'hip thrust machine'],
+  x_Seated_Leg_Press_Pin_Loaded: ['machine leg press', 'leg press machine', 'selectorized leg press', 'stack leg press'],
   Leg_Extensions: ['quad extension'],
   'Barbell_Bench_Press_-_Medium_Grip': ['bench press', 'barbell bench press', 'flat bench press'],
   'Barbell_Incline_Bench_Press_-_Medium_Grip': ['incline bench press', 'incline barbell bench press'],
@@ -755,7 +830,20 @@ export const SIMILAR_PHOTOS: Record<string, string> = {
   "Front-Foot-Elevated Split Squat": "Split Squat with Dumbbells",
   "Hack Squat Machine": "Hack Squat",
   "Pendulum Squat": "Hack Squat",
-  "Seated Leg Press Machine": "Leg Press",
+  "Seated Leg Press (Pin-Loaded)": "Leg Press",
+  "Incline Chest Press Machine (Pin-Loaded)": "Leverage Incline Chest Press",
+  "Seated Row Machine (Pin-Loaded)": "Seated Cable Rows",
+  "Back Extension Machine (Pin-Loaded)": "Hyperextensions (Back Extensions)",
+  "Multi-Hip Machine": "Thigh Abductor",
+  "Lat Pulldown (Plate-Loaded)": "Wide-Grip Lat Pulldown",
+  "Low Row (Plate-Loaded)": "Leverage Iso Row",
+  "Leg Extension (Plate-Loaded)": "Leg Extensions",
+  "Lying Leg Curl (Plate-Loaded)": "Lying Leg Curls",
+  "Lateral Raise (Plate-Loaded)": "Side Lateral Raise",
+  "Preacher Curl (Plate-Loaded)": "Machine Preacher Curls",
+  "Seated Dip (Plate-Loaded)": "Dip Machine",
+  "Hip Thrust (Plate-Loaded)": "Barbell Hip Thrust",
+  "V-Squat (Plate-Loaded)": "Hack Squat",
   "Single-Leg Leg Press": "Leg Press",
   "Wide-Stance Leg Press": "Leg Press",
   "Devil's Press": "Dumbbell Clean",
@@ -848,4 +936,23 @@ export const SIMILAR_PHOTOS: Record<string, string> = {
   "Incline Treadmill Walk": "Walking, Treadmill",
   "Assault Bike": "Bicycling, Stationary",
   "Jumping Jacks": "Star Jump",
+};
+
+/**
+ * Clearer names for machines that come in plate-loaded and pin-loaded versions, keyed by id.
+ * Logged workouts store ids, so renaming is safe; the old name stays searchable as an alias.
+ */
+export const RENAMES: Record<string, string> = {
+  Leg_Press: 'Leg Press (Plate-Loaded)',
+  Leverage_Chest_Press: 'Chest Press (Plate-Loaded)',
+  Leverage_Incline_Chest_Press: 'Incline Chest Press (Plate-Loaded)',
+  Leverage_Decline_Chest_Press: 'Decline Chest Press (Plate-Loaded)',
+  Leverage_Shoulder_Press: 'Shoulder Press (Plate-Loaded)',
+  Leverage_Iso_Row: 'Iso-Lateral Row (Plate-Loaded)',
+  Leverage_High_Row: 'High Row (Plate-Loaded)',
+  Leverage_Shrug: 'Shrug Machine (Plate-Loaded)',
+  Leverage_Deadlift: 'Deadlift Machine (Plate-Loaded)',
+  Machine_Bench_Press: 'Chest Press Machine (Pin-Loaded)',
+  Machine_Shoulder_Military_Press: 'Shoulder Press Machine (Pin-Loaded)',
+  x_Machine_Lateral_Raise: 'Lateral Raise Machine (Pin-Loaded)',
 };

@@ -50,13 +50,20 @@ describe('extra exercises', () => {
   });
   it('match equipment words, plurals and gym shorthand', () => {
     const find = (q: string) => filterExercises(all, q, '', '', false).map((e) => e.name);
-    expect(find('machine leg press')[0]).toBe('Seated Leg Press Machine');
-    expect(find('leg press')[0]).toBe('Leg Press');
-    expect(find('leg presses')).toContain('Leg Press');
+    expect(find('machine leg press')[0]).toBe('Seated Leg Press (Pin-Loaded)');
+    expect(find('plate loaded leg press')[0]).toBe('Leg Press (Plate-Loaded)');
+    expect(find('pin loaded chest press')[0]).toBe('Chest Press Machine (Pin-Loaded)');
+    expect(find('leverage chest press')).toContain('Chest Press (Plate-Loaded)');
+    expect(find('leg presses')).toContain('Leg Press (Plate-Loaded)');
+    expect(find('leg press')[0]).toBe('Leg Press (Plate-Loaded)');
     expect(find('seated row machine')).toContain('Seated Cable Rows');
     expect(find('db curls')).toContain('Dumbbell Bicep Curl');
     expect(find('back squat')).toContain('Barbell Squat');
     expect(find('side plank')).toContain('Side Bridge');
     expect(find('crunches')).toContain('Cable Crunch');
+    expect(find('lat pull down')).toContain('Wide-Grip Lat Pulldown');
+    expect(find('chinup')).toContain('Chin-Up');
+    expect(find('row machine')).not.toContain('Narrow Stance Hack Squats');
+    expect(find('plate loaded')).toContain('Lat Pulldown (Plate-Loaded)');
   });
 });

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from './db';
-import { ALIASES, EXTRA_EXERCISES, SIMILAR_PHOTOS } from './data/extraExercises';
+import { ALIASES, EXTRA_EXERCISES, RENAMES, SIMILAR_PHOTOS } from './data/extraExercises';
 import type { Exercise } from './types';
 
 /** Pinned commit of github.com/yuhonas/free-exercise-db (public domain). Keep in sync with scripts/build-exercises.mjs. */
@@ -27,7 +27,7 @@ export function loadLibrary(): Promise<Exercise[]> {
   return libraryPromise;
 }
 
-/** Adds the app's own exercises and everyday-name aliases to the free-exercise-db list. */
+/** Adds the app's own exercises, everyday-name aliases and clearer machine names to the free-exercise-db list. */
 export function withExtras(library: Exercise[]): Exercise[] {
   const byName = new Map(library.map((e) => [e.name, e]));
   // Extras have no photos of their own; borrow a similar movement's, labelled as such.
@@ -36,7 +36,10 @@ export function withExtras(library: Exercise[]): Exercise[] {
     return similar?.images.length ? { ...e, images: similar.images, similarTo: similar.name } : e;
   });
   return [...library, ...extras]
-    .map((e) => (ALIASES[e.id] ? { ...e, aliases: ALIASES[e.id] } : e))
+    .map((e) => {
+      const aliases = [...(ALIASES[e.id] ?? []), ...(RENAMES[e.id] ? [e.name] : [])];
+      return { ...e, name: RENAMES[e.id] ?? e.name, ...(aliases.length ? { aliases } : {}) };
+    })
     .sort((a, b) => a.name.localeCompare(b.name));
 }
 

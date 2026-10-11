@@ -19,6 +19,12 @@ const stem = (w: string) => {
   if (/(ss|sh|ch|x)es$/.test(w)) return w.slice(0, -2);
   return w.endsWith('s') && !w.endsWith('ss') ? w.slice(0, -1) : w;
 };
+// Words match from their start, so "row" finds "rows" but not "narrow". Longer queries also match
+// with spaces ignored, so "pull down", "chinup" and "stair master" still find their exercises.
+const hasWord = (text: string, w: string) => ` ${text}`.includes(` ${w}`);
+const squash = (s: string) => s.replace(/ /g, '');
+const matches = (text: string, words: string[], joined: string) =>
+  words.every((w) => hasWord(text, w)) || (joined.length >= 4 && squash(text).includes(joined));
 const queryWords = (q: string) => norm(q).split(' ').filter(Boolean).flatMap((w) => (SYNONYMS[w] ?? stem(w)).split(' '));
 
 /**
@@ -29,11 +35,12 @@ const queryWords = (q: string) => norm(q).split(' ').filter(Boolean).flatMap((w)
 export function filterExercises(all: Exercise[], q: string, muscle: string, equipment: string, strengthOnly: boolean, missing?: readonly string[]) {
   const words = queryWords(q);
   const phrase = words.join(' ');
+  const joined = squash(phrase);
   const rank = (e: Exercise) => {
     const names = [e.name, ...(e.aliases ?? [])].map(norm);
     if (names.some((n) => n === phrase)) return 0;
     if (names.some((n) => n.startsWith(phrase))) return 1;
-    if (names.some((n) => words.every((w) => n.includes(w)))) return 2;
+    if (names.some((n) => matches(n, words, joined))) return 2;
     return 3;
   };
   const list = all.filter((e) => {
@@ -45,7 +52,7 @@ export function filterExercises(all: Exercise[], q: string, muscle: string, equi
     const gear = e.equipment === 'cable' ? 'cable machine' : norm(e.equipment);
     return [e.name, ...(e.aliases ?? [])].some((n) => {
       const text = `${norm(n)} ${gear}`;
-      return words.every((w) => text.includes(w));
+      return matches(text, words, joined);
     });
   });
   if (!words.length) return list;
