@@ -1,0 +1,6695 @@
+[
+ {
+  "name": "4-Way Neck Machine",
+  "equipment": "machine",
+  "mechanic": "isolation",
+  "primary": [
+   "neck"
+  ],
+  "secondary": [
+   "traps"
+  ],
+  "instructions": [
+   "Sit in the neck machine and set your head against the pad facing the direction you want to train.",
+   "Move your head slowly against the resistance through a comfortable range.",
+   "Return under control, then turn to train the front, back and both sides."
+  ],
+  "aliases": [
+   "neck machine"
+  ]
+ },
+ {
+  "name": "90/90 Hip Stretch",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "glutes"
+  ],
+  "secondary": [
+   "abductors",
+   "adductors"
+  ],
+  "instructions": [
+   "Sit on the floor with your front leg bent 90 degrees in front and your back leg bent 90 degrees to the side.",
+   "Sit tall and lean forward over your front shin.",
+   "Hold, then rotate your knees to the other side and repeat."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "90 90 stretch",
+   "hip 90 90",
+   "90/90 hip switch"
+  ]
+ },
+ {
+  "name": "A-Skip",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "calves"
+  ],
+  "secondary": [
+   "hamstrings",
+   "glutes"
+  ],
+  "instructions": [
+   "Skip forward, driving one knee up to hip height.",
+   "Snap that foot back down under your hip as the other knee comes up.",
+   "Swing your arms in rhythm and stay tall."
+  ],
+  "category": "plyometrics",
+  "similarTo": "Fast Skipping",
+  "aliases": [
+   "a skips"
+  ]
+ },
+ {
+  "name": "Ab Coaster",
+  "equipment": "machine",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Kneel on the carriage of the ab coaster and hold the handles.",
+   "Pull your knees up toward your chest by curling your hips.",
+   "Lower back down slowly."
+  ]
+ },
+ {
+  "name": "Ab Crunch (Plate-Loaded)",
+  "equipment": "machine",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Sit in the plate-loaded ab machine and grab the handles or chest pads.",
+   "Crunch forward, curling your ribs toward your hips.",
+   "Return slowly without letting the weight stack touch."
+  ],
+  "similarTo": "Ab Crunch Machine",
+  "aliases": [
+   "hammer strength ab crunch",
+   "leverage ab crunch"
+  ]
+ },
+ {
+  "name": "Agility Ladder Drills",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "calves",
+   "quadriceps"
+  ],
+  "secondary": [
+   "adductors",
+   "abductors",
+   "hamstrings"
+  ],
+  "instructions": [
+   "Lay an agility ladder flat on the floor.",
+   "Move through it with quick foot patterns such as one foot in each box, two feet in, or in-in-out-out.",
+   "Stay on the balls of your feet and pump your arms."
+  ],
+  "category": "plyometrics",
+  "aliases": [
+   "agility ladder",
+   "ladder drills",
+   "speed ladder"
+  ]
+ },
+ {
+  "name": "Alternating Dumbbell Bench Press",
+  "equipment": "dumbbell",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders"
+  ],
+  "instructions": [
+   "Lie on a flat bench holding dumbbells above your chest with your arms straight.",
+   "Lower one dumbbell to your chest while the other stays locked out.",
+   "Press it back up, then repeat with the other arm."
+  ],
+  "similarTo": "Dumbbell Bench Press",
+  "aliases": [
+   "alternating dumbbell press"
+  ]
+ },
+ {
+  "name": "Alternating V-Up",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Lie flat with arms overhead.",
+   "Lift one straight leg and your upper body, reaching your hands toward that foot.",
+   "Lower and repeat with the other leg."
+  ],
+  "similarTo": "Jackknife Sit-Up",
+  "aliases": [
+   "single leg v-up"
+  ]
+ },
+ {
+  "name": "American Kettlebell Swing",
+  "equipment": "kettlebells",
+  "mechanic": "compound",
+  "primary": [
+   "glutes",
+   "hamstrings"
+  ],
+  "secondary": [
+   "shoulders",
+   "lower back",
+   "abdominals",
+   "forearms"
+  ],
+  "instructions": [
+   "Hold a kettlebell with both hands and hinge to swing it back between your legs.",
+   "Drive your hips forward hard and keep the swing going past chest height.",
+   "Finish with the bell directly overhead, arms locked and ribs down.",
+   "Control it back down into the next swing."
+  ],
+  "similarTo": "One-Arm Kettlebell Swings"
+ },
+ {
+  "name": "Arc Trainer",
+  "equipment": "machine",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "glutes"
+  ],
+  "secondary": [
+   "hamstrings",
+   "calves"
+  ],
+  "instructions": [
+   "Step onto the pedals and hold the handles.",
+   "Push through your feet in a smooth arcing stride.",
+   "Adjust the incline and resistance to set your effort, and keep a steady pace."
+  ],
+  "category": "cardio",
+  "similarTo": "Elliptical Trainer",
+  "aliases": [
+   "arc machine",
+   "cybex arc"
+  ]
+ },
+ {
+  "name": "Archer Pull-Up",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "lats"
+  ],
+  "secondary": [
+   "biceps",
+   "middle back"
+  ],
+  "instructions": [
+   "Hang from the bar with a very wide overhand grip.",
+   "Pull yourself toward one hand while the other arm stays nearly straight.",
+   "Lower under control and alternate sides each rep."
+  ],
+  "similarTo": "Side To Side Chins"
+ },
+ {
+  "name": "Arm Ergometer",
+  "equipment": "machine",
+  "mechanic": "compound",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "chest",
+   "middle back",
+   "biceps",
+   "triceps"
+  ],
+  "instructions": [
+   "Sit or stand facing the machine and grab both handles.",
+   "Turn the handles in smooth circles like pedaling a bike with your arms.",
+   "Set the resistance and keep a steady pace for the set time."
+  ],
+  "category": "cardio",
+  "aliases": [
+   "arm bike",
+   "upper body ergometer",
+   "ube",
+   "hand cycle"
+  ]
+ },
+ {
+  "name": "Assisted Chin-Up",
+  "equipment": "machine",
+  "mechanic": "compound",
+  "primary": [
+   "lats"
+  ],
+  "secondary": [
+   "biceps"
+  ],
+  "instructions": [
+   "Set the counterweight and kneel or stand on the platform of the assisted pull-up machine.",
+   "Grab the close handles with your palms facing you.",
+   "Pull your chin above your hands, then lower under control."
+  ],
+  "similarTo": "Chin-Up",
+  "aliases": [
+   "machine assisted chin up"
+  ]
+ },
+ {
+  "name": "B-Stance Hip Thrust",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "glutes"
+  ],
+  "secondary": [
+   "hamstrings"
+  ],
+  "instructions": [
+   "Set up for a barbell hip thrust and move one foot slightly forward onto its heel.",
+   "Drive mainly through the back foot to raise your hips.",
+   "Squeeze at the top and lower."
+  ],
+  "similarTo": "Barbell Hip Thrust",
+  "aliases": [
+   "staggered stance hip thrust"
+  ]
+ },
+ {
+  "name": "Back Lever",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "lats",
+   "chest"
+  ],
+  "secondary": [
+   "biceps",
+   "shoulders",
+   "abdominals",
+   "lower back"
+  ],
+  "instructions": [
+   "Hang from a bar or rings and tuck your legs through your arms.",
+   "Lower your body behind you until it is flat and face down.",
+   "Hold with straight arms, then pull back out the way you came in."
+  ]
+ },
+ {
+  "name": "Backstroke",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "lats",
+   "shoulders"
+  ],
+  "secondary": [
+   "abdominals",
+   "glutes",
+   "quadriceps"
+  ],
+  "instructions": [
+   "Float on your back with your body flat and your face up.",
+   "Reach one arm overhead into the water and pull it down to your hip, then the other.",
+   "Keep a small, steady flutter kick from your hips."
+  ],
+  "category": "cardio",
+  "aliases": [
+   "backstroke swimming"
+  ]
+ },
+ {
+  "name": "Ball Adductor Squeeze",
+  "equipment": "medicine ball",
+  "mechanic": "isolation",
+  "primary": [
+   "adductors"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Lie on your back with knees bent and a ball between your knees.",
+   "Squeeze the ball as hard as you can.",
+   "Hold and release."
+  ],
+  "aliases": [
+   "adductor squeeze"
+  ]
+ },
+ {
+  "name": "Band Bent-Over Row",
+  "equipment": "bands",
+  "mechanic": "compound",
+  "primary": [
+   "middle back"
+  ],
+  "secondary": [
+   "lats",
+   "biceps"
+  ],
+  "instructions": [
+   "Stand on a band with feet hip-width apart and hinge forward at the hips.",
+   "Hold the band with arms hanging straight.",
+   "Row your hands toward your stomach, then lower under control."
+  ],
+  "similarTo": "Bent Over Barbell Row"
+ },
+ {
+  "name": "Band Bicep Curl",
+  "equipment": "bands",
+  "mechanic": "isolation",
+  "primary": [
+   "biceps"
+  ],
+  "secondary": [
+   "forearms"
+  ],
+  "instructions": [
+   "Stand on a resistance band and hold the ends with palms facing forward.",
+   "Keep your elbows at your sides and curl your hands to your shoulders.",
+   "Lower slowly against the band."
+  ],
+  "similarTo": "Dumbbell Bicep Curl",
+  "aliases": [
+   "resistance band curl"
+  ]
+ },
+ {
+  "name": "Band Chest Press",
+  "equipment": "bands",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders"
+  ],
+  "instructions": [
+   "Anchor a resistance band behind you at chest height and hold an end in each hand.",
+   "Step forward until there is tension, with your hands beside your chest.",
+   "Press your hands forward until your arms are straight, then return slowly."
+  ],
+  "similarTo": "Standing Cable Chest Press",
+  "aliases": [
+   "resistance band chest press",
+   "banded chest press"
+  ]
+ },
+ {
+  "name": "Band Deadlift",
+  "equipment": "bands",
+  "mechanic": "compound",
+  "primary": [
+   "lower back"
+  ],
+  "secondary": [
+   "glutes",
+   "hamstrings"
+  ],
+  "instructions": [
+   "Stand on the middle of a resistance band and grab both ends.",
+   "Hinge at the hips with a flat back, hands near your shins.",
+   "Drive your hips forward to stand tall, then lower slowly."
+  ]
+ },
+ {
+  "name": "Band Face Pull",
+  "equipment": "bands",
+  "mechanic": "isolation",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "middle back",
+   "traps"
+  ],
+  "instructions": [
+   "Anchor a band at head height and hold it with both hands, arms straight.",
+   "Pull the band toward your face, spreading your hands and driving your elbows out and back.",
+   "Squeeze your shoulder blades, then return slowly."
+  ]
+ },
+ {
+  "name": "Band Finger Extension",
+  "equipment": "bands",
+  "mechanic": "isolation",
+  "primary": [
+   "forearms"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Loop a small rubber band around your fingers and thumb.",
+   "Spread your fingers apart against the band.",
+   "Return slowly and repeat."
+  ],
+  "aliases": [
+   "finger extensions"
+  ]
+ },
+ {
+  "name": "Band Front Raise",
+  "equipment": "bands",
+  "mechanic": "isolation",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Stand on a resistance band and hold the handles in front of your thighs.",
+   "Raise your arms straight forward to shoulder height.",
+   "Lower slowly against the band's pull."
+  ],
+  "similarTo": "Front Dumbbell Raise"
+ },
+ {
+  "name": "Band Glute Kickback",
+  "equipment": "bands",
+  "mechanic": "isolation",
+  "primary": [
+   "glutes"
+  ],
+  "secondary": [
+   "hamstrings"
+  ],
+  "instructions": [
+   "On all fours, loop a band around your feet.",
+   "Kick one leg back and up.",
+   "Return slowly."
+  ],
+  "similarTo": "Glute Kickback",
+  "aliases": [
+   "banded kickback"
+  ]
+ },
+ {
+  "name": "Band Hammer Curl",
+  "equipment": "bands",
+  "mechanic": "isolation",
+  "primary": [
+   "biceps"
+  ],
+  "secondary": [
+   "forearms"
+  ],
+  "instructions": [
+   "Stand on a resistance band holding the ends with palms facing each other.",
+   "Curl your hands up toward your shoulders, keeping elbows still.",
+   "Lower slowly."
+  ],
+  "similarTo": "Hammer Curls"
+ },
+ {
+  "name": "Band Hip Thrust",
+  "equipment": "bands",
+  "mechanic": "compound",
+  "primary": [
+   "glutes"
+  ],
+  "secondary": [
+   "hamstrings"
+  ],
+  "instructions": [
+   "Sit against a bench with a band stretched across your hips and anchored at both sides.",
+   "Drive your hips up against the band.",
+   "Squeeze your glutes and lower slowly."
+  ],
+  "similarTo": "Barbell Hip Thrust",
+  "aliases": [
+   "banded hip thrust"
+  ]
+ },
+ {
+  "name": "Band Lat Pulldown",
+  "equipment": "bands",
+  "mechanic": "compound",
+  "primary": [
+   "lats"
+  ],
+  "secondary": [
+   "biceps",
+   "middle back"
+  ],
+  "instructions": [
+   "Anchor a resistance band high above you and kneel or sit facing it.",
+   "Hold the band with arms extended overhead.",
+   "Pull your elbows down to your sides, then let your arms return slowly."
+  ],
+  "similarTo": "Wide-Grip Lat Pulldown",
+  "aliases": [
+   "resistance band pulldown"
+  ]
+ },
+ {
+  "name": "Band Lying Leg Curl",
+  "equipment": "bands",
+  "mechanic": "isolation",
+  "primary": [
+   "hamstrings"
+  ],
+  "secondary": [
+   "calves"
+  ],
+  "instructions": [
+   "Anchor a band low and loop it around your ankles while lying face down.",
+   "Curl your heels toward your glutes.",
+   "Lower slowly."
+  ],
+  "similarTo": "Lying Leg Curls",
+  "aliases": [
+   "banded hamstring curl"
+  ]
+ },
+ {
+  "name": "Band Neck Extension",
+  "equipment": "bands",
+  "mechanic": "isolation",
+  "primary": [
+   "neck"
+  ],
+  "secondary": [
+   "traps"
+  ],
+  "instructions": [
+   "Loop a light band around the back of your head and anchor it in front of you.",
+   "Sit or stand tall and tilt your head back against the band.",
+   "Return slowly to neutral."
+  ]
+ },
+ {
+  "name": "Band Pallof Press",
+  "equipment": "bands",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "shoulders"
+  ],
+  "instructions": [
+   "Anchor a band at chest height and stand side-on to it, holding it at your chest.",
+   "Press the band straight out in front of you and resist being twisted.",
+   "Hold briefly, bring it back, then switch sides."
+  ],
+  "similarTo": "Pallof Press"
+ },
+ {
+  "name": "Band Push-Up",
+  "equipment": "bands",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders",
+   "abdominals"
+  ],
+  "instructions": [
+   "Loop a resistance band across your upper back and hold an end under each hand.",
+   "Get into a push-up position and lower your chest toward the floor.",
+   "Push back up against the band until your arms are straight."
+  ],
+  "similarTo": "Pushups",
+  "aliases": [
+   "banded push up",
+   "resistance band push up"
+  ]
+ },
+ {
+  "name": "Band Reverse Curl",
+  "equipment": "bands",
+  "mechanic": "isolation",
+  "primary": [
+   "forearms",
+   "biceps"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Stand on a resistance band and hold the ends with palms facing down.",
+   "Keep your elbows at your sides and curl your hands up to your shoulders.",
+   "Lower slowly."
+  ],
+  "similarTo": "Standing Dumbbell Reverse Curl"
+ },
+ {
+  "name": "Band Romanian Deadlift",
+  "equipment": "bands",
+  "mechanic": "compound",
+  "primary": [
+   "hamstrings",
+   "glutes"
+  ],
+  "secondary": [
+   "lower back"
+  ],
+  "instructions": [
+   "Stand on the middle of a band and hold the ends at your thighs.",
+   "Hinge at the hips with soft knees until you feel a stretch in your hamstrings.",
+   "Drive your hips forward to stand up against the band."
+  ],
+  "similarTo": "Romanian Deadlift",
+  "aliases": [
+   "band rdl"
+  ]
+ },
+ {
+  "name": "Band Seated Hip Abduction",
+  "equipment": "bands",
+  "mechanic": "isolation",
+  "primary": [
+   "abductors"
+  ],
+  "secondary": [
+   "glutes"
+  ],
+  "instructions": [
+   "Sit on a bench with a mini band just above your knees.",
+   "Push your knees out against the band.",
+   "Return slowly."
+  ],
+  "similarTo": "Thigh Abductor",
+  "aliases": [
+   "banded seated abduction"
+  ]
+ },
+ {
+  "name": "Band Seated Row",
+  "equipment": "bands",
+  "mechanic": "compound",
+  "primary": [
+   "middle back"
+  ],
+  "secondary": [
+   "lats",
+   "biceps"
+  ],
+  "instructions": [
+   "Sit with legs straight and loop a band around your feet.",
+   "Hold the ends with arms extended and sit tall.",
+   "Pull your elbows back and squeeze your shoulder blades, then return slowly."
+  ],
+  "similarTo": "Seated Cable Rows",
+  "aliases": [
+   "resistance band row"
+  ]
+ },
+ {
+  "name": "Band Shoulder Pass-Through",
+  "equipment": "bands",
+  "mechanic": "isolation",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "chest",
+   "traps"
+  ],
+  "instructions": [
+   "Hold a band or stick in front of your hips with a wide grip.",
+   "Keeping your arms straight, lift it over your head and behind your back.",
+   "Bring it back to the front and repeat slowly, narrowing your grip over time."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "band dislocates",
+   "band shoulder dislocates",
+   "pvc pass through",
+   "shoulder dislocates"
+  ]
+ },
+ {
+  "name": "Band Shrug",
+  "equipment": "bands",
+  "mechanic": "isolation",
+  "primary": [
+   "traps"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Stand on a resistance band and hold the ends at your sides.",
+   "Shrug your shoulders up toward your ears.",
+   "Pause at the top and lower slowly."
+  ],
+  "similarTo": "Dumbbell Shrug"
+ },
+ {
+  "name": "Band Standing Hip Abduction",
+  "equipment": "bands",
+  "mechanic": "isolation",
+  "primary": [
+   "abductors"
+  ],
+  "secondary": [
+   "glutes"
+  ],
+  "instructions": [
+   "Loop a band around your ankles and stand tall.",
+   "Lift one leg out to the side.",
+   "Return slowly."
+  ]
+ },
+ {
+  "name": "Band Straight-Arm Pulldown",
+  "equipment": "bands",
+  "mechanic": "isolation",
+  "primary": [
+   "lats"
+  ],
+  "secondary": [
+   "triceps"
+  ],
+  "instructions": [
+   "Anchor a band high and stand facing it, holding it with straight arms in front of you.",
+   "Keeping your arms straight, pull the band down until your hands reach your thighs.",
+   "Return slowly to the start."
+  ],
+  "similarTo": "Straight-Arm Pulldown"
+ },
+ {
+  "name": "Band Triceps Kickback",
+  "equipment": "bands",
+  "mechanic": "isolation",
+  "primary": [
+   "triceps"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Stand on a resistance band, hinge forward at the hips and hold the band with your upper arm tucked to your side.",
+   "Extend your elbow to push your hand back until your arm is straight.",
+   "Return slowly without moving your upper arm."
+  ],
+  "similarTo": "Tricep Dumbbell Kickback",
+  "aliases": [
+   "resistance band kickback"
+  ]
+ },
+ {
+  "name": "Band Triceps Pushdown",
+  "equipment": "bands",
+  "mechanic": "isolation",
+  "primary": [
+   "triceps"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Anchor a resistance band high, such as over a door or pull-up bar, and grab it with both hands.",
+   "Keep your elbows pinned to your sides and push your hands down until your arms are straight.",
+   "Let your forearms rise back up slowly."
+  ],
+  "similarTo": "Triceps Pushdown",
+  "aliases": [
+   "resistance band pushdown",
+   "band tricep pushdown"
+  ]
+ },
+ {
+  "name": "Band Woodchop",
+  "equipment": "bands",
+  "mechanic": "compound",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "shoulders"
+  ],
+  "instructions": [
+   "Anchor a band high and stand side-on to it, holding it with both hands.",
+   "Pull diagonally down across your body, rotating through your torso.",
+   "Return slowly and switch sides."
+  ],
+  "similarTo": "Standing Cable Wood Chop"
+ },
+ {
+  "name": "Banded Glute Bridge",
+  "equipment": "bands",
+  "mechanic": "compound",
+  "primary": [
+   "glutes"
+  ],
+  "secondary": [
+   "abductors",
+   "hamstrings"
+  ],
+  "instructions": [
+   "Lie on your back with a mini band above your knees.",
+   "Press your knees out against the band and lift your hips.",
+   "Hold briefly at the top and lower."
+  ],
+  "similarTo": "Single Leg Glute Bridge"
+ },
+ {
+  "name": "Barbell Bulgarian Split Squat",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "glutes"
+  ],
+  "secondary": [
+   "hamstrings",
+   "adductors"
+  ],
+  "instructions": [
+   "Place a barbell on your upper back and rest your rear foot on a bench behind you.",
+   "Lower until your front thigh is about parallel.",
+   "Drive through your front foot to stand back up."
+  ],
+  "similarTo": "Elevated Back Lunge",
+  "aliases": [
+   "barbell rear foot elevated split squat"
+  ]
+ },
+ {
+  "name": "Barbell Cheat Curl",
+  "equipment": "barbell",
+  "mechanic": "isolation",
+  "primary": [
+   "biceps"
+  ],
+  "secondary": [
+   "forearms",
+   "lower back"
+  ],
+  "instructions": [
+   "Hold a heavy barbell with an underhand grip.",
+   "Use a small hip swing to start the curl, then finish it with your biceps.",
+   "Lower the bar slowly with strict control."
+  ],
+  "similarTo": "Barbell Curl",
+  "aliases": [
+   "cheat curl"
+  ]
+ },
+ {
+  "name": "Barbell Curtsy Lunge",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "glutes"
+  ],
+  "secondary": [
+   "quadriceps",
+   "abductors"
+  ],
+  "instructions": [
+   "Place a barbell on your upper back.",
+   "Step one leg back and across behind the other, lowering into a lunge.",
+   "Return to standing and repeat."
+  ]
+ },
+ {
+  "name": "Barbell Front Raise",
+  "equipment": "barbell",
+  "mechanic": "isolation",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "chest"
+  ],
+  "instructions": [
+   "Stand holding a barbell with an overhand, shoulder-width grip in front of your thighs.",
+   "Keeping your arms nearly straight, raise the bar to eye level.",
+   "Lower it slowly back to your thighs."
+  ],
+  "similarTo": "Front Two-Dumbbell Raise"
+ },
+ {
+  "name": "Barbell High Pull",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "traps"
+  ],
+  "secondary": [
+   "shoulders",
+   "hamstrings",
+   "glutes"
+  ],
+  "instructions": [
+   "Stand holding a barbell at your thighs with an overhand grip.",
+   "Dip slightly, then explosively extend your hips and pull the bar to chest height with elbows high.",
+   "Lower the bar back to your thighs and reset."
+  ],
+  "similarTo": "Clean Pull"
+ },
+ {
+  "name": "Barbell Single-Leg Romanian Deadlift",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "hamstrings",
+   "glutes"
+  ],
+  "secondary": [
+   "lower back"
+  ],
+  "instructions": [
+   "Hold a barbell at your thighs and shift your weight onto one leg.",
+   "Hinge forward while your free leg extends behind you.",
+   "Return to standing by squeezing the glute of the standing leg."
+  ],
+  "similarTo": "Romanian Deadlift"
+ },
+ {
+  "name": "Barbell Skull Crusher",
+  "equipment": "barbell",
+  "mechanic": "isolation",
+  "primary": [
+   "triceps"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Lie on a flat bench holding a straight barbell over your chest with a shoulder-width overhand grip.",
+   "Keeping your upper arms still, bend your elbows to lower the bar toward your forehead.",
+   "Extend your elbows to raise the bar back to the start."
+  ],
+  "similarTo": "Lying Triceps Press",
+  "aliases": [
+   "straight bar skull crusher",
+   "barbell lying triceps extension"
+  ]
+ },
+ {
+  "name": "Barbell Split Squat",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "glutes"
+  ],
+  "secondary": [
+   "hamstrings"
+  ],
+  "instructions": [
+   "Place a barbell on your upper back and take a long split stance.",
+   "Lower straight down until your back knee nearly touches the floor.",
+   "Drive up through your front foot."
+  ],
+  "similarTo": "Split Squats"
+ },
+ {
+  "name": "Barbell Static Hold",
+  "equipment": "barbell",
+  "mechanic": "isolation",
+  "primary": [
+   "forearms"
+  ],
+  "secondary": [
+   "traps"
+  ],
+  "instructions": [
+   "Set a loaded barbell in a rack at thigh height.",
+   "Grip it overhand, stand up with it, and hold it at arm's length.",
+   "Hold for time, then set it back down."
+  ],
+  "similarTo": "Rack Pulls",
+  "aliases": [
+   "barbell hold"
+  ]
+ },
+ {
+  "name": "Barbell Sumo Squat",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "adductors"
+  ],
+  "secondary": [
+   "glutes",
+   "hamstrings"
+  ],
+  "instructions": [
+   "Place a barbell on your upper back and take a wide stance with toes turned out.",
+   "Push your knees out and sit straight down between your legs.",
+   "Drive through your heels to stand back up."
+  ],
+  "similarTo": "Wide Stance Barbell Squat",
+  "aliases": [
+   "wide stance sumo squat"
+  ]
+ },
+ {
+  "name": "Basketball",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "calves"
+  ],
+  "secondary": [
+   "glutes",
+   "hamstrings",
+   "shoulders"
+  ],
+  "instructions": [
+   "Warm up with light jogging and some shooting.",
+   "Play a full or half-court game, or run drills like layups and sprints.",
+   "Take breaks between games and drink water."
+  ],
+  "category": "cardio"
+ },
+ {
+  "name": "Battle Rope Slams",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "lats",
+   "abdominals",
+   "glutes",
+   "forearms"
+  ],
+  "instructions": [
+   "Hold one rope end in each hand in a half squat.",
+   "Lift both arms overhead together.",
+   "Slam the ropes down as hard as you can, bending your knees with the slam.",
+   "Repeat quickly for the set time."
+  ],
+  "category": "cardio",
+  "similarTo": "Battling Ropes",
+  "aliases": [
+   "battle rope slam",
+   "rope slams"
+  ]
+ },
+ {
+  "name": "Bear Crawl",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "shoulders",
+   "quadriceps"
+  ],
+  "secondary": [
+   "abdominals",
+   "triceps",
+   "glutes"
+  ],
+  "instructions": [
+   "Get on hands and toes with your knees hovering just off the ground.",
+   "Move forward by stepping the opposite hand and foot together.",
+   "Keep your back flat and hips low."
+  ],
+  "category": "cardio",
+  "similarTo": "Bear Crawl Sled Drags",
+  "aliases": [
+   "bear walk"
+  ]
+ },
+ {
+  "name": "Bear Plank",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "shoulders",
+   "quadriceps"
+  ],
+  "instructions": [
+   "Start on hands and knees with hands under shoulders and knees under hips.",
+   "Lift your knees an inch off the floor.",
+   "Hold with a flat back."
+  ],
+  "aliases": [
+   "bear hold"
+  ]
+ },
+ {
+  "name": "Behind-the-Back Cable Lateral Raise",
+  "equipment": "cable",
+  "mechanic": "isolation",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Stand beside a low pulley and reach behind your back with the far hand to grab the handle.",
+   "Raise your arm out to the side until it reaches shoulder height.",
+   "Lower slowly back behind your hips, then switch sides."
+  ],
+  "similarTo": "Standing Low-Pulley Deltoid Raise"
+ },
+ {
+  "name": "Body Saw",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "shoulders"
+  ],
+  "instructions": [
+   "Get into a forearm plank with your feet on sliders or towels.",
+   "Push your body back with your forearms so your shoulders move past your elbows.",
+   "Pull back to the start without letting your hips drop."
+  ],
+  "similarTo": "Plank"
+ },
+ {
+  "name": "Bodyweight Bulgarian Split Squat",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "glutes"
+  ],
+  "secondary": [
+   "hamstrings"
+  ],
+  "instructions": [
+   "Stand in front of a bench and place the top of your rear foot on it.",
+   "Lower until your front thigh is about parallel.",
+   "Push through your front foot to return up."
+  ],
+  "similarTo": "Elevated Back Lunge",
+  "aliases": [
+   "rear foot elevated split squat"
+  ]
+ },
+ {
+  "name": "Bodyweight Calf Raise",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "calves"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Stand with the balls of your feet on a step or the floor.",
+   "Rise onto your toes as high as you can.",
+   "Lower slowly."
+  ],
+  "similarTo": "Standing Dumbbell Calf Raise",
+  "aliases": [
+   "calf raise"
+  ]
+ },
+ {
+  "name": "Bodyweight Hip Thrust",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "glutes"
+  ],
+  "secondary": [
+   "hamstrings"
+  ],
+  "instructions": [
+   "Sit with your upper back on a bench and feet flat.",
+   "Drive your hips up until your body is in a line from shoulders to knees.",
+   "Squeeze your glutes at the top, then lower."
+  ],
+  "similarTo": "Barbell Hip Thrust"
+ },
+ {
+  "name": "Bodyweight Lateral Lunge",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "adductors",
+   "quadriceps"
+  ],
+  "secondary": [
+   "glutes"
+  ],
+  "instructions": [
+   "Stand with your feet together.",
+   "Take a big step to the side and sit back into that hip, keeping the other leg straight.",
+   "Push off to return to the start."
+  ],
+  "aliases": [
+   "side lunge"
+  ]
+ },
+ {
+  "name": "Bodyweight Lunge",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "glutes"
+  ],
+  "secondary": [
+   "hamstrings"
+  ],
+  "instructions": [
+   "Stand tall with your feet hip-width apart.",
+   "Step forward and lower until both knees are bent about 90 degrees.",
+   "Push back to the start and switch legs."
+  ],
+  "similarTo": "Dumbbell Lunges",
+  "aliases": [
+   "forward lunge",
+   "lunge"
+  ]
+ },
+ {
+  "name": "Bodyweight Reverse Lunge",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "glutes"
+  ],
+  "secondary": [
+   "hamstrings"
+  ],
+  "instructions": [
+   "Stand tall with your hands on your hips.",
+   "Step one foot back and lower until both knees are bent about 90 degrees.",
+   "Push through the front foot to return and switch legs."
+  ],
+  "similarTo": "Dumbbell Rear Lunge",
+  "aliases": [
+   "reverse lunge"
+  ]
+ },
+ {
+  "name": "Bodyweight Step-Up",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "glutes"
+  ],
+  "secondary": [
+   "hamstrings"
+  ],
+  "instructions": [
+   "Stand in front of a box or bench.",
+   "Step up with one foot and drive through it to stand on top.",
+   "Step back down and repeat."
+  ],
+  "similarTo": "Dumbbell Step Ups",
+  "aliases": [
+   "box step up bodyweight"
+  ]
+ },
+ {
+  "name": "Breaststroke",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "chest",
+   "quadriceps"
+  ],
+  "secondary": [
+   "shoulders",
+   "adductors",
+   "lats",
+   "glutes"
+  ],
+  "instructions": [
+   "Float face down with arms stretched in front of you.",
+   "Sweep your hands out and back, then bring them together under your chest.",
+   "Kick your legs out and together like a frog as you glide forward.",
+   "Breathe in each time your head lifts at the end of the pull."
+  ],
+  "category": "cardio",
+  "aliases": [
+   "breaststroke swimming"
+  ]
+ },
+ {
+  "name": "Burpee Box Jump",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "glutes"
+  ],
+  "secondary": [
+   "chest",
+   "calves",
+   "shoulders"
+  ],
+  "instructions": [
+   "Stand facing a box.",
+   "Do a burpee, bringing your chest to the floor and jumping your feet back in.",
+   "Jump onto the box, stand tall, then step down and repeat."
+  ],
+  "category": "plyometrics",
+  "aliases": [
+   "burpee box jump over"
+  ]
+ },
+ {
+  "name": "Burpee Pull-Up",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "lats",
+   "quadriceps"
+  ],
+  "secondary": [
+   "chest",
+   "biceps",
+   "shoulders",
+   "abdominals"
+  ],
+  "instructions": [
+   "Stand under a pull-up bar.",
+   "Do a burpee: drop to the floor, chest to the ground, then jump your feet back in.",
+   "Jump up to grab the bar and do one pull-up.",
+   "Drop down and repeat."
+  ],
+  "category": "cardio"
+ },
+ {
+  "name": "Bus Driver",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "forearms"
+  ],
+  "instructions": [
+   "Hold a weight plate at the sides with arms extended in front of you at shoulder height.",
+   "Rotate the plate left and right like turning a steering wheel.",
+   "Keep your arms up the whole set."
+  ],
+  "similarTo": "Front Plate Raise",
+  "aliases": [
+   "plate steering wheel"
+  ]
+ },
+ {
+  "name": "Butterfly Sit-Up",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "adductors"
+  ],
+  "instructions": [
+   "Sit with the soles of your feet together and knees falling out.",
+   "Lie back until your hands touch the floor behind your head.",
+   "Sit up and reach forward to touch your feet."
+  ],
+  "similarTo": "Sit-Up",
+  "aliases": [
+   "butterfly situp"
+  ]
+ },
+ {
+  "name": "Butterfly Stretch",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "adductors"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Sit tall on the floor with the soles of your feet pressed together.",
+   "Hold your feet and let your knees drop toward the floor.",
+   "Hold for 20 to 30 seconds, gently pressing your knees down with your elbows if needed."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "seated butterfly"
+  ]
+ },
+ {
+  "name": "Cable Concentration Curl",
+  "equipment": "cable",
+  "mechanic": "isolation",
+  "primary": [
+   "biceps"
+  ],
+  "secondary": [
+   "forearms"
+  ],
+  "instructions": [
+   "Sit on a bench next to a low cable with a single handle.",
+   "Brace your elbow against your inner thigh and curl the handle up.",
+   "Squeeze at the top and lower slowly."
+  ],
+  "similarTo": "Concentration Curls"
+ },
+ {
+  "name": "Cable Cross-Body Hammer Curl",
+  "equipment": "cable",
+  "mechanic": "isolation",
+  "primary": [
+   "biceps"
+  ],
+  "secondary": [
+   "forearms"
+  ],
+  "instructions": [
+   "Attach a rope or single handle to a low cable and stand side-on to it.",
+   "With palm facing in, curl the handle up and across your body toward the opposite shoulder.",
+   "Lower slowly and finish all reps before switching arms."
+  ],
+  "similarTo": "Cross Body Hammer Curl"
+ },
+ {
+  "name": "Cable Cross-Body Lateral Raise",
+  "equipment": "cable",
+  "mechanic": "isolation",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Stand between two low pulleys and grab the opposite handles so the cables cross in front of you.",
+   "Raise both arms out to the sides to shoulder height.",
+   "Lower slowly until your hands cross in front of your hips."
+  ],
+  "similarTo": "Standing Low-Pulley Deltoid Raise",
+  "aliases": [
+   "two arm cable lateral raise"
+  ]
+ },
+ {
+  "name": "Cable Goblet Squat",
+  "equipment": "cable",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "glutes",
+   "adductors"
+  ],
+  "instructions": [
+   "Attach a handle or rope to a low pulley and hold it at your chest while facing the machine.",
+   "Step back so the cable is taut and squat down between your knees.",
+   "Stand back up, keeping your chest tall."
+  ],
+  "similarTo": "Goblet Squat",
+  "aliases": [
+   "cable squat"
+  ]
+ },
+ {
+  "name": "Cable Oblique Crunch",
+  "equipment": "cable",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Stand side-on to a high pulley holding a handle beside your head.",
+   "Crunch down and to the side toward the machine.",
+   "Return slowly and switch sides."
+  ],
+  "similarTo": "One-Arm High-Pulley Cable Side Bends"
+ },
+ {
+  "name": "Cable Reverse Wrist Curl",
+  "equipment": "cable",
+  "mechanic": "isolation",
+  "primary": [
+   "forearms"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Attach a straight bar to a low cable and hold it with palms facing down.",
+   "Rest your forearms on your thighs or a bench with wrists over the edge.",
+   "Lift the backs of your hands up, then lower slowly."
+  ],
+  "similarTo": "Cable Wrist Curl"
+ },
+ {
+  "name": "Cable Romanian Deadlift",
+  "equipment": "cable",
+  "mechanic": "compound",
+  "primary": [
+   "hamstrings",
+   "glutes"
+  ],
+  "secondary": [
+   "lower back"
+  ],
+  "instructions": [
+   "Attach a bar or rope to a low pulley and stand facing the machine.",
+   "With soft knees, hinge at the hips and let the handle travel toward your shins.",
+   "Drive your hips forward to stand back up."
+  ],
+  "similarTo": "Cable Deadlifts",
+  "aliases": [
+   "cable rdl"
+  ]
+ },
+ {
+  "name": "Cable Standing Hip Abduction",
+  "equipment": "cable",
+  "mechanic": "isolation",
+  "primary": [
+   "abductors"
+  ],
+  "secondary": [
+   "glutes"
+  ],
+  "instructions": [
+   "Attach an ankle strap to your outside leg.",
+   "Lift the leg out to the side.",
+   "Return slowly."
+  ]
+ },
+ {
+  "name": "Cable Standing Leg Curl",
+  "equipment": "cable",
+  "mechanic": "isolation",
+  "primary": [
+   "hamstrings"
+  ],
+  "secondary": [
+   "calves"
+  ],
+  "instructions": [
+   "Attach an ankle strap to a low pulley and face the machine.",
+   "Curl your heel toward your glute.",
+   "Lower slowly and repeat."
+  ],
+  "similarTo": "Standing Leg Curl",
+  "aliases": [
+   "cable hamstring curl"
+  ]
+ },
+ {
+  "name": "Captain's Chair Leg Raise",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Stand on a captain's chair with your forearms on the pads and back against the backrest.",
+   "Keep your legs straight and raise them until they are level with your hips.",
+   "Lower slowly without swinging."
+  ],
+  "similarTo": "Knee/Hip Raise On Parallel Bars",
+  "aliases": [
+   "vertical leg raise"
+  ]
+ },
+ {
+  "name": "Chest-to-Bar Pull-Up",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "lats"
+  ],
+  "secondary": [
+   "biceps",
+   "middle back"
+  ],
+  "instructions": [
+   "Hang from the bar with an overhand grip about shoulder-width.",
+   "Pull hard until your chest touches the bar, squeezing your shoulder blades together.",
+   "Lower all the way down to a full hang."
+  ],
+  "similarTo": "Pullups",
+  "aliases": [
+   "c2b pull up"
+  ]
+ },
+ {
+  "name": "Chin Tucks",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "neck"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Sit or stand tall looking straight ahead.",
+   "Pull your chin straight back as if making a double chin.",
+   "Hold for a couple of seconds, then relax."
+  ],
+  "aliases": [
+   "chin tuck"
+  ]
+ },
+ {
+  "name": "Close-Grip Incline Bench Press",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "triceps"
+  ],
+  "secondary": [
+   "chest",
+   "shoulders"
+  ],
+  "instructions": [
+   "Lie on an incline bench and grip the bar about shoulder-width apart.",
+   "Lower the bar to your upper chest, keeping your elbows close to your sides.",
+   "Press the bar back up until your arms are straight."
+  ],
+  "similarTo": "Barbell Incline Bench Press - Medium Grip",
+  "aliases": [
+   "incline close grip bench press"
+  ]
+ },
+ {
+  "name": "Cobra Stretch",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "lower back"
+  ],
+  "secondary": [
+   "abdominals"
+  ],
+  "instructions": [
+   "Lie face down with your hands under your shoulders.",
+   "Press your chest up while keeping your hips on the floor.",
+   "Hold for 20 to 30 seconds while breathing slowly."
+  ],
+  "category": "stretching"
+ },
+ {
+  "name": "Commando Pull-Up",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "lats"
+  ],
+  "secondary": [
+   "biceps",
+   "abdominals"
+  ],
+  "instructions": [
+   "Stand sideways under the bar and grab it with both hands close together, one in front of the other.",
+   "Pull up, bringing your head to one side of the bar.",
+   "Lower under control and alternate sides each rep."
+  ],
+  "similarTo": "Mixed Grip Chin"
+ },
+ {
+  "name": "Crab Walk",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "triceps",
+   "glutes"
+  ],
+  "secondary": [
+   "shoulders",
+   "hamstrings",
+   "abdominals"
+  ],
+  "instructions": [
+   "Sit down with your feet flat and hands behind you, fingers forward.",
+   "Lift your hips off the floor.",
+   "Walk forward or backward on your hands and feet, keeping your hips up."
+  ],
+  "category": "cardio",
+  "aliases": [
+   "crab crawl"
+  ]
+ },
+ {
+  "name": "Cross-Body Cable Triceps Extension",
+  "equipment": "cable",
+  "mechanic": "isolation",
+  "primary": [
+   "triceps"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Set both pulleys at shoulder height or higher and cross the cables, holding each one in the opposite hand.",
+   "Keep your elbows up and extend your arms out to the sides until they are straight.",
+   "Return slowly back across your body."
+  ],
+  "aliases": [
+   "cable cross body extension",
+   "x triceps extension"
+  ]
+ },
+ {
+  "name": "Cross-Body Dumbbell Triceps Extension",
+  "equipment": "dumbbell",
+  "mechanic": "isolation",
+  "primary": [
+   "triceps"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Lie on a flat bench holding one dumbbell straight above your shoulder.",
+   "Bend your elbow to lower the dumbbell across your body toward the opposite shoulder.",
+   "Straighten your arm to return and finish all reps before switching sides."
+  ],
+  "similarTo": "One Arm Pronated Dumbbell Triceps Extension",
+  "aliases": [
+   "cross body skull crusher",
+   "lying cross body triceps extension"
+  ]
+ },
+ {
+  "name": "Cross-Body Mountain Climber",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "shoulders",
+   "quadriceps"
+  ],
+  "instructions": [
+   "Start in a high plank.",
+   "Drive your right knee toward your left elbow, then switch.",
+   "Move quickly while keeping your hips low and level."
+  ],
+  "category": "cardio",
+  "similarTo": "Mountain Climbers",
+  "aliases": [
+   "cross body mountain climbers",
+   "twisting mountain climbers"
+  ]
+ },
+ {
+  "name": "Crow Pose",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "shoulders",
+   "abdominals"
+  ],
+  "secondary": [
+   "triceps",
+   "forearms",
+   "chest"
+  ],
+  "instructions": [
+   "Squat down and put your hands flat on the floor shoulder-width apart.",
+   "Rest your knees on the backs of your upper arms.",
+   "Lean forward until your feet lift off the floor and hold."
+  ],
+  "aliases": [
+   "crow stand",
+   "crane pose"
+  ]
+ },
+ {
+  "name": "Curved Treadmill Run",
+  "equipment": "machine",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "hamstrings"
+  ],
+  "secondary": [
+   "glutes",
+   "calves"
+  ],
+  "instructions": [
+   "Step onto the curved belt and hold the rails to start.",
+   "Move toward the front of the curve to speed up and drift back to slow down.",
+   "Run tall with quick steps on the balls of your feet."
+  ],
+  "category": "cardio",
+  "similarTo": "Running, Treadmill",
+  "aliases": [
+   "curved treadmill",
+   "assault runner",
+   "manual treadmill"
+  ]
+ },
+ {
+  "name": "Decline Bench Leg Raise",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Lie on a decline bench, head at the top, holding the bench behind your head.",
+   "Raise your straight legs until they point at the ceiling.",
+   "Lower slowly until they are just above the bench."
+  ],
+  "similarTo": "Flat Bench Lying Leg Raise"
+ },
+ {
+  "name": "Decline Cable Chest Press",
+  "equipment": "cable",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders"
+  ],
+  "instructions": [
+   "Set a decline bench between two cable stations with the pulleys low and grab a handle in each hand.",
+   "Start with the handles beside your chest and press them up and together over your lower chest.",
+   "Lower the handles back under control."
+  ],
+  "similarTo": "Incline Cable Chest Press",
+  "aliases": [
+   "decline cable press"
+  ]
+ },
+ {
+  "name": "Decline Chest Press Machine (Pin-Loaded)",
+  "equipment": "machine",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders"
+  ],
+  "instructions": [
+   "Sit in the machine and set the seat so the handles line up with your lower chest.",
+   "Press the handles forward and down until your arms are straight.",
+   "Return slowly until you feel a stretch in your chest."
+  ],
+  "similarTo": "Leverage Decline Chest Press",
+  "aliases": [
+   "decline machine press",
+   "selectorized decline chest press"
+  ]
+ },
+ {
+  "name": "Decline Close-Grip Bench Press",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "triceps"
+  ],
+  "secondary": [
+   "chest",
+   "shoulders"
+  ],
+  "instructions": [
+   "Secure your legs on a decline bench and grip the bar about shoulder-width apart.",
+   "Lower the bar to your lower chest, keeping your elbows tucked.",
+   "Press the bar back up to lockout."
+  ],
+  "similarTo": "Decline Barbell Bench Press"
+ },
+ {
+  "name": "Decline Russian Twist",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Sit on a decline bench with your feet hooked and lean back partway.",
+   "Holding a weight at your chest, rotate your torso side to side.",
+   "Keep your lower back neutral."
+  ],
+  "similarTo": "Russian Twist"
+ },
+ {
+  "name": "Dive Bomber Push-Up",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "shoulders",
+   "triceps"
+  ],
+  "instructions": [
+   "Start in a pike position with your hips high and hands slightly wider than your shoulders.",
+   "Bend your elbows and dive your chest forward and down just above the floor, ending with your arms straight and chest up.",
+   "Reverse the motion back to the pike position."
+  ],
+  "aliases": [
+   "dive bomber"
+  ]
+ },
+ {
+  "name": "Doorway Chest Stretch",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "shoulders"
+  ],
+  "instructions": [
+   "Stand in a doorway and place your forearms on the frame with your elbows at shoulder height.",
+   "Step one foot forward and lean gently through the door until you feel a stretch across your chest.",
+   "Hold for 20 to 30 seconds while breathing slowly."
+  ],
+  "category": "stretching",
+  "similarTo": "Chest And Front Of Shoulder Stretch",
+  "aliases": [
+   "door frame chest stretch",
+   "pec stretch"
+  ]
+ },
+ {
+  "name": "Double Kettlebell Floor Press",
+  "equipment": "kettlebells",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders"
+  ],
+  "instructions": [
+   "Lie on the floor with your knees bent, holding a kettlebell in each hand at chest level with the bells resting on your forearms.",
+   "Press both kettlebells straight up until your arms lock out.",
+   "Lower them until your elbows touch the floor."
+  ],
+  "similarTo": "One-Arm Kettlebell Floor Press",
+  "aliases": [
+   "two kettlebell floor press"
+  ]
+ },
+ {
+  "name": "Double Unders",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "calves",
+   "quadriceps"
+  ],
+  "secondary": [
+   "shoulders",
+   "forearms"
+  ],
+  "instructions": [
+   "Hold a speed rope and start with a few regular jumps.",
+   "Jump a little higher and spin the rope fast with your wrists so it passes under your feet twice.",
+   "Land softly and keep your arms close to your sides."
+  ],
+  "category": "cardio",
+  "similarTo": "Rope Jumping",
+  "aliases": [
+   "double under",
+   "double under jump rope"
+  ]
+ },
+ {
+  "name": "Downward Dog",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "hamstrings",
+   "calves"
+  ],
+  "secondary": [
+   "shoulders",
+   "lats"
+  ],
+  "instructions": [
+   "Start on hands and knees.",
+   "Lift your hips up and back so your body makes an upside-down V.",
+   "Press your heels toward the floor and your chest toward your legs, then hold."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "downward facing dog",
+   "down dog"
+  ]
+ },
+ {
+  "name": "Dumbbell Curl to Press",
+  "equipment": "dumbbell",
+  "mechanic": "compound",
+  "primary": [
+   "biceps"
+  ],
+  "secondary": [
+   "shoulders",
+   "triceps"
+  ],
+  "instructions": [
+   "Stand with a dumbbell in each hand at your sides.",
+   "Curl the dumbbells to your shoulders, then press them overhead.",
+   "Reverse the motion to return to the start."
+  ],
+  "similarTo": "Dumbbell Bicep Curl",
+  "aliases": [
+   "bicep curl to shoulder press"
+  ]
+ },
+ {
+  "name": "Dumbbell Deadlift",
+  "equipment": "dumbbell",
+  "mechanic": "compound",
+  "primary": [
+   "lower back"
+  ],
+  "secondary": [
+   "glutes",
+   "hamstrings",
+   "quadriceps",
+   "forearms"
+  ],
+  "instructions": [
+   "Stand with a dumbbell in each hand in front of your thighs.",
+   "Push your hips back and bend your knees to lower the dumbbells to mid-shin, back flat.",
+   "Stand back up by driving through your feet."
+  ]
+ },
+ {
+  "name": "Dumbbell Drag Curl",
+  "equipment": "dumbbell",
+  "mechanic": "isolation",
+  "primary": [
+   "biceps"
+  ],
+  "secondary": [
+   "forearms"
+  ],
+  "instructions": [
+   "Stand with a dumbbell in each hand, palms forward.",
+   "Curl the weights up while sliding them along your body and pulling your elbows back.",
+   "Lower slowly along the same path."
+  ],
+  "similarTo": "Drag Curl"
+ },
+ {
+  "name": "Dumbbell Floor Fly",
+  "equipment": "dumbbell",
+  "mechanic": "isolation",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "shoulders"
+  ],
+  "instructions": [
+   "Lie on your back on the floor holding dumbbells above your chest, palms facing each other.",
+   "With a slight bend in your elbows, open your arms out to the sides until your upper arms touch the floor.",
+   "Squeeze your chest to bring the dumbbells back together over your chest."
+  ],
+  "similarTo": "Dumbbell Flyes",
+  "aliases": [
+   "floor fly"
+  ]
+ },
+ {
+  "name": "Dumbbell Front Squat",
+  "equipment": "dumbbell",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "glutes",
+   "abdominals"
+  ],
+  "instructions": [
+   "Hold two dumbbells at your shoulders with one end resting on each shoulder.",
+   "Keep your elbows up and squat down until your thighs are at least parallel.",
+   "Drive back up to standing."
+  ],
+  "similarTo": "Dumbbell Squat"
+ },
+ {
+  "name": "Dumbbell Glute Bridge",
+  "equipment": "dumbbell",
+  "mechanic": "compound",
+  "primary": [
+   "glutes"
+  ],
+  "secondary": [
+   "hamstrings"
+  ],
+  "instructions": [
+   "Lie on your back with knees bent and a dumbbell on your hips.",
+   "Drive through your heels to lift your hips.",
+   "Squeeze your glutes at the top, then lower."
+  ],
+  "similarTo": "Barbell Glute Bridge"
+ },
+ {
+  "name": "Dumbbell High Pull",
+  "equipment": "dumbbell",
+  "mechanic": "compound",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "traps",
+   "hamstrings"
+  ],
+  "instructions": [
+   "Stand holding dumbbells in front of your thighs.",
+   "Hinge slightly, then drive your hips forward and pull the dumbbells up, elbows high and wide.",
+   "Bring them to chest height, then lower under control."
+  ],
+  "similarTo": "Standing Dumbbell Upright Row"
+ },
+ {
+  "name": "Dumbbell Internal Rotation",
+  "equipment": "dumbbell",
+  "mechanic": "isolation",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "chest"
+  ],
+  "instructions": [
+   "Lie on your side on the arm you will work, elbow bent 90 degrees and tucked by your side.",
+   "Holding a light dumbbell, rotate your forearm up toward your belly.",
+   "Lower slowly back toward the floor."
+  ]
+ },
+ {
+  "name": "Dumbbell JM Press",
+  "equipment": "dumbbell",
+  "mechanic": "compound",
+  "primary": [
+   "triceps"
+  ],
+  "secondary": [
+   "chest"
+  ],
+  "instructions": [
+   "Lie on a flat bench holding dumbbells over your chest with your palms facing your feet.",
+   "Bend your elbows and bring the dumbbells down toward your shoulders, letting your elbows travel slightly forward.",
+   "Press the dumbbells back up by straightening your elbows."
+  ],
+  "similarTo": "JM Press"
+ },
+ {
+  "name": "Dumbbell Lying Leg Curl",
+  "equipment": "dumbbell",
+  "mechanic": "isolation",
+  "primary": [
+   "hamstrings"
+  ],
+  "secondary": [
+   "calves"
+  ],
+  "instructions": [
+   "Lie face down on a bench with a dumbbell held between your feet.",
+   "Curl the dumbbell toward your glutes.",
+   "Lower slowly."
+  ],
+  "similarTo": "Lying Leg Curls",
+  "aliases": [
+   "dumbbell hamstring curl"
+  ]
+ },
+ {
+  "name": "Dumbbell Push Press",
+  "equipment": "dumbbell",
+  "mechanic": "compound",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "triceps",
+   "quadriceps"
+  ],
+  "instructions": [
+   "Stand holding dumbbells at your shoulders.",
+   "Dip slightly at the knees, then drive up hard with your legs.",
+   "Use that momentum to press the dumbbells overhead, then lower them to your shoulders."
+  ],
+  "similarTo": "Standing Dumbbell Press"
+ },
+ {
+  "name": "Dumbbell Push-Up",
+  "equipment": "dumbbell",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders",
+   "abdominals"
+  ],
+  "instructions": [
+   "Place two dumbbells on the floor shoulder-width apart and grip the handles in a push-up position.",
+   "Lower your chest between the dumbbells, going deeper than a normal push-up.",
+   "Push back up until your arms are straight."
+  ],
+  "similarTo": "Pushups",
+  "aliases": [
+   "push up on dumbbells"
+  ]
+ },
+ {
+  "name": "Dumbbell Rear Delt Row",
+  "equipment": "dumbbell",
+  "mechanic": "compound",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "middle back",
+   "traps"
+  ],
+  "instructions": [
+   "Hinge forward holding dumbbells with your arms hanging and palms facing back.",
+   "Row the dumbbells up with your elbows flared out wide toward the ceiling.",
+   "Squeeze the backs of your shoulders, then lower slowly."
+  ],
+  "similarTo": "Barbell Rear Delt Row"
+ },
+ {
+  "name": "Dumbbell Renegade Row",
+  "equipment": "dumbbell",
+  "mechanic": "compound",
+  "primary": [
+   "middle back"
+  ],
+  "secondary": [
+   "abdominals",
+   "lats",
+   "biceps"
+  ],
+  "instructions": [
+   "Get into a high plank holding a dumbbell in each hand, feet wide.",
+   "Row one dumbbell to your ribs without rotating your hips.",
+   "Lower it and alternate arms."
+  ],
+  "similarTo": "Alternating Renegade Row"
+ },
+ {
+  "name": "Dumbbell Rolling Triceps Extension",
+  "equipment": "dumbbell",
+  "mechanic": "compound",
+  "primary": [
+   "triceps"
+  ],
+  "secondary": [
+   "chest"
+  ],
+  "instructions": [
+   "Lie on a flat bench holding dumbbells over your chest with your palms facing each other.",
+   "Bend your elbows and let your upper arms drift back so the dumbbells come down beside your head.",
+   "Roll your upper arms forward and press the dumbbells back up over your chest."
+  ],
+  "similarTo": "Lying Dumbbell Tricep Extension",
+  "aliases": [
+   "dumbbell rollback",
+   "rolling triceps extension"
+  ]
+ },
+ {
+  "name": "Dumbbell Seal Row",
+  "equipment": "dumbbell",
+  "mechanic": "compound",
+  "primary": [
+   "middle back"
+  ],
+  "secondary": [
+   "lats",
+   "biceps"
+  ],
+  "instructions": [
+   "Lie face down on a raised flat bench with a dumbbell in each hand.",
+   "Row the dumbbells up toward your hips while keeping your chest on the bench.",
+   "Lower the weights until your arms are fully straight."
+  ],
+  "similarTo": "Dumbbell Incline Row",
+  "aliases": [
+   "lying dumbbell row"
+  ]
+ },
+ {
+  "name": "Dumbbell Step-Down",
+  "equipment": "dumbbell",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "glutes"
+  ],
+  "instructions": [
+   "Stand on a low box holding dumbbells at your sides.",
+   "Slowly lower one heel toward the floor by bending the standing leg.",
+   "Tap lightly and push back up with the leg on the box."
+  ],
+  "similarTo": "Dumbbell Step Ups",
+  "aliases": [
+   "eccentric step down"
+  ]
+ },
+ {
+  "name": "Dumbbell Sumo Deadlift",
+  "equipment": "dumbbell",
+  "mechanic": "compound",
+  "primary": [
+   "glutes",
+   "adductors"
+  ],
+  "secondary": [
+   "hamstrings",
+   "quadriceps"
+  ],
+  "instructions": [
+   "Take a wide stance with toes out and hold one dumbbell between your legs.",
+   "Push your hips back and lower the dumbbell toward the floor.",
+   "Drive through your feet and stand up tall."
+  ],
+  "similarTo": "Sumo Deadlift"
+ },
+ {
+  "name": "Dumbbell Woodchop",
+  "equipment": "dumbbell",
+  "mechanic": "compound",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "shoulders"
+  ],
+  "instructions": [
+   "Hold one dumbbell with both hands above one shoulder.",
+   "Swing it down across your body to the outside of the opposite knee while rotating.",
+   "Lift it back up under control and switch sides."
+  ],
+  "similarTo": "Standing Cable Wood Chop"
+ },
+ {
+  "name": "Dumbbell Z Press",
+  "equipment": "dumbbell",
+  "mechanic": "compound",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "triceps",
+   "abdominals"
+  ],
+  "instructions": [
+   "Sit on the floor with legs straight in front of you, holding dumbbells at your shoulders.",
+   "Sit tall and press the dumbbells straight overhead without leaning back.",
+   "Lower them back to your shoulders under control."
+  ],
+  "similarTo": "Seated Dumbbell Press"
+ },
+ {
+  "name": "EZ-Bar Upright Row",
+  "equipment": "e-z curl bar",
+  "mechanic": "compound",
+  "primary": [
+   "traps"
+  ],
+  "secondary": [
+   "shoulders",
+   "biceps"
+  ],
+  "instructions": [
+   "Hold an EZ bar at your thighs with a narrow overhand grip.",
+   "Pull the bar up along your body to chest height, leading with your elbows.",
+   "Lower slowly to the start."
+  ],
+  "similarTo": "Upright Barbell Row"
+ },
+ {
+  "name": "Elevated Pike Push-Up",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "triceps"
+  ],
+  "instructions": [
+   "Place your feet on a bench and your hands on the floor, hips high in a pike.",
+   "Bend your elbows to lower the top of your head toward the floor.",
+   "Press back up until your arms are straight."
+  ],
+  "similarTo": "Handstand Push-Ups",
+  "aliases": [
+   "feet elevated pike push-up",
+   "decline pike push-up"
+  ]
+ },
+ {
+  "name": "Exercise Ball Pike",
+  "equipment": "exercise ball",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "shoulders"
+  ],
+  "instructions": [
+   "Get into a push-up position with your shins on a stability ball.",
+   "Lift your hips toward the ceiling, rolling the ball to your toes.",
+   "Lower slowly back to the plank."
+  ],
+  "similarTo": "Push-Ups With Feet On An Exercise Ball",
+  "aliases": [
+   "stability ball pike"
+  ]
+ },
+ {
+  "name": "Exercise Ball Plank",
+  "equipment": "exercise ball",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "shoulders"
+  ],
+  "instructions": [
+   "Place your forearms on a stability ball and walk your feet back into a plank.",
+   "Brace your abs to stop the ball from rolling.",
+   "Hold for time."
+  ],
+  "aliases": [
+   "stability ball plank"
+  ]
+ },
+ {
+  "name": "Exercise Ball Rollout",
+  "equipment": "exercise ball",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "shoulders",
+   "lats"
+  ],
+  "instructions": [
+   "Kneel with your forearms on a stability ball.",
+   "Roll the ball forward, extending your body into a long line.",
+   "Pull it back with your abs."
+  ],
+  "similarTo": "Barbell Ab Rollout - On Knees",
+  "aliases": [
+   "stability ball rollout"
+  ]
+ },
+ {
+  "name": "Exercise Ball V-Up Pass",
+  "equipment": "exercise ball",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Lie on your back holding a stability ball overhead.",
+   "Lift your arms and legs together and pass the ball to your feet.",
+   "Lower, then lift again and pass it back to your hands."
+  ],
+  "aliases": [
+   "stability ball pass"
+  ]
+ },
+ {
+  "name": "Fast Feet",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "calves"
+  ],
+  "secondary": [
+   "quadriceps"
+  ],
+  "instructions": [
+   "Get in a low athletic stance on the balls of your feet.",
+   "Pitter-patter your feet as fast as you can in place.",
+   "Keep your chest up and arms ready."
+  ],
+  "category": "cardio",
+  "aliases": [
+   "football shuffle",
+   "quick feet"
+  ]
+ },
+ {
+  "name": "Feet-Elevated Bench Dip",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "triceps"
+  ],
+  "secondary": [
+   "chest",
+   "shoulders"
+  ],
+  "instructions": [
+   "Place your hands on the edge of a bench behind you and rest your heels on a second bench in front.",
+   "Bend your elbows to lower your hips until your upper arms are about parallel to the floor.",
+   "Press back up until your arms are straight."
+  ],
+  "similarTo": "Bench Dips",
+  "aliases": [
+   "elevated bench dip"
+  ]
+ },
+ {
+  "name": "Feet-Elevated Inverted Row",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "middle back"
+  ],
+  "secondary": [
+   "lats",
+   "biceps"
+  ],
+  "instructions": [
+   "Set a bar at hip height and rest your heels on a bench or box.",
+   "Hang beneath the bar with a straight body.",
+   "Pull your chest to the bar and lower with control."
+  ],
+  "similarTo": "Inverted Row"
+ },
+ {
+  "name": "Feet-Up Bench Press",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders"
+  ],
+  "instructions": [
+   "Lie on a flat bench and lift your feet off the floor, knees bent or legs straight.",
+   "Unrack the bar and lower it to your mid-chest while keeping your body steady.",
+   "Press the bar back up to lockout without using leg drive."
+  ],
+  "similarTo": "Barbell Bench Press - Medium Grip",
+  "aliases": [
+   "feet up bench"
+  ]
+ },
+ {
+  "name": "Flat Bench Cable Chest Press",
+  "equipment": "cable",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders"
+  ],
+  "instructions": [
+   "Place a flat bench between two low pulleys and lie back holding a handle in each hand.",
+   "Press the handles up until your arms are straight above your chest.",
+   "Lower them slowly back to chest level."
+  ],
+  "similarTo": "Incline Cable Chest Press",
+  "aliases": [
+   "cable bench press",
+   "lying cable chest press"
+  ]
+ },
+ {
+  "name": "Flexed-Arm Hang",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "biceps",
+   "lats"
+  ],
+  "secondary": [
+   "forearms"
+  ],
+  "instructions": [
+   "Grab a pull-up bar with an underhand or overhand grip and jump or pull to the top position.",
+   "Hold your chin above the bar for as long as you can.",
+   "Lower slowly when you can no longer hold the position."
+  ],
+  "similarTo": "Chin-Up",
+  "aliases": [
+   "bent arm hang"
+  ]
+ },
+ {
+  "name": "Floor Triceps Dip",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "triceps"
+  ],
+  "secondary": [
+   "shoulders"
+  ],
+  "instructions": [
+   "Sit on the floor with your knees bent and your hands behind you, fingers pointing toward your feet.",
+   "Press through your hands to lift your hips off the floor.",
+   "Bend and straighten your elbows to lower and raise your body."
+  ],
+  "similarTo": "Bench Dips",
+  "aliases": [
+   "floor dip",
+   "floor tricep dip"
+  ]
+ },
+ {
+  "name": "Foam Roller Thoracic Extension",
+  "equipment": "foam roll",
+  "mechanic": "isolation",
+  "primary": [
+   "middle back"
+  ],
+  "secondary": [
+   "lower back",
+   "chest"
+  ],
+  "instructions": [
+   "Lie back with a foam roller across your upper back and hands behind your head.",
+   "Keep your hips on the floor and gently arch back over the roller.",
+   "Move the roller up or down a little and repeat."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "thoracic extension",
+   "t-spine extension",
+   "upper back foam roll"
+  ]
+ },
+ {
+  "name": "Forearm-SMR",
+  "equipment": "foam roll",
+  "mechanic": "isolation",
+  "primary": [
+   "forearms"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Rest your forearm on a foam roller or ball on a table or the floor.",
+   "Press down and roll slowly from wrist to elbow.",
+   "Pause on tight spots, then switch arms."
+  ],
+  "category": "stretching",
+  "similarTo": "Brachialis-SMR",
+  "aliases": [
+   "forearm foam roll"
+  ]
+ },
+ {
+  "name": "Frog Stretch",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "adductors"
+  ],
+  "secondary": [
+   "glutes"
+  ],
+  "instructions": [
+   "Get on hands and knees and slide your knees out wide.",
+   "Turn your feet out so your ankles line up with your knees.",
+   "Rock your hips back slowly until you feel a stretch in your inner thighs and hold."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "frog pose"
+  ]
+ },
+ {
+  "name": "Front Lever",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "lats"
+  ],
+  "secondary": [
+   "abdominals",
+   "middle back",
+   "shoulders"
+  ],
+  "instructions": [
+   "Hang from a pull-up bar with straight arms.",
+   "Pull your shoulders down and lift your body until it is flat and parallel to the floor, face up.",
+   "Hold, or start with knees tucked to make it easier."
+  ]
+ },
+ {
+  "name": "GHD Sit-Up",
+  "equipment": "machine",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "quadriceps"
+  ],
+  "instructions": [
+   "Sit on a glute-ham developer with your feet locked in and thighs on the pad.",
+   "Lean back under control until your torso is parallel or below.",
+   "Drive your legs and abs to sit back up."
+  ]
+ },
+ {
+  "name": "Glute-Focused Back Extension",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "glutes"
+  ],
+  "secondary": [
+   "hamstrings",
+   "lower back"
+  ],
+  "instructions": [
+   "Set up on a 45-degree back extension bench with the pad below your hips.",
+   "Round your upper back slightly and lower your torso.",
+   "Squeeze your glutes to lift back up until your body is in a straight line."
+  ],
+  "similarTo": "Hyperextensions (Back Extensions)",
+  "aliases": [
+   "45 degree glute hyperextension",
+   "glute hyper"
+  ]
+ },
+ {
+  "name": "Gorilla Row",
+  "equipment": "kettlebells",
+  "mechanic": "compound",
+  "primary": [
+   "middle back"
+  ],
+  "secondary": [
+   "lats",
+   "biceps",
+   "lower back"
+  ],
+  "instructions": [
+   "Stand in a wide stance with two kettlebells between your feet and hinge forward.",
+   "Row one kettlebell to your hip while pressing the other into the floor.",
+   "Lower it and alternate sides each rep."
+  ],
+  "similarTo": "Alternating Kettlebell Row",
+  "aliases": [
+   "kettlebell gorilla row"
+  ]
+ },
+ {
+  "name": "Hack Squat Calf Raise",
+  "equipment": "machine",
+  "mechanic": "isolation",
+  "primary": [
+   "calves"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Stand in the hack squat machine with the balls of your feet at the edge of the platform.",
+   "Keep your knees straight and lower your heels.",
+   "Rise onto your toes."
+  ],
+  "similarTo": "Hack Squat"
+ },
+ {
+  "name": "Half-Kneeling Cable Chop",
+  "equipment": "cable",
+  "mechanic": "compound",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "shoulders"
+  ],
+  "instructions": [
+   "Kneel on one knee side-on to a high pulley with the outside knee up.",
+   "Pull the handle down and across your body toward your outside hip.",
+   "Return slowly and repeat, then switch sides."
+  ],
+  "similarTo": "Standing Cable Wood Chop"
+ },
+ {
+  "name": "Hand Gripper",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "forearms"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Hold a hand gripper in one hand with the handles in your palm and fingers.",
+   "Squeeze until the handles touch.",
+   "Release slowly and repeat, then switch hands."
+  ],
+  "aliases": [
+   "grip trainer"
+  ]
+ },
+ {
+  "name": "Hand-Release Push-Up",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders"
+  ],
+  "instructions": [
+   "Start in a push-up position and lower your chest all the way to the floor.",
+   "Lift your hands off the floor for a moment.",
+   "Place them back and push up to full arm extension."
+  ],
+  "similarTo": "Pushups",
+  "aliases": [
+   "hand release push ups"
+  ]
+ },
+ {
+  "name": "Hang Power Clean",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "glutes",
+   "hamstrings"
+  ],
+  "secondary": [
+   "traps",
+   "shoulders",
+   "lower back",
+   "calves"
+  ],
+  "instructions": [
+   "Stand holding a barbell at your thighs with an overhand grip just outside your legs.",
+   "Hinge slightly so the bar slides to just above your knees.",
+   "Jump hard through your legs, shrug and pull your elbows high.",
+   "Drop slightly under the bar and catch it on your shoulders in a quarter squat, then stand."
+  ],
+  "category": "olympic weightlifting",
+  "similarTo": "Smith Machine Hang Power Clean",
+  "aliases": [
+   "hang power clean barbell"
+  ]
+ },
+ {
+  "name": "Hang Power Snatch",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "glutes",
+   "hamstrings"
+  ],
+  "secondary": [
+   "shoulders",
+   "traps",
+   "lower back",
+   "triceps"
+  ],
+  "instructions": [
+   "Hold a barbell at your thighs with a wide snatch grip.",
+   "Hinge so the bar sits just above your knees, keeping your back flat.",
+   "Explode up through your legs and pull the bar close to your body.",
+   "Punch under it and catch it overhead with locked arms in a quarter squat, then stand."
+  ],
+  "category": "olympic weightlifting",
+  "similarTo": "Hang Snatch"
+ },
+ {
+  "name": "Hanging Oblique Knee Raise",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Hang from a pull-up bar with straight arms.",
+   "Raise your knees up and toward one side, turning your hips.",
+   "Lower slowly and alternate sides."
+  ],
+  "similarTo": "Hanging Leg Raise",
+  "aliases": [
+   "hanging side knee raise"
+  ]
+ },
+ {
+  "name": "Hanging Windshield Wiper",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "lats"
+  ],
+  "instructions": [
+   "Hang from a bar and raise your straight legs to the top.",
+   "Rotate your legs side to side like windshield wipers.",
+   "Keep the movement slow and controlled."
+  ],
+  "similarTo": "Hanging Pike"
+ },
+ {
+  "name": "Happy Baby",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "adductors",
+   "glutes"
+  ],
+  "secondary": [
+   "lower back",
+   "hamstrings"
+  ],
+  "instructions": [
+   "Lie on your back and pull your knees toward your armpits.",
+   "Grab the outsides of your feet with your shins pointing up.",
+   "Gently pull down and rock side to side while you breathe."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "happy baby pose"
+  ]
+ },
+ {
+  "name": "Heavy Bag Punching",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "chest",
+   "triceps",
+   "abdominals",
+   "calves"
+  ],
+  "instructions": [
+   "Wrap your hands and put on gloves, then stand in a boxing stance near the bag.",
+   "Throw jabs, crosses, hooks and uppercuts in combinations.",
+   "Move around the bag and work in rounds with short rests."
+  ],
+  "category": "cardio",
+  "aliases": [
+   "heavy bag",
+   "bag work",
+   "punching bag",
+   "boxing"
+  ]
+ },
+ {
+  "name": "Heel-Elevated Barbell Squat",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "glutes",
+   "adductors"
+  ],
+  "instructions": [
+   "Stand with your heels on a small plate or wedge and a barbell on your upper back.",
+   "Squat straight down, letting your knees travel forward over your toes.",
+   "Stand back up by driving through the balls of your feet and heels."
+  ],
+  "similarTo": "Barbell Squat",
+  "aliases": [
+   "cyclist squat",
+   "heels elevated squat"
+  ]
+ },
+ {
+  "name": "High Knees",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "hamstrings",
+   "calves",
+   "abdominals"
+  ],
+  "instructions": [
+   "Stand tall with your arms at your sides.",
+   "Run in place, driving each knee up to hip height.",
+   "Pump your arms and stay on the balls of your feet."
+  ],
+  "category": "cardio",
+  "aliases": [
+   "running in place",
+   "high knee run"
+  ]
+ },
+ {
+  "name": "High Row (Pin-Loaded)",
+  "equipment": "machine",
+  "mechanic": "compound",
+  "primary": [
+   "lats"
+  ],
+  "secondary": [
+   "middle back",
+   "biceps"
+  ],
+  "instructions": [
+   "Sit at the selectorized high row machine and set the pin for your weight.",
+   "Grab the handles above and in front of you.",
+   "Pull the handles down and back toward your chest, then return slowly."
+  ],
+  "similarTo": "Leverage High Row",
+  "aliases": [
+   "selectorized high row"
+  ]
+ },
+ {
+  "name": "Hill Sprints",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "glutes"
+  ],
+  "secondary": [
+   "hamstrings",
+   "calves"
+  ],
+  "instructions": [
+   "Find a moderate hill and warm up with easy jogging.",
+   "Sprint up the hill for 10 to 30 seconds with a strong arm drive.",
+   "Walk back down to recover and repeat."
+  ],
+  "category": "cardio",
+  "similarTo": "Wind Sprints",
+  "aliases": [
+   "hill runs",
+   "hill repeats"
+  ]
+ },
+ {
+  "name": "Hindu Push-Up",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "shoulders",
+   "triceps",
+   "lower back"
+  ],
+  "instructions": [
+   "Start in a downward dog position with your hips high and hands and feet on the floor.",
+   "Bend your elbows and swoop your chest down and forward close to the floor.",
+   "Finish with your arms straight and chest lifted, then push your hips back up to the start."
+  ],
+  "aliases": [
+   "dand"
+  ]
+ },
+ {
+  "name": "Hollow Body Rock",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Get into a hollow hold with arms overhead and legs straight off the floor.",
+   "Rock back and forth while keeping the same rigid shape.",
+   "Keep your lower back pressed into the floor."
+  ],
+  "aliases": [
+   "hollow rock"
+  ]
+ },
+ {
+  "name": "Incline Cable Curl",
+  "equipment": "cable",
+  "mechanic": "isolation",
+  "primary": [
+   "biceps"
+  ],
+  "secondary": [
+   "forearms"
+  ],
+  "instructions": [
+   "Set an incline bench in front of a low cable and lie back holding two handles.",
+   "Let your arms hang straight down behind your body line.",
+   "Curl the handles toward your shoulders, then lower slowly."
+  ],
+  "similarTo": "Incline Dumbbell Curl"
+ },
+ {
+  "name": "Incline Dumbbell Shrug",
+  "equipment": "dumbbell",
+  "mechanic": "isolation",
+  "primary": [
+   "traps"
+  ],
+  "secondary": [
+   "middle back"
+  ],
+  "instructions": [
+   "Lie face down on an incline bench with a dumbbell in each hand.",
+   "Let your arms hang straight, then pull your shoulder blades up and together.",
+   "Hold briefly and lower slowly."
+  ],
+  "similarTo": "Middle Back Shrug",
+  "aliases": [
+   "prone incline shrug"
+  ]
+ },
+ {
+  "name": "Incline Dumbbell Squeeze Press",
+  "equipment": "dumbbell",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders"
+  ],
+  "instructions": [
+   "Lie on an incline bench holding two dumbbells together over your upper chest, palms facing each other.",
+   "Squeeze the dumbbells hard against each other.",
+   "Lower them to your chest and press back up while keeping them pressed together."
+  ],
+  "similarTo": "Incline Dumbbell Press",
+  "aliases": [
+   "incline hex press"
+  ]
+ },
+ {
+  "name": "Incline Dumbbell Triceps Extension",
+  "equipment": "dumbbell",
+  "mechanic": "isolation",
+  "primary": [
+   "triceps"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Lie on an incline bench holding dumbbells above your head with your palms facing each other.",
+   "Bend your elbows to lower the dumbbells behind your head, keeping your upper arms still.",
+   "Extend your elbows to return to the start."
+  ],
+  "similarTo": "Incline Barbell Triceps Extension",
+  "aliases": [
+   "incline dumbbell skull crusher"
+  ]
+ },
+ {
+  "name": "Incline Dumbbell W Raise",
+  "equipment": "dumbbell",
+  "mechanic": "isolation",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "middle back"
+  ],
+  "instructions": [
+   "Lie face down on an incline bench with light dumbbells and elbows bent.",
+   "Pull your elbows back and rotate your hands up so your arms form a W.",
+   "Squeeze your shoulder blades together, then lower slowly."
+  ],
+  "similarTo": "Lying Rear Delt Raise"
+ },
+ {
+  "name": "Jacob's Ladder",
+  "equipment": "machine",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "glutes"
+  ],
+  "secondary": [
+   "shoulders",
+   "hamstrings",
+   "calves"
+  ],
+  "instructions": [
+   "Step onto the slanted ladder and put on the belt if your machine has one.",
+   "Climb the rungs with hands and feet, keeping your hips near the belt.",
+   "Speed up to make the ladder move faster, and slow down to ease off."
+  ],
+  "category": "cardio",
+  "aliases": [
+   "ladder climber"
+  ]
+ },
+ {
+  "name": "Jumping Pull-Up",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "lats"
+  ],
+  "secondary": [
+   "biceps",
+   "quadriceps"
+  ],
+  "instructions": [
+   "Stand under a bar that you can reach with a small jump, gripping it overhand.",
+   "Jump and use the momentum to help pull your chin over the bar.",
+   "Lower yourself slowly back to the floor."
+  ],
+  "similarTo": "Pullups"
+ },
+ {
+  "name": "Kettlebell Around the Body Pass",
+  "equipment": "kettlebells",
+  "mechanic": "compound",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "shoulders",
+   "forearms",
+   "lower back"
+  ],
+  "instructions": [
+   "Stand tall holding a kettlebell in one hand at hip height.",
+   "Pass it behind your back to the other hand.",
+   "Bring it around the front and switch hands again, making circles around your waist.",
+   "Do your reps, then switch direction."
+  ],
+  "aliases": [
+   "kettlebell around the world",
+   "kettlebell slingshot"
+  ]
+ },
+ {
+  "name": "Kettlebell Bottoms-Up Carry",
+  "equipment": "kettlebells",
+  "mechanic": "isolation",
+  "primary": [
+   "forearms"
+  ],
+  "secondary": [
+   "shoulders",
+   "abdominals"
+  ],
+  "instructions": [
+   "Hold a kettlebell upside down by the handle at shoulder height.",
+   "Squeeze the handle hard to keep the bell balanced.",
+   "Walk slowly for the set distance, then switch hands."
+  ]
+ },
+ {
+  "name": "Kettlebell Bottoms-Up Press",
+  "equipment": "kettlebells",
+  "mechanic": "compound",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "triceps",
+   "forearms"
+  ],
+  "instructions": [
+   "Hold a kettlebell upside down by the handle at shoulder height, bell pointing up.",
+   "Grip hard and brace your core to keep the bell balanced.",
+   "Press it straight overhead without letting it tip, then lower slowly."
+  ],
+  "similarTo": "Two-Arm Kettlebell Military Press"
+ },
+ {
+  "name": "Kettlebell Bulgarian Split Squat",
+  "equipment": "kettlebells",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "glutes"
+  ],
+  "secondary": [
+   "hamstrings"
+  ],
+  "instructions": [
+   "Hold a kettlebell at your chest and rest your rear foot on a bench.",
+   "Lower straight down until your front thigh is about parallel.",
+   "Push through your front foot to stand."
+  ],
+  "similarTo": "Elevated Back Lunge"
+ },
+ {
+  "name": "Kettlebell Calf Raise",
+  "equipment": "kettlebells",
+  "mechanic": "isolation",
+  "primary": [
+   "calves"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Hold a kettlebell in each hand and stand on a step.",
+   "Lower your heels.",
+   "Rise onto your toes."
+  ],
+  "similarTo": "Standing Dumbbell Calf Raise"
+ },
+ {
+  "name": "Kettlebell Clean and Press",
+  "equipment": "kettlebells",
+  "mechanic": "compound",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "glutes",
+   "hamstrings",
+   "triceps",
+   "abdominals"
+  ],
+  "instructions": [
+   "Start with a kettlebell between your feet and grab it with one hand.",
+   "Hinge and pull it up to the rack position at your shoulder, letting it roll around your wrist.",
+   "Press it overhead until your arm is straight.",
+   "Lower to the rack, then back between your legs, and repeat."
+  ],
+  "similarTo": "One-Arm Kettlebell Clean",
+  "aliases": [
+   "kb clean and press",
+   "single arm kettlebell clean and press"
+  ]
+ },
+ {
+  "name": "Kettlebell Curl",
+  "equipment": "kettlebells",
+  "mechanic": "isolation",
+  "primary": [
+   "biceps"
+  ],
+  "secondary": [
+   "forearms"
+  ],
+  "instructions": [
+   "Stand holding a kettlebell in each hand, or one bell by the horns with both hands.",
+   "Keep your elbows at your sides and curl the weight up to your shoulders.",
+   "Lower slowly until your arms are straight."
+  ],
+  "similarTo": "Dumbbell Bicep Curl",
+  "aliases": [
+   "kettlebell bicep curl"
+  ]
+ },
+ {
+  "name": "Kettlebell Deadlift",
+  "equipment": "kettlebells",
+  "mechanic": "compound",
+  "primary": [
+   "lower back"
+  ],
+  "secondary": [
+   "glutes",
+   "hamstrings",
+   "quadriceps"
+  ],
+  "instructions": [
+   "Stand over a kettlebell with feet about hip-width apart.",
+   "Hinge at the hips and grab the handle with both hands, back flat.",
+   "Stand up tall, then lower the bell back to the floor."
+  ]
+ },
+ {
+  "name": "Kettlebell Front Rack Carry",
+  "equipment": "kettlebells",
+  "mechanic": "compound",
+  "primary": [
+   "abdominals",
+   "shoulders"
+  ],
+  "secondary": [
+   "traps",
+   "forearms",
+   "quadriceps",
+   "glutes"
+  ],
+  "instructions": [
+   "Clean one or two kettlebells up to the rack position at your shoulders.",
+   "Keep your elbows tucked and stand tall with your core braced.",
+   "Walk forward with short, steady steps for the set distance or time."
+  ],
+  "category": "strongman",
+  "aliases": [
+   "kettlebell rack carry",
+   "rack walk"
+  ]
+ },
+ {
+  "name": "Kettlebell Front Rack Squat",
+  "equipment": "kettlebells",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "glutes",
+   "abdominals"
+  ],
+  "instructions": [
+   "Clean one kettlebell to the rack position at your shoulder.",
+   "Brace your core and squat down until your thighs are at least parallel.",
+   "Stand back up without leaning toward the weight."
+  ],
+  "similarTo": "Front Squats With Two Kettlebells",
+  "aliases": [
+   "single kettlebell front squat"
+  ]
+ },
+ {
+  "name": "Kettlebell Front Raise",
+  "equipment": "kettlebells",
+  "mechanic": "isolation",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "chest"
+  ],
+  "instructions": [
+   "Hold a kettlebell by the horns with both hands in front of your hips.",
+   "Raise it forward with nearly straight arms until it reaches shoulder height.",
+   "Lower slowly without swinging."
+  ],
+  "similarTo": "Front Plate Raise"
+ },
+ {
+  "name": "Kettlebell Hammer Curl",
+  "equipment": "kettlebells",
+  "mechanic": "isolation",
+  "primary": [
+   "biceps"
+  ],
+  "secondary": [
+   "forearms"
+  ],
+  "instructions": [
+   "Hold a kettlebell in each hand with palms facing in.",
+   "Curl the bells up without letting your elbows move forward.",
+   "Lower slowly to the start."
+  ],
+  "similarTo": "Hammer Curls"
+ },
+ {
+  "name": "Kettlebell Hip Thrust",
+  "equipment": "kettlebells",
+  "mechanic": "compound",
+  "primary": [
+   "glutes"
+  ],
+  "secondary": [
+   "hamstrings"
+  ],
+  "instructions": [
+   "Sit against a bench and hold a kettlebell on your hips.",
+   "Drive your hips up until your torso is level.",
+   "Squeeze your glutes and lower."
+  ],
+  "similarTo": "Barbell Hip Thrust"
+ },
+ {
+  "name": "Kettlebell Pullover",
+  "equipment": "kettlebells",
+  "mechanic": "isolation",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "lats",
+   "triceps"
+  ],
+  "instructions": [
+   "Lie on a bench or the floor holding a kettlebell by the horns above your chest.",
+   "Keeping a slight bend in your elbows, lower the kettlebell back behind your head until you feel a stretch.",
+   "Pull it back over your chest."
+  ],
+  "similarTo": "Straight-Arm Dumbbell Pullover",
+  "aliases": [
+   "kb pullover"
+  ]
+ },
+ {
+  "name": "Kettlebell Reverse Lunge",
+  "equipment": "kettlebells",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "glutes"
+  ],
+  "secondary": [
+   "hamstrings"
+  ],
+  "instructions": [
+   "Hold a kettlebell in each hand or one at your chest.",
+   "Step back and lower until both knees are bent about 90 degrees.",
+   "Push through your front foot to return to standing."
+  ],
+  "similarTo": "Dumbbell Rear Lunge"
+ },
+ {
+  "name": "Kettlebell Shrug",
+  "equipment": "kettlebells",
+  "mechanic": "isolation",
+  "primary": [
+   "traps"
+  ],
+  "secondary": [
+   "forearms"
+  ],
+  "instructions": [
+   "Stand holding a kettlebell in each hand at your sides.",
+   "Shrug your shoulders straight up as high as possible.",
+   "Pause, then lower slowly."
+  ],
+  "similarTo": "Dumbbell Shrug"
+ },
+ {
+  "name": "Kettlebell Skull Crusher",
+  "equipment": "kettlebells",
+  "mechanic": "isolation",
+  "primary": [
+   "triceps"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Lie on a bench holding a kettlebell by the horns above your chest with your arms straight.",
+   "Bend your elbows to lower the kettlebell behind your head, keeping your upper arms still.",
+   "Extend your elbows to raise it back up."
+  ],
+  "similarTo": "Lying Dumbbell Tricep Extension",
+  "aliases": [
+   "kettlebell lying triceps extension"
+  ]
+ },
+ {
+  "name": "Kettlebell Step-Up",
+  "equipment": "kettlebells",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "glutes"
+  ],
+  "secondary": [
+   "hamstrings"
+  ],
+  "instructions": [
+   "Hold a kettlebell in each hand in front of a box.",
+   "Step one foot onto the box and drive up to standing.",
+   "Step down with control and repeat."
+  ],
+  "similarTo": "Dumbbell Step Ups"
+ },
+ {
+  "name": "Kettlebell Upright Row",
+  "equipment": "kettlebells",
+  "mechanic": "compound",
+  "primary": [
+   "traps"
+  ],
+  "secondary": [
+   "shoulders"
+  ],
+  "instructions": [
+   "Hold one kettlebell by the handle with both hands in front of your thighs.",
+   "Pull it up toward your chin, keeping your elbows above your hands.",
+   "Lower slowly back down."
+  ],
+  "similarTo": "Standing Dumbbell Upright Row"
+ },
+ {
+  "name": "Kettlebell Waiter's Walk",
+  "equipment": "kettlebells",
+  "mechanic": "compound",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "abdominals",
+   "traps",
+   "triceps"
+  ],
+  "instructions": [
+   "Press a kettlebell overhead with one arm and lock your elbow.",
+   "Keep your wrist straight and your ribs pulled down.",
+   "Walk slowly for the set distance, then switch arms."
+  ],
+  "category": "strongman",
+  "aliases": [
+   "waiter walk",
+   "waiters carry",
+   "single arm overhead carry"
+  ]
+ },
+ {
+  "name": "Kipping Pull-Up",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "lats"
+  ],
+  "secondary": [
+   "biceps",
+   "abdominals",
+   "shoulders"
+  ],
+  "instructions": [
+   "Hang from the bar with an overhand grip and swing your body into an arch, then a hollow position.",
+   "Use the hip drive from the swing to pull your chin over the bar.",
+   "Push away from the bar and flow straight into the next swing."
+  ],
+  "similarTo": "Pullups"
+ },
+ {
+  "name": "Knee Push-Up",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders"
+  ],
+  "instructions": [
+   "Get on your hands and knees with your hands slightly wider than shoulder width and your body straight from knees to head.",
+   "Lower your chest toward the floor by bending your elbows.",
+   "Push back up until your arms are straight."
+  ],
+  "similarTo": "Pushups",
+  "aliases": [
+   "kneeling push up",
+   "modified push up"
+  ]
+ },
+ {
+  "name": "Knee-to-Wall Ankle Stretch",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "calves"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Stand facing a wall in a split stance with your front toes a few inches from it.",
+   "Bend your front knee forward to touch the wall without lifting your heel.",
+   "Move your foot back a little as you get more flexible, then switch legs."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "ankle mobility",
+   "knee to wall",
+   "ankle dorsiflexion stretch"
+  ]
+ },
+ {
+  "name": "Kneeling Diamond Push-Up",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "triceps"
+  ],
+  "secondary": [
+   "chest",
+   "shoulders"
+  ],
+  "instructions": [
+   "Kneel and place your hands close together under your chest so your thumbs and index fingers form a diamond.",
+   "Keeping your body straight from knees to head, lower your chest to your hands.",
+   "Push back up until your arms are straight."
+  ],
+  "similarTo": "Push-Ups - Close Triceps Position",
+  "aliases": [
+   "diamond push up on knees"
+  ]
+ },
+ {
+  "name": "Knuckle Push-Up",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders",
+   "forearms"
+  ],
+  "instructions": [
+   "Make fists and set up in a push-up position resting on your knuckles with your wrists straight.",
+   "Lower your chest toward the floor.",
+   "Push back up until your arms are straight."
+  ],
+  "similarTo": "Pushups",
+  "aliases": [
+   "fist push up"
+  ]
+ },
+ {
+  "name": "L-Sit",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders",
+   "quadriceps"
+  ],
+  "instructions": [
+   "Sit between parallettes, dip bars or on the floor with hands by your hips.",
+   "Press down to lift your body off the ground.",
+   "Hold your legs straight out in front at hip height for as long as you can."
+  ],
+  "aliases": [
+   "l sit",
+   "l-sit hold"
+  ]
+ },
+ {
+  "name": "L-Sit Pull-Up",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "lats"
+  ],
+  "secondary": [
+   "abdominals",
+   "biceps"
+  ],
+  "instructions": [
+   "Hang from the bar and raise your straight legs until they are level with your hips.",
+   "Hold the L position as you pull your chin over the bar.",
+   "Lower to a full hang while keeping your legs up."
+  ],
+  "similarTo": "Pullups"
+ },
+ {
+  "name": "Landmine Hack Squat",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "glutes"
+  ],
+  "instructions": [
+   "Load the free end of a landmine bar and stand facing away from the anchor with the sleeve on one shoulder.",
+   "Lean slightly back into the bar and squat down.",
+   "Drive up through your feet to stand."
+  ]
+ },
+ {
+  "name": "Landmine Lateral Raise",
+  "equipment": "barbell",
+  "mechanic": "isolation",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Stand side-on to a landmine and grab the end of the bar with your far hand, arm across your body.",
+   "Raise the bar out and up in an arc until your arm is at shoulder height.",
+   "Lower slowly and finish all reps before switching sides."
+  ]
+ },
+ {
+  "name": "Landmine Split Squat",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "glutes"
+  ],
+  "secondary": [
+   "abdominals"
+  ],
+  "instructions": [
+   "Hold the end of a loaded landmine bar at your chest in a split stance.",
+   "Lower until your back knee nearly touches the floor.",
+   "Drive up through your front foot."
+  ]
+ },
+ {
+  "name": "Landmine Squeeze Press",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "shoulders",
+   "triceps"
+  ],
+  "instructions": [
+   "Load one end of a barbell anchored in a landmine and stand facing it.",
+   "Hold the sleeve at chest height with both palms pressed together around it.",
+   "Squeeze your hands together and press the bar up and forward until your arms are straight, then lower it back to your chest."
+  ],
+  "aliases": [
+   "landmine chest press",
+   "two hand landmine press"
+  ]
+ },
+ {
+  "name": "Lateral Shuffle",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "adductors",
+   "abductors"
+  ],
+  "secondary": [
+   "quadriceps",
+   "glutes",
+   "calves"
+  ],
+  "instructions": [
+   "Get in a low athletic stance with knees bent.",
+   "Shuffle sideways quickly without letting your feet touch.",
+   "Go a set distance, then shuffle back the other way."
+  ],
+  "category": "cardio",
+  "aliases": [
+   "side shuffle",
+   "defensive slides"
+  ]
+ },
+ {
+  "name": "Levator Scapulae Stretch",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "neck"
+  ],
+  "secondary": [
+   "traps"
+  ],
+  "instructions": [
+   "Sit tall and turn your head about 45 degrees to one side.",
+   "Drop your nose toward your armpit and gently pull with the same-side hand.",
+   "Hold for 20 to 30 seconds, then switch sides."
+  ],
+  "category": "stretching",
+  "similarTo": "Side Neck Stretch"
+ },
+ {
+  "name": "Lizard Pose",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "quadriceps",
+   "adductors"
+  ],
+  "secondary": [
+   "glutes",
+   "hamstrings"
+  ],
+  "instructions": [
+   "Step one foot forward into a lunge, outside of your hands.",
+   "Lower your back knee to the floor.",
+   "Sink your hips down and forward, or drop to your forearms for a deeper stretch, then hold and switch."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "lizard stretch"
+  ]
+ },
+ {
+  "name": "Low Incline Dumbbell Press",
+  "equipment": "dumbbell",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "shoulders",
+   "triceps"
+  ],
+  "instructions": [
+   "Set a bench to a low incline of about 15 to 30 degrees and lie back with a dumbbell in each hand.",
+   "Lower the dumbbells to the sides of your upper chest.",
+   "Press them back up until your arms are straight."
+  ],
+  "similarTo": "Incline Dumbbell Press",
+  "aliases": [
+   "low incline db press"
+  ]
+ },
+ {
+  "name": "Lu Raise",
+  "equipment": "dumbbell",
+  "mechanic": "isolation",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "traps"
+  ],
+  "instructions": [
+   "Stand holding light dumbbells at your sides with thumbs up.",
+   "Raise your arms out to the sides with straight elbows until they pass shoulder height.",
+   "Keep lifting in a wide arc until the dumbbells are nearly overhead.",
+   "Lower slowly along the same path."
+  ],
+  "similarTo": "Side Lateral Raise"
+ },
+ {
+  "name": "Man Maker",
+  "equipment": "dumbbell",
+  "mechanic": "compound",
+  "primary": [
+   "shoulders",
+   "quadriceps"
+  ],
+  "secondary": [
+   "chest",
+   "middle back",
+   "triceps",
+   "glutes"
+  ],
+  "instructions": [
+   "Start in a plank holding a dumbbell in each hand.",
+   "Do a push-up, then row each dumbbell once.",
+   "Jump your feet to your hands, clean the dumbbells to your shoulders and stand.",
+   "Press them overhead, then lower and repeat."
+  ],
+  "category": "cardio",
+  "similarTo": "Alternating Renegade Row",
+  "aliases": [
+   "manmaker",
+   "dumbbell man maker"
+  ]
+ },
+ {
+  "name": "Marching Glute Bridge",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "glutes"
+  ],
+  "secondary": [
+   "hamstrings",
+   "abdominals"
+  ],
+  "instructions": [
+   "Lift into a glute bridge.",
+   "Keeping your hips level, lift one knee toward your chest.",
+   "Lower it and alternate legs."
+  ],
+  "similarTo": "Single Leg Glute Bridge",
+  "aliases": [
+   "glute bridge march"
+  ]
+ },
+ {
+  "name": "Medicine Ball Push-Up",
+  "equipment": "medicine ball",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders",
+   "abdominals"
+  ],
+  "instructions": [
+   "Get into a push-up position with one hand on a medicine ball and the other on the floor.",
+   "Lower your chest toward the floor and push back up.",
+   "Switch the ball to the other hand between reps or sets."
+  ],
+  "similarTo": "Pushups",
+  "aliases": [
+   "one hand medicine ball push up"
+  ]
+ },
+ {
+  "name": "Medicine Ball Sit-Up Throw",
+  "equipment": "medicine ball",
+  "mechanic": "compound",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "shoulders",
+   "chest"
+  ],
+  "instructions": [
+   "Lie on your back facing a partner or wall, holding a medicine ball at your chest.",
+   "Sit up explosively and throw the ball forward.",
+   "Catch it and lower back down under control."
+  ],
+  "category": "plyometrics",
+  "similarTo": "Press Sit-Up"
+ },
+ {
+  "name": "Muscle Clean",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "shoulders",
+   "traps"
+  ],
+  "secondary": [
+   "quadriceps",
+   "glutes",
+   "hamstrings",
+   "lower back"
+  ],
+  "instructions": [
+   "Start with a barbell on the floor and grab it with a clean grip.",
+   "Lift it as in a clean, keeping it close to your body.",
+   "Without dipping your knees, pull the bar up and turn your elbows forward to catch it on your shoulders.",
+   "Lower it back down and repeat."
+  ],
+  "category": "olympic weightlifting",
+  "similarTo": "Power Clean"
+ },
+ {
+  "name": "Neck Harness Extension",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "neck"
+  ],
+  "secondary": [
+   "traps"
+  ],
+  "instructions": [
+   "Put on a neck harness with weight hanging and stand bent forward with hands on your knees.",
+   "Let your head drop forward slowly.",
+   "Lift your head back up until your face points forward."
+  ],
+  "similarTo": "Seated Head Harness Neck Resistance"
+ },
+ {
+  "name": "Neck Rolls",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "neck"
+  ],
+  "secondary": [
+   "traps"
+  ],
+  "instructions": [
+   "Sit or stand tall with your shoulders relaxed.",
+   "Drop your chin to your chest and slowly roll your head to one side, then the other.",
+   "Keep the movement slow and gentle, then switch directions."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "neck circles"
+  ]
+ },
+ {
+  "name": "Negative Push-Up",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders"
+  ],
+  "instructions": [
+   "Start at the top of a push-up with your arms straight and body in a line.",
+   "Lower yourself as slowly as you can, taking three to five seconds to reach the floor.",
+   "Drop to your knees to get back up and repeat."
+  ],
+  "similarTo": "Pushups",
+  "aliases": [
+   "eccentric push up",
+   "slow negative push up"
+  ]
+ },
+ {
+  "name": "One-Arm Kettlebell Overhead Press",
+  "equipment": "kettlebells",
+  "mechanic": "compound",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "triceps",
+   "abdominals"
+  ],
+  "instructions": [
+   "Clean a kettlebell to the rack position at your shoulder.",
+   "Brace your core and press the bell straight overhead until your arm locks out.",
+   "Lower it back to the rack and repeat, then switch sides."
+  ],
+  "similarTo": "Two-Arm Kettlebell Military Press",
+  "aliases": [
+   "single arm kettlebell press",
+   "kettlebell overhead press"
+  ]
+ },
+ {
+  "name": "Open Book Stretch",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "middle back"
+  ],
+  "secondary": [
+   "chest",
+   "shoulders"
+  ],
+  "instructions": [
+   "Lie on your side with knees bent and arms straight out in front, palms together.",
+   "Keeping your knees together, open your top arm across your body toward the floor behind you.",
+   "Follow your hand with your eyes, pause, then return and repeat."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "open books",
+   "side lying thoracic rotation"
+  ]
+ },
+ {
+  "name": "Paused Bench Press",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders"
+  ],
+  "instructions": [
+   "Lie on a flat bench and unrack the bar with a grip slightly wider than shoulder width.",
+   "Lower the bar to your mid-chest and hold it there motionless for one to two seconds.",
+   "Press the bar back up to full arm extension without bouncing."
+  ],
+  "similarTo": "Barbell Bench Press - Medium Grip",
+  "aliases": [
+   "pause bench press",
+   "paused bench"
+  ]
+ },
+ {
+  "name": "Paused Deadlift",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "lower back"
+  ],
+  "secondary": [
+   "glutes",
+   "hamstrings",
+   "quadriceps",
+   "traps"
+  ],
+  "instructions": [
+   "Set up for a normal deadlift and lift the bar just off the floor.",
+   "Pause for one to two seconds just below the knees.",
+   "Finish the lift, then lower and reset for the next rep."
+  ],
+  "category": "powerlifting",
+  "similarTo": "Barbell Deadlift",
+  "aliases": [
+   "pause deadlift"
+  ]
+ },
+ {
+  "name": "Pistol Squat",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "glutes"
+  ],
+  "secondary": [
+   "hamstrings",
+   "calves",
+   "abdominals"
+  ],
+  "instructions": [
+   "Stand on one leg with the other leg held straight out in front.",
+   "Squat down on the standing leg as low as you can, reaching your arms forward.",
+   "Drive back up to standing without letting the other foot touch."
+  ],
+  "similarTo": "Kettlebell Pistol Squat",
+  "aliases": [
+   "single leg squat",
+   "pistols"
+  ]
+ },
+ {
+  "name": "Plank Hip Dips",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "shoulders"
+  ],
+  "instructions": [
+   "Start in a forearm plank.",
+   "Rotate your hips to dip one side toward the floor, then the other.",
+   "Keep your shoulders still and move under control."
+  ],
+  "similarTo": "Plank",
+  "aliases": [
+   "plank twist"
+  ]
+ },
+ {
+  "name": "Plank Jacks",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "shoulders",
+   "adductors",
+   "abductors"
+  ],
+  "instructions": [
+   "Start in a high plank with your feet together.",
+   "Jump your feet out wide and back in, like a jumping jack.",
+   "Keep your hips level and your hands under your shoulders."
+  ],
+  "category": "cardio",
+  "similarTo": "Plank"
+ },
+ {
+  "name": "Plank Up-Down",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "triceps"
+  ],
+  "secondary": [
+   "abdominals",
+   "shoulders",
+   "chest"
+  ],
+  "instructions": [
+   "Start in a forearm plank.",
+   "Press up onto one hand and then the other until you are in a high plank.",
+   "Lower back down one forearm at a time and alternate the leading arm."
+  ],
+  "aliases": [
+   "plank walk up",
+   "up down plank"
+  ]
+ },
+ {
+  "name": "Plate Halo",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "abdominals",
+   "triceps"
+  ],
+  "instructions": [
+   "Hold a weight plate by its sides in front of your chest.",
+   "Circle it around your head, keeping it close and your core tight.",
+   "Alternate directions each rep."
+  ]
+ },
+ {
+  "name": "Plate Pinch Carry",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "forearms"
+  ],
+  "secondary": [
+   "traps"
+  ],
+  "instructions": [
+   "Pinch a weight plate in each hand with your fingers and thumb.",
+   "Walk for the set distance or time without letting the plates slip.",
+   "Set the plates down carefully."
+  ],
+  "similarTo": "Plate Pinch"
+ },
+ {
+  "name": "Pogo Jumps",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "calves"
+  ],
+  "secondary": [
+   "quadriceps"
+  ],
+  "instructions": [
+   "Stand tall with your feet hip-width apart.",
+   "Bounce up and down quickly using mostly your ankles, with knees almost straight.",
+   "Spend as little time on the ground as possible."
+  ],
+  "category": "plyometrics",
+  "aliases": [
+   "pogo hops",
+   "ankle hops"
+  ]
+ },
+ {
+  "name": "Prone Y-T-W Raise",
+  "equipment": "dumbbell",
+  "mechanic": "isolation",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "middle back",
+   "traps"
+  ],
+  "instructions": [
+   "Lie face down on an incline bench holding light dumbbells, arms hanging.",
+   "Raise your arms into a Y shape, lower, then raise them straight out to the sides in a T.",
+   "Finish by pulling your elbows back and squeezing into a W shape.",
+   "Move slowly and keep your chest on the pad."
+  ],
+  "similarTo": "Lying Rear Delt Raise",
+  "aliases": [
+   "ytw raise",
+   "y t w"
+  ]
+ },
+ {
+  "name": "Pseudo Planche Push-Up",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "shoulders",
+   "triceps",
+   "abdominals"
+  ],
+  "instructions": [
+   "Set up in a push-up with your hands turned out and placed by your waist, leaning your shoulders forward past your hands.",
+   "Keep the forward lean and lower your chest toward the floor.",
+   "Push back up while holding the lean throughout."
+  ],
+  "similarTo": "Pushups",
+  "aliases": [
+   "planche push up"
+  ]
+ },
+ {
+  "name": "RKC Plank",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "glutes",
+   "shoulders"
+  ],
+  "instructions": [
+   "Get into a forearm plank with elbows under your eyes.",
+   "Squeeze your glutes, quads and fists hard and pull your elbows toward your toes.",
+   "Hold the maximal tension for short sets of 10 to 20 seconds."
+  ],
+  "similarTo": "Plank"
+ },
+ {
+  "name": "Reverse Hack Squat",
+  "equipment": "machine",
+  "mechanic": "compound",
+  "primary": [
+   "glutes",
+   "hamstrings"
+  ],
+  "secondary": [
+   "quadriceps"
+  ],
+  "instructions": [
+   "Stand facing the pad of a hack squat machine with your chest against it.",
+   "Release the safeties and sit your hips back as you squat down.",
+   "Push through your heels to return to the top."
+  ],
+  "similarTo": "Hack Squat",
+  "aliases": [
+   "reverse hack",
+   "hack squat facing in"
+  ]
+ },
+ {
+  "name": "Reverse Plank",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "glutes",
+   "hamstrings",
+   "shoulders"
+  ],
+  "instructions": [
+   "Sit with legs straight and hands on the floor behind your hips, fingers pointing toward your feet.",
+   "Lift your hips until your body forms a straight line from shoulders to heels.",
+   "Hold for time without letting your hips sag."
+  ]
+ },
+ {
+  "name": "Reverse-Grip Dumbbell Bench Press",
+  "equipment": "dumbbell",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders"
+  ],
+  "instructions": [
+   "Lie on a flat bench holding dumbbells over your chest with your palms facing your head.",
+   "Lower the dumbbells to the sides of your chest, keeping your elbows tucked.",
+   "Press the dumbbells back up until your arms are straight."
+  ],
+  "similarTo": "Dumbbell Bench Press",
+  "aliases": [
+   "underhand dumbbell bench press"
+  ]
+ },
+ {
+  "name": "Ring Push-Up",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders",
+   "abdominals"
+  ],
+  "instructions": [
+   "Set gymnastic rings a few inches off the floor and grip one in each hand in a push-up position.",
+   "Lower your chest between the rings while keeping them steady and close to your body.",
+   "Push back up and turn your palms slightly out at the top."
+  ],
+  "similarTo": "Suspended Push-Up",
+  "aliases": [
+   "gymnastic ring push up"
+  ]
+ },
+ {
+  "name": "Ring Support Hold",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "triceps",
+   "shoulders"
+  ],
+  "secondary": [
+   "chest",
+   "abdominals"
+  ],
+  "instructions": [
+   "Grab a pair of gymnastic rings set just above hip height.",
+   "Jump up so your arms are straight and the rings are at your sides.",
+   "Turn the rings slightly out, keep them steady and hold."
+  ],
+  "aliases": [
+   "ring support",
+   "ring hold"
+  ]
+ },
+ {
+  "name": "Rock Climbing",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "lats",
+   "forearms"
+  ],
+  "secondary": [
+   "biceps",
+   "middle back",
+   "abdominals",
+   "quadriceps"
+  ],
+  "instructions": [
+   "Put on climbing shoes and, for roped climbs, a harness with a belayer.",
+   "Climb the route using your legs to push and your arms mainly to hold on.",
+   "Keep your hips close to the wall and rest between climbs."
+  ],
+  "category": "cardio",
+  "aliases": [
+   "bouldering",
+   "indoor climbing",
+   "climbing wall"
+  ]
+ },
+ {
+  "name": "Roman Chair Side Bend",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "lower back"
+  ],
+  "instructions": [
+   "Lie sideways on a 45-degree back extension bench with your hip on the pad.",
+   "Lower your upper body toward the floor, bending at the side.",
+   "Lift back up past straight using your obliques, then switch sides."
+  ],
+  "aliases": [
+   "45 degree side bend",
+   "hyperextension side bend"
+  ]
+ },
+ {
+  "name": "Rotational Medicine Ball Throw",
+  "equipment": "medicine ball",
+  "mechanic": "compound",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "shoulders",
+   "glutes",
+   "chest"
+  ],
+  "instructions": [
+   "Stand side-on to a wall about a meter away, holding a medicine ball at your hip.",
+   "Turn your hips away from the wall to load up.",
+   "Rotate hard through your hips and torso and throw the ball into the wall.",
+   "Catch it and repeat, then switch sides."
+  ],
+  "category": "plyometrics",
+  "similarTo": "Medicine Ball Scoop Throw",
+  "aliases": [
+   "med ball rotational throw",
+   "medicine ball side toss",
+   "med ball scoop toss"
+  ]
+ },
+ {
+  "name": "Rucking",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "glutes"
+  ],
+  "secondary": [
+   "calves",
+   "traps",
+   "lower back",
+   "abdominals"
+  ],
+  "instructions": [
+   "Load a backpack with a weight plate or ruck plate and tighten the straps.",
+   "Walk at a brisk pace with good posture.",
+   "Build up distance and weight gradually."
+  ],
+  "category": "cardio",
+  "aliases": [
+   "weighted vest walk",
+   "ruck march",
+   "weighted walk"
+  ]
+ },
+ {
+  "name": "Safety Squat Bar Good Morning",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "hamstrings"
+  ],
+  "secondary": [
+   "glutes",
+   "lower back"
+  ],
+  "instructions": [
+   "Set the safety squat bar on your upper back and hold the handles.",
+   "Push your hips back and hinge forward with a flat back.",
+   "Return to standing by driving your hips forward."
+  ],
+  "similarTo": "Good Morning",
+  "aliases": [
+   "ssb good morning"
+  ]
+ },
+ {
+  "name": "Safety Squat Bar Squat",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "glutes",
+   "hamstrings",
+   "lower back",
+   "traps"
+  ],
+  "instructions": [
+   "Set the safety squat bar on your upper back and hold the handles in front of you.",
+   "Brace your core and squat down until your thighs are at least parallel.",
+   "Drive through your whole foot to stand back up, keeping your chest tall."
+  ],
+  "similarTo": "Barbell Squat",
+  "aliases": [
+   "ssb squat",
+   "safety bar squat"
+  ]
+ },
+ {
+  "name": "Sandbag Bear Hug Carry",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "abdominals",
+   "middle back"
+  ],
+  "secondary": [
+   "biceps",
+   "quadriceps",
+   "glutes",
+   "lower back"
+  ],
+  "instructions": [
+   "Pick a heavy sandbag off the floor and hug it tight against your chest.",
+   "Stand tall with your elbows squeezed in.",
+   "Walk forward with short, quick steps for the set distance."
+  ],
+  "category": "strongman",
+  "aliases": [
+   "sandbag carry",
+   "bear hug carry"
+  ]
+ },
+ {
+  "name": "Sandbag Over the Shoulder",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "glutes",
+   "lower back"
+  ],
+  "secondary": [
+   "hamstrings",
+   "quadriceps",
+   "traps",
+   "biceps"
+  ],
+  "instructions": [
+   "Stand over a sandbag and squat down to wrap your arms around it.",
+   "Lap the bag onto your thighs, then explode up with your hips.",
+   "Roll the bag over one shoulder so it drops behind you.",
+   "Turn around and repeat, alternating shoulders."
+  ],
+  "category": "strongman",
+  "similarTo": "Sandbag Load",
+  "aliases": [
+   "sandbag to shoulder",
+   "sandbag shouldering"
+  ]
+ },
+ {
+  "name": "Scapular Push-Up",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "chest"
+  ],
+  "instructions": [
+   "Get into a push-up position with straight arms.",
+   "Without bending your elbows, let your chest sink so your shoulder blades pinch together.",
+   "Push the floor away to spread your shoulder blades apart, then repeat."
+  ],
+  "similarTo": "Plank",
+  "aliases": [
+   "scap push-up",
+   "push-up plus"
+  ]
+ },
+ {
+  "name": "Scorpion Stretch",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "lower back",
+   "quadriceps"
+  ],
+  "secondary": [
+   "chest",
+   "glutes"
+  ],
+  "instructions": [
+   "Lie face down with your arms out to the sides.",
+   "Lift one leg and reach it across your body toward the opposite hand.",
+   "Return and repeat on the other side."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "scorpions"
+  ]
+ },
+ {
+  "name": "Seated Behind the Neck Press",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "triceps",
+   "traps"
+  ],
+  "instructions": [
+   "Sit on an upright bench with a barbell resting behind your neck, hands wider than shoulders.",
+   "Press the bar straight overhead until your arms lock out.",
+   "Lower it slowly back to the base of your neck."
+  ],
+  "similarTo": "Standing Barbell Press Behind Neck",
+  "aliases": [
+   "behind the neck press"
+  ]
+ },
+ {
+  "name": "Seated Dumbbell Shrug",
+  "equipment": "dumbbell",
+  "mechanic": "isolation",
+  "primary": [
+   "traps"
+  ],
+  "secondary": [
+   "forearms"
+  ],
+  "instructions": [
+   "Sit on the end of a bench holding a dumbbell in each hand at your sides.",
+   "Sit tall and shrug your shoulders up as high as possible.",
+   "Pause and lower slowly."
+  ],
+  "similarTo": "Dumbbell Shrug"
+ },
+ {
+  "name": "Seated Hammer Curl",
+  "equipment": "dumbbell",
+  "mechanic": "isolation",
+  "primary": [
+   "biceps"
+  ],
+  "secondary": [
+   "forearms"
+  ],
+  "instructions": [
+   "Sit on a bench with a dumbbell in each hand and palms facing in.",
+   "Curl the dumbbells up while keeping your back against the bench or upright.",
+   "Lower slowly."
+  ],
+  "similarTo": "Hammer Curls"
+ },
+ {
+  "name": "Seated Leg Curl (Plate-Loaded)",
+  "equipment": "machine",
+  "mechanic": "isolation",
+  "primary": [
+   "hamstrings"
+  ],
+  "secondary": [
+   "calves"
+  ],
+  "instructions": [
+   "Sit in the plate-loaded leg curl and lock the thigh pad down.",
+   "Curl the lower pad under the seat.",
+   "Return slowly."
+  ],
+  "similarTo": "Seated Leg Curl"
+ },
+ {
+  "name": "Shadow Boxing",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "abdominals",
+   "chest",
+   "triceps",
+   "calves"
+  ],
+  "instructions": [
+   "Stand in a boxing stance with your hands up by your chin.",
+   "Throw punch combinations at the air while moving on your feet.",
+   "Keep your hands back up after every punch and stay light on your toes."
+  ],
+  "category": "cardio",
+  "aliases": [
+   "shadowboxing"
+  ]
+ },
+ {
+  "name": "Shoulder Tap Push-Up",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders",
+   "abdominals"
+  ],
+  "instructions": [
+   "Do a standard push-up.",
+   "At the top, lift one hand and tap the opposite shoulder while keeping your hips still.",
+   "Place the hand back, do another push-up and tap with the other hand."
+  ],
+  "similarTo": "Pushups",
+  "aliases": [
+   "push up with shoulder tap"
+  ]
+ },
+ {
+  "name": "Shrimp Squat",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "glutes"
+  ],
+  "instructions": [
+   "Stand on one leg and hold the other foot behind you with the same-side hand.",
+   "Lower until your back knee touches the floor.",
+   "Stand back up on the working leg."
+  ]
+ },
+ {
+  "name": "Shuttle Run",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "hamstrings"
+  ],
+  "secondary": [
+   "calves",
+   "glutes",
+   "adductors"
+  ],
+  "instructions": [
+   "Set two markers about 10 to 20 meters apart.",
+   "Sprint to the far marker, touch the ground and turn.",
+   "Sprint back and keep going for the set number of lengths."
+  ],
+  "category": "cardio",
+  "similarTo": "Wind Sprints",
+  "aliases": [
+   "suicides",
+   "shuttle sprints",
+   "line drills"
+  ]
+ },
+ {
+  "name": "Side Plank Hip Dips",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "glutes"
+  ],
+  "instructions": [
+   "Set up in a side plank on your forearm.",
+   "Lower your hips toward the floor without touching.",
+   "Lift them back up above level, finish your reps, then switch sides."
+  ],
+  "similarTo": "Side Bridge"
+ },
+ {
+  "name": "Side Plank Reach-Through",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "shoulders"
+  ],
+  "instructions": [
+   "Start in a side plank with your top arm reaching to the ceiling.",
+   "Sweep the top arm under your body, rotating your chest toward the floor.",
+   "Rotate back open and repeat, then switch sides."
+  ],
+  "similarTo": "Side Bridge",
+  "aliases": [
+   "side plank thread the needle"
+  ]
+ },
+ {
+  "name": "Side-Lying Dumbbell External Rotation",
+  "equipment": "dumbbell",
+  "mechanic": "isolation",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Lie on your side with a light dumbbell in your top hand and your elbow tucked against your ribs, bent 90 degrees.",
+   "Rotate your forearm up toward the ceiling while keeping your elbow pinned.",
+   "Lower slowly back toward your stomach."
+  ],
+  "similarTo": "External Rotation"
+ },
+ {
+  "name": "Side-Lying Hip Abduction",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abductors"
+  ],
+  "secondary": [
+   "glutes"
+  ],
+  "instructions": [
+   "Lie on your side with legs straight.",
+   "Lift your top leg toward the ceiling.",
+   "Lower slowly."
+  ],
+  "similarTo": "Side Leg Raises",
+  "aliases": [
+   "side lying leg raise"
+  ]
+ },
+ {
+  "name": "Side-Lying Hip Adduction",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "adductors"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Lie on your side and cross your top leg in front.",
+   "Lift your bottom leg off the floor.",
+   "Lower slowly."
+  ]
+ },
+ {
+  "name": "Side-Lying Plate Neck Raise",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "neck"
+  ],
+  "secondary": [
+   "traps"
+  ],
+  "instructions": [
+   "Lie on your side on a bench with your head off the end, holding a light plate on a towel on the side of your head.",
+   "Lift your head up toward your shoulder.",
+   "Lower slowly, then switch sides."
+  ],
+  "similarTo": "Lying Face Up Plate Neck Resistance"
+ },
+ {
+  "name": "Single-Arm Chest Press (Plate-Loaded)",
+  "equipment": "machine",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders"
+  ],
+  "instructions": [
+   "Sit in an iso-lateral plate-loaded chest press and grip one handle at chest height.",
+   "Press the handle forward with one arm until it is straight, keeping your torso square.",
+   "Return slowly and finish all reps before switching arms."
+  ],
+  "similarTo": "Leverage Chest Press",
+  "aliases": [
+   "one arm hammer strength chest press",
+   "iso lateral chest press"
+  ]
+ },
+ {
+  "name": "Single-Arm Dumbbell Floor Press",
+  "equipment": "dumbbell",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders",
+   "abdominals"
+  ],
+  "instructions": [
+   "Lie on the floor with your knees bent, holding one dumbbell with your upper arm resting on the floor.",
+   "Press the dumbbell straight up until your arm is fully extended.",
+   "Lower it until your elbow touches the floor and finish all reps before switching sides."
+  ],
+  "similarTo": "Dumbbell Floor Press",
+  "aliases": [
+   "one arm dumbbell floor press"
+  ]
+ },
+ {
+  "name": "Single-Arm Incline Dumbbell Press",
+  "equipment": "dumbbell",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "shoulders",
+   "triceps",
+   "abdominals"
+  ],
+  "instructions": [
+   "Lie on an incline bench holding one dumbbell at shoulder level.",
+   "Brace your core to stop your body rotating and press the dumbbell straight up.",
+   "Lower it back to your shoulder and finish all reps before switching arms."
+  ],
+  "similarTo": "Incline Dumbbell Press",
+  "aliases": [
+   "one arm incline dumbbell press"
+  ]
+ },
+ {
+  "name": "Single-Arm Pec Deck Fly",
+  "equipment": "machine",
+  "mechanic": "isolation",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "shoulders"
+  ],
+  "instructions": [
+   "Sit in the pec deck with your back against the pad and hold one handle with a slightly bent arm.",
+   "Bring the handle across in front of your chest by squeezing your pec.",
+   "Return slowly to the start and finish all reps before switching arms."
+  ],
+  "similarTo": "Butterfly",
+  "aliases": [
+   "one arm pec deck",
+   "single arm machine fly"
+  ]
+ },
+ {
+  "name": "Single-Arm Reverse-Grip Cable Pushdown",
+  "equipment": "cable",
+  "mechanic": "isolation",
+  "primary": [
+   "triceps"
+  ],
+  "secondary": [
+   "forearms"
+  ],
+  "instructions": [
+   "Attach a D-handle to a high pulley and grip it with your palm facing up.",
+   "Keep your elbow pinned to your side and push the handle down until your arm is straight.",
+   "Let it rise slowly, then switch arms after your reps."
+  ],
+  "similarTo": "Reverse Grip Triceps Pushdown",
+  "aliases": [
+   "one arm underhand pushdown"
+  ]
+ },
+ {
+  "name": "Single-Arm Straight-Arm Pulldown",
+  "equipment": "cable",
+  "mechanic": "isolation",
+  "primary": [
+   "lats"
+  ],
+  "secondary": [
+   "triceps"
+  ],
+  "instructions": [
+   "Attach a single handle to a high cable and stand facing it.",
+   "With your arm straight, sweep the handle down to your thigh.",
+   "Return under control and finish all reps before switching arms."
+  ],
+  "similarTo": "Straight-Arm Pulldown"
+ },
+ {
+  "name": "Single-Leg Box Jump",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "glutes"
+  ],
+  "secondary": [
+   "calves",
+   "hamstrings"
+  ],
+  "instructions": [
+   "Stand on one leg facing a low box.",
+   "Swing your arms and jump off that leg onto the box.",
+   "Land softly on the same leg or both feet, then step down and repeat."
+  ],
+  "category": "plyometrics",
+  "similarTo": "Front Box Jump"
+ },
+ {
+  "name": "Single-Leg Calf Raise",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "calves"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Stand on one foot on the edge of a step, holding something for balance.",
+   "Lower your heel below the step.",
+   "Rise up as high as you can."
+  ],
+  "similarTo": "Standing Dumbbell Calf Raise"
+ },
+ {
+  "name": "Single-Leg Dumbbell Calf Raise",
+  "equipment": "dumbbell",
+  "mechanic": "isolation",
+  "primary": [
+   "calves"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Hold a dumbbell in one hand and stand on one foot on a step.",
+   "Lower your heel below the step.",
+   "Rise as high as you can."
+  ],
+  "similarTo": "Standing Dumbbell Calf Raise"
+ },
+ {
+  "name": "Single-Leg Hip Thrust",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "glutes"
+  ],
+  "secondary": [
+   "hamstrings"
+  ],
+  "instructions": [
+   "Sit with your upper back against a bench and one foot planted.",
+   "Lift the other foot off the floor.",
+   "Drive through the planted heel to raise your hips, then lower."
+  ],
+  "similarTo": "Single Leg Glute Bridge",
+  "aliases": [
+   "single leg hip thrust"
+  ]
+ },
+ {
+  "name": "Sissy Squat",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "abdominals"
+  ],
+  "instructions": [
+   "Hold onto something for balance and rise onto your toes.",
+   "Lean back and let your knees travel forward as you lower down.",
+   "Squeeze your quads to return to the top."
+  ],
+  "similarTo": "Weighted Sissy Squat"
+ },
+ {
+  "name": "Six-Way Dumbbell Raise",
+  "equipment": "dumbbell",
+  "mechanic": "isolation",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Hold light dumbbells at your sides.",
+   "Raise them out to the sides, bring them together in front, then raise them overhead.",
+   "Reverse the path back down to your sides."
+  ],
+  "similarTo": "Side Laterals to Front Raise",
+  "aliases": [
+   "6 way raise",
+   "six way lateral raise"
+  ]
+ },
+ {
+  "name": "Skater Squat",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "glutes"
+  ],
+  "instructions": [
+   "Stand on one leg with the other knee bent and foot behind you.",
+   "Lower until your back knee lightly touches the floor or a pad.",
+   "Drive up through your standing leg."
+  ],
+  "similarTo": "Single-Leg High Box Squat"
+ },
+ {
+  "name": "Skin the Cat",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "lats",
+   "shoulders"
+  ],
+  "secondary": [
+   "abdominals",
+   "biceps",
+   "chest"
+  ],
+  "instructions": [
+   "Hang from rings or a bar with straight arms.",
+   "Tuck your knees and roll backward through your arms until you hang upside down behind you.",
+   "Pause, then roll back the same way to the starting hang."
+  ]
+ },
+ {
+  "name": "Sled Rope Pull",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "lats",
+   "middle back"
+  ],
+  "secondary": [
+   "biceps",
+   "forearms",
+   "abdominals",
+   "hamstrings"
+  ],
+  "instructions": [
+   "Attach a rope to a weighted sled and walk out to the end of the rope.",
+   "Sit back in an athletic stance and grab the rope with both hands.",
+   "Pull the rope hand over hand until the sled reaches you.",
+   "Walk it back out and repeat."
+  ],
+  "category": "strongman",
+  "aliases": [
+   "hand over hand sled pull",
+   "sled rope row"
+  ]
+ },
+ {
+  "name": "Sleeper Stretch",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Lie on one side with your bottom arm out in front at shoulder height and elbow bent to 90 degrees.",
+   "Use your top hand to gently push your bottom forearm toward the floor.",
+   "Hold when you feel a stretch in the back of your shoulder, then switch sides."
+  ],
+  "category": "stretching"
+ },
+ {
+  "name": "Smith Machine Behind the Neck Press",
+  "equipment": "machine",
+  "mechanic": "compound",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "triceps",
+   "traps"
+  ],
+  "instructions": [
+   "Sit under a Smith machine with the bar behind your head at ear level.",
+   "Unrack and lower the bar to the top of your neck under control.",
+   "Press straight up until your arms are extended, then lower again."
+  ],
+  "similarTo": "Standing Barbell Press Behind Neck"
+ },
+ {
+  "name": "Smith Machine Box Squat",
+  "equipment": "machine",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "glutes"
+  ],
+  "secondary": [
+   "hamstrings"
+  ],
+  "instructions": [
+   "Place a box or bench behind you under the Smith bar.",
+   "Unrack and sit back until you lightly touch the box.",
+   "Drive up from the box without rocking."
+  ],
+  "similarTo": "Smith Machine Squat"
+ },
+ {
+  "name": "Smith Machine Bulgarian Split Squat",
+  "equipment": "machine",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "glutes"
+  ],
+  "secondary": [
+   "hamstrings"
+  ],
+  "instructions": [
+   "Set a bench behind the Smith machine and rest your rear foot on it.",
+   "Unrack the bar and lower until your front thigh is about parallel.",
+   "Drive up through your front foot."
+  ],
+  "similarTo": "Smith Single-Leg Split Squat"
+ },
+ {
+  "name": "Smith Machine Deadlift",
+  "equipment": "machine",
+  "mechanic": "compound",
+  "primary": [
+   "lower back"
+  ],
+  "secondary": [
+   "glutes",
+   "hamstrings",
+   "quadriceps"
+  ],
+  "instructions": [
+   "Set the Smith bar low and stand with the bar over your mid-foot.",
+   "Hinge down and grip the bar just outside your legs.",
+   "Stand up tall, then lower the bar back down with a flat back."
+  ]
+ },
+ {
+  "name": "Smith Machine Front Squat",
+  "equipment": "machine",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "glutes",
+   "abdominals"
+  ],
+  "instructions": [
+   "Set the Smith bar at shoulder height and rest it across the front of your shoulders.",
+   "Unrack the bar and squat down with your elbows high.",
+   "Drive up to standing and re-rack when done."
+  ],
+  "similarTo": "Smith Machine Squat"
+ },
+ {
+  "name": "Smith Machine Good Morning",
+  "equipment": "machine",
+  "mechanic": "compound",
+  "primary": [
+   "hamstrings"
+  ],
+  "secondary": [
+   "glutes",
+   "lower back"
+  ],
+  "instructions": [
+   "Set the Smith bar across your upper back and unrack it.",
+   "With slightly bent knees, hinge forward until your torso is near parallel.",
+   "Squeeze your glutes and hamstrings to return to upright."
+  ],
+  "similarTo": "Good Morning"
+ },
+ {
+  "name": "Smith Machine Inverted Row",
+  "equipment": "machine",
+  "mechanic": "compound",
+  "primary": [
+   "middle back"
+  ],
+  "secondary": [
+   "lats",
+   "biceps"
+  ],
+  "instructions": [
+   "Set the Smith bar at about hip height and lie underneath it.",
+   "Grab the bar slightly wider than shoulders and keep your body straight from heels to head.",
+   "Pull your chest to the bar, then lower until your arms are straight."
+  ],
+  "similarTo": "Inverted Row"
+ },
+ {
+  "name": "Smith Machine JM Press",
+  "equipment": "machine",
+  "mechanic": "compound",
+  "primary": [
+   "triceps"
+  ],
+  "secondary": [
+   "chest"
+  ],
+  "instructions": [
+   "Lie on a flat bench under a Smith machine bar and grip it with a close grip.",
+   "Unhook the bar and lower it toward your chin by bending your elbows and letting them move slightly forward.",
+   "Press the bar back up to lockout."
+  ],
+  "similarTo": "JM Press",
+  "aliases": [
+   "smith jm press"
+  ]
+ },
+ {
+  "name": "Smith Machine Lunge",
+  "equipment": "machine",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "glutes"
+  ],
+  "secondary": [
+   "hamstrings"
+  ],
+  "instructions": [
+   "Set the Smith bar on your upper back and unrack it in a staggered stance.",
+   "Lower until your back knee nearly touches the floor.",
+   "Drive through your front foot to rise."
+  ],
+  "similarTo": "Smith Single-Leg Split Squat"
+ },
+ {
+  "name": "Smith Machine Seated Calf Raise",
+  "equipment": "machine",
+  "mechanic": "isolation",
+  "primary": [
+   "calves"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Sit on a bench under the Smith bar with the balls of your feet on a plate and the padded bar on your knees.",
+   "Lift the bar by raising your heels.",
+   "Lower slowly for a full stretch."
+  ],
+  "similarTo": "Barbell Seated Calf Raise"
+ },
+ {
+  "name": "Smith Machine Shrug",
+  "equipment": "machine",
+  "mechanic": "isolation",
+  "primary": [
+   "traps"
+  ],
+  "secondary": [
+   "forearms"
+  ],
+  "instructions": [
+   "Set the Smith bar at about thigh height and grip it just outside your legs.",
+   "Unrack the bar and stand tall with arms straight.",
+   "Shrug your shoulders up toward your ears, pause, and lower slowly."
+  ],
+  "similarTo": "Smith Machine Behind the Back Shrug"
+ },
+ {
+  "name": "Smith Machine Step-Up",
+  "equipment": "machine",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "glutes"
+  ],
+  "secondary": [
+   "hamstrings"
+  ],
+  "instructions": [
+   "Place a box under one side of the Smith machine and set the bar on your upper back.",
+   "Step up onto the box with one foot and drive to standing.",
+   "Lower back down with control."
+  ],
+  "similarTo": "Barbell Step Ups"
+ },
+ {
+  "name": "Smith Machine Sumo Squat",
+  "equipment": "machine",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "adductors"
+  ],
+  "secondary": [
+   "glutes"
+  ],
+  "instructions": [
+   "Set up under the Smith bar with a wide stance and toes turned out.",
+   "Unrack and squat down, pushing your knees out.",
+   "Drive through your heels to return to the top."
+  ],
+  "similarTo": "Smith Machine Squat"
+ },
+ {
+  "name": "Soccer",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "hamstrings"
+  ],
+  "secondary": [
+   "calves",
+   "glutes",
+   "adductors"
+  ],
+  "instructions": [
+   "Warm up with light jogging and passing.",
+   "Play a game or run drills like dribbling, passing and short sprints.",
+   "Rest and hydrate between halves or drills."
+  ],
+  "category": "cardio"
+ },
+ {
+  "name": "Spiderman Push-Up",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders",
+   "abdominals"
+  ],
+  "instructions": [
+   "Start in a standard push-up position.",
+   "As you lower your chest, bring one knee out to the side toward your elbow.",
+   "Push back up while returning the leg, then alternate sides."
+  ],
+  "similarTo": "Pushups",
+  "aliases": [
+   "spider man push up"
+  ]
+ },
+ {
+  "name": "Spoto Press",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders"
+  ],
+  "instructions": [
+   "Set up as for a normal bench press and unrack the bar.",
+   "Lower the bar under control and stop it about an inch above your chest.",
+   "Hold briefly without touching your chest, then press back up."
+  ],
+  "similarTo": "Barbell Bench Press - Medium Grip"
+ },
+ {
+  "name": "Sprawl",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "abdominals",
+   "chest",
+   "shoulders"
+  ],
+  "instructions": [
+   "Stand in an athletic stance.",
+   "Drop your hands to the floor and kick your legs back, landing with your hips low to the ground.",
+   "Jump your feet back in and pop back up quickly."
+  ],
+  "category": "cardio",
+  "aliases": [
+   "sprawls"
+  ]
+ },
+ {
+  "name": "Squat Thrust",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "shoulders",
+   "abdominals",
+   "chest"
+  ],
+  "instructions": [
+   "Stand tall, then squat down and put your hands on the floor.",
+   "Jump your feet back into a plank.",
+   "Jump your feet back up to your hands and stand up."
+  ],
+  "category": "cardio",
+  "aliases": [
+   "half burpee",
+   "no push-up burpee"
+  ]
+ },
+ {
+  "name": "Stability Ball Dumbbell Chest Press",
+  "equipment": "dumbbell",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders",
+   "glutes",
+   "abdominals"
+  ],
+  "instructions": [
+   "Rest your upper back on a stability ball with your hips raised and feet flat on the floor, holding dumbbells at chest level.",
+   "Press the dumbbells up until your arms are straight while keeping your hips level.",
+   "Lower them back to your chest under control."
+  ],
+  "similarTo": "Dumbbell Bench Press",
+  "aliases": [
+   "swiss ball dumbbell press",
+   "exercise ball chest press"
+  ]
+ },
+ {
+  "name": "Stability Ball Dumbbell Fly",
+  "equipment": "dumbbell",
+  "mechanic": "isolation",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "shoulders",
+   "abdominals"
+  ],
+  "instructions": [
+   "Rest your upper back on a stability ball with your hips up, holding dumbbells over your chest.",
+   "With a slight bend in your elbows, lower your arms out to the sides until you feel a stretch in your chest.",
+   "Bring the dumbbells back together over your chest."
+  ],
+  "similarTo": "Dumbbell Flyes",
+  "aliases": [
+   "swiss ball dumbbell fly"
+  ]
+ },
+ {
+  "name": "Stability Ball Push-Up",
+  "equipment": "exercise ball",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders",
+   "abdominals"
+  ],
+  "instructions": [
+   "Place your hands on the sides of a stability ball with your legs straight behind you.",
+   "Lower your chest to the ball while keeping it steady.",
+   "Push back up until your arms are straight."
+  ],
+  "similarTo": "Pushups",
+  "aliases": [
+   "swiss ball push up",
+   "hands on ball push up"
+  ]
+ },
+ {
+  "name": "Stability Ball Wall Squat",
+  "equipment": "exercise ball",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "glutes"
+  ],
+  "instructions": [
+   "Place a stability ball between your lower back and a wall.",
+   "Walk your feet slightly forward and squat down, letting the ball roll.",
+   "Stand back up to the start."
+  ],
+  "aliases": [
+   "ball wall squat"
+  ]
+ },
+ {
+  "name": "Staggered Push-Up",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders"
+  ],
+  "instructions": [
+   "Get in a push-up position with one hand placed forward and the other further back.",
+   "Lower your chest to the floor and push back up.",
+   "Switch your hand positions between sets."
+  ],
+  "similarTo": "Pushups",
+  "aliases": [
+   "offset push up"
+  ]
+ },
+ {
+  "name": "Stair Sprints",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "glutes"
+  ],
+  "secondary": [
+   "calves",
+   "hamstrings"
+  ],
+  "instructions": [
+   "Find a long set of stairs and warm up.",
+   "Run up the stairs quickly, one or two steps at a time.",
+   "Walk back down carefully to recover and repeat."
+  ],
+  "category": "cardio",
+  "aliases": [
+   "stair running",
+   "stadium stairs",
+   "running stairs"
+  ]
+ },
+ {
+  "name": "Standing Ab Wheel Rollout",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "lats",
+   "shoulders"
+  ],
+  "instructions": [
+   "Stand holding an ab wheel and bend to place it on the floor.",
+   "Roll it forward as far as you can while keeping your body straight.",
+   "Pull yourself back up to standing."
+  ],
+  "similarTo": "Barbell Ab Rollout"
+ },
+ {
+  "name": "Standing Cable Row",
+  "equipment": "cable",
+  "mechanic": "compound",
+  "primary": [
+   "middle back"
+  ],
+  "secondary": [
+   "lats",
+   "biceps"
+  ],
+  "instructions": [
+   "Set a cable at chest height and stand facing it, holding the handle with straight arms.",
+   "Bend your knees slightly and keep your chest tall.",
+   "Pull the handle to your stomach and slowly return."
+  ],
+  "similarTo": "Elevated Cable Rows"
+ },
+ {
+  "name": "Standing Calf Raise (Plate-Loaded)",
+  "equipment": "machine",
+  "mechanic": "isolation",
+  "primary": [
+   "calves"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Stand in the plate-loaded calf raise with pads on your shoulders.",
+   "Lower your heels below the platform.",
+   "Press up onto your toes."
+  ],
+  "similarTo": "Standing Calf Raises"
+ },
+ {
+  "name": "Standing EZ-Bar Overhead Triceps Extension",
+  "equipment": "e-z curl bar",
+  "mechanic": "isolation",
+  "primary": [
+   "triceps"
+  ],
+  "secondary": [
+   "abdominals"
+  ],
+  "instructions": [
+   "Stand holding an EZ-bar overhead with a close grip and your arms straight.",
+   "Bend your elbows to lower the bar behind your head, keeping your upper arms close to your head.",
+   "Extend your elbows to raise the bar back overhead."
+  ],
+  "similarTo": "Standing Overhead Barbell Triceps Extension",
+  "aliases": [
+   "standing ez bar french press"
+  ]
+ },
+ {
+  "name": "Standing Leg Curl (Plate-Loaded)",
+  "equipment": "machine",
+  "mechanic": "isolation",
+  "primary": [
+   "hamstrings"
+  ],
+  "secondary": [
+   "calves"
+  ],
+  "instructions": [
+   "Stand in the machine with one leg behind the pad.",
+   "Curl your heel toward your glute.",
+   "Lower slowly and switch legs."
+  ],
+  "similarTo": "Standing Leg Curl"
+ },
+ {
+  "name": "Standing Oblique Crunch",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Stand with your hands behind your head.",
+   "Lift one knee up and to the side while bending your torso to bring your elbow toward it.",
+   "Return and alternate sides."
+  ],
+  "aliases": [
+   "standing side crunch"
+  ]
+ },
+ {
+  "name": "Straight Bar Dip",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "triceps"
+  ],
+  "secondary": [
+   "chest",
+   "shoulders"
+  ],
+  "instructions": [
+   "Grip a single straight bar in front of you and press up so your arms are straight with your hips against the bar.",
+   "Lean forward slightly and bend your elbows to lower your chest toward the bar.",
+   "Press back up to lockout."
+  ],
+  "similarTo": "Parallel Bar Dip",
+  "aliases": [
+   "straight bar dips"
+  ]
+ },
+ {
+  "name": "Straight-Bar Cable Overhead Triceps Extension",
+  "equipment": "cable",
+  "mechanic": "isolation",
+  "primary": [
+   "triceps"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Attach a straight bar to a cable and face away from the machine, holding the bar behind your head with your elbows bent.",
+   "Lean forward slightly and extend your elbows until your arms are straight overhead.",
+   "Bend your elbows slowly to return."
+  ],
+  "similarTo": "Triceps Overhead Extension with Rope",
+  "aliases": [
+   "cable overhead extension with bar",
+   "bar overhead triceps extension"
+  ]
+ },
+ {
+  "name": "Sumo Deadlift High Pull",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "traps",
+   "glutes"
+  ],
+  "secondary": [
+   "shoulders",
+   "quadriceps",
+   "hamstrings",
+   "lower back"
+  ],
+  "instructions": [
+   "Take a wide stance and grab the barbell with a narrow overhand grip.",
+   "Drive up through your legs as if doing a deadlift.",
+   "As your hips extend, shrug and pull the bar up to your chin with elbows high.",
+   "Lower it back under control and repeat."
+  ],
+  "similarTo": "Kettlebell Sumo High Pull",
+  "aliases": [
+   "sdhp",
+   "sumo high pull"
+  ]
+ },
+ {
+  "name": "Supine Spinal Twist",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "lower back"
+  ],
+  "secondary": [
+   "glutes"
+  ],
+  "instructions": [
+   "Lie on your back with your arms out to the sides.",
+   "Bring one knee across your body toward the floor, keeping your shoulders down.",
+   "Hold for 20 to 30 seconds, then switch sides."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "lying spinal twist"
+  ]
+ },
+ {
+  "name": "Suspension Bicep Curl",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "biceps"
+  ],
+  "secondary": [
+   "forearms"
+  ],
+  "instructions": [
+   "Hold suspension trainer handles palms up and lean back with arms straight.",
+   "Keep your body straight and curl your hands toward your forehead.",
+   "Lower yourself back slowly."
+  ],
+  "aliases": [
+   "trx bicep curl"
+  ]
+ },
+ {
+  "name": "Tennis",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "shoulders",
+   "quadriceps"
+  ],
+  "secondary": [
+   "forearms",
+   "calves",
+   "abdominals"
+  ],
+  "instructions": [
+   "Warm up with easy rallies from the baseline.",
+   "Play sets or practice drills like serves and volleys.",
+   "Stay on the balls of your feet and recover to the middle after each shot."
+  ],
+  "category": "cardio"
+ },
+ {
+  "name": "Thread the Needle",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "middle back"
+  ],
+  "secondary": [
+   "shoulders"
+  ],
+  "instructions": [
+   "Start on your hands and knees.",
+   "Slide one arm under your body along the floor, letting your shoulder and head rest down.",
+   "Hold briefly, return, and repeat on the other side."
+  ],
+  "category": "stretching"
+ },
+ {
+  "name": "Tiger Push-Up",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "triceps"
+  ],
+  "secondary": [
+   "chest",
+   "shoulders"
+  ],
+  "instructions": [
+   "Start in a push-up position with your hands slightly ahead of your shoulders.",
+   "Lower yourself until your forearms rest flat on the floor.",
+   "Push through your palms to straighten your arms back to the push-up position."
+  ],
+  "aliases": [
+   "tiger bend push up"
+  ]
+ },
+ {
+  "name": "Towel Pull-Up",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "lats",
+   "forearms"
+  ],
+  "secondary": [
+   "biceps"
+  ],
+  "instructions": [
+   "Drape two towels over a pull-up bar and grab one in each hand.",
+   "Squeeze the towels hard and pull your chin up toward your hands.",
+   "Lower slowly to a full hang."
+  ],
+  "similarTo": "Pullups"
+ },
+ {
+  "name": "Toy Soldiers",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "hamstrings"
+  ],
+  "secondary": [
+   "glutes"
+  ],
+  "instructions": [
+   "Walk forward and kick one straight leg up in front of you.",
+   "Reach the opposite hand toward your toes.",
+   "Step down and repeat on the other side."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "frankenstein walk",
+   "walking leg kicks",
+   "straight leg kicks"
+  ]
+ },
+ {
+  "name": "Trap Bar Jump",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "glutes"
+  ],
+  "secondary": [
+   "calves"
+  ],
+  "instructions": [
+   "Stand inside a lightly loaded trap bar and hold the handles.",
+   "Dip into a quarter squat and jump as high as you can.",
+   "Land softly with bent knees and reset before the next rep."
+  ],
+  "category": "plyometrics",
+  "similarTo": "Trap Bar Deadlift",
+  "aliases": [
+   "hex bar jump"
+  ]
+ },
+ {
+  "name": "Trap Bar Romanian Deadlift",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "hamstrings",
+   "glutes"
+  ],
+  "secondary": [
+   "lower back"
+  ],
+  "instructions": [
+   "Stand in a trap bar and lift it to standing.",
+   "With soft knees, push your hips back and lower the handles to mid-shin.",
+   "Squeeze your glutes to return to standing."
+  ],
+  "similarTo": "Romanian Deadlift",
+  "aliases": [
+   "hex bar rdl",
+   "trap bar rdl"
+  ]
+ },
+ {
+  "name": "Triceps Extension Machine (Plate-Loaded)",
+  "equipment": "machine",
+  "mechanic": "isolation",
+  "primary": [
+   "triceps"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Sit in the machine with your upper arms resting on the pad and grip the handles.",
+   "Extend your elbows to push the handles down until your arms are straight.",
+   "Return slowly without lifting your arms off the pad."
+  ],
+  "similarTo": "Machine Triceps Extension",
+  "aliases": [
+   "hammer strength triceps extension",
+   "plate loaded triceps extension"
+  ]
+ },
+ {
+  "name": "Tuck Front Lever",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "lats"
+  ],
+  "secondary": [
+   "abdominals",
+   "shoulders"
+  ],
+  "instructions": [
+   "Hang from a bar with straight arms and pull your knees to your chest.",
+   "Press the bar down toward your hips until your back is level with the floor.",
+   "Hold the position, then lower back to a hang."
+  ],
+  "similarTo": "Hanging Pike"
+ },
+ {
+  "name": "Tuck Planche",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "chest",
+   "triceps",
+   "abdominals"
+  ],
+  "instructions": [
+   "Put your hands on the floor or parallettes with fingers turned slightly out.",
+   "Lean forward over your hands and tuck your knees to your chest.",
+   "Lift your feet off the floor and hold with straight arms."
+  ],
+  "aliases": [
+   "planche",
+   "planche lean"
+  ]
+ },
+ {
+  "name": "Two-Arm Kettlebell Swing",
+  "equipment": "kettlebells",
+  "mechanic": "compound",
+  "primary": [
+   "glutes",
+   "hamstrings"
+  ],
+  "secondary": [
+   "lower back",
+   "shoulders",
+   "abdominals",
+   "forearms"
+  ],
+  "instructions": [
+   "Stand with feet shoulder-width apart, holding a kettlebell with both hands in front of you.",
+   "Hinge at the hips and swing the bell back between your legs.",
+   "Snap your hips forward to swing the bell up to chest height with straight arms.",
+   "Let it fall back into the hinge and repeat smoothly."
+  ],
+  "similarTo": "One-Arm Kettlebell Swings",
+  "aliases": [
+   "kettlebell swing",
+   "russian kettlebell swing",
+   "kb swing"
+  ]
+ },
+ {
+  "name": "Typewriter Push-Up",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders"
+  ],
+  "instructions": [
+   "Start in a very wide push-up position.",
+   "Lower down and shift your body toward one hand, straightening the other arm.",
+   "Slide across to the other side at the bottom, then push back up to the center."
+  ],
+  "similarTo": "Push-Up Wide"
+ },
+ {
+  "name": "Underhand Seated Cable Row",
+  "equipment": "cable",
+  "mechanic": "compound",
+  "primary": [
+   "lats"
+  ],
+  "secondary": [
+   "middle back",
+   "biceps"
+  ],
+  "instructions": [
+   "Sit at the cable row with a straight bar attached and grip it palms up.",
+   "Sit tall and pull the bar to your lower stomach, keeping your elbows close.",
+   "Extend your arms slowly to return."
+  ],
+  "similarTo": "Seated Cable Rows",
+  "aliases": [
+   "reverse grip cable row"
+  ]
+ },
+ {
+  "name": "VersaClimber",
+  "equipment": "machine",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps",
+   "shoulders"
+  ],
+  "secondary": [
+   "glutes",
+   "lats",
+   "calves",
+   "hamstrings"
+  ],
+  "instructions": [
+   "Strap your feet into the pedals and grab the handles.",
+   "Climb by driving one leg down while the opposite arm pulls down.",
+   "Keep a steady rhythm, using longer strokes for strength or short fast strokes for speed."
+  ],
+  "category": "cardio",
+  "aliases": [
+   "vertical climber",
+   "climber machine"
+  ]
+ },
+ {
+  "name": "Vertical Leg Press",
+  "equipment": "machine",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "glutes",
+   "hamstrings"
+  ],
+  "instructions": [
+   "Lie on your back under the vertical leg press with your feet on the platform.",
+   "Release the safeties and lower the platform toward your chest.",
+   "Press the platform back up without locking your knees."
+  ],
+  "similarTo": "Leg Press"
+ },
+ {
+  "name": "Viking Press (Plate-Loaded)",
+  "equipment": "machine",
+  "mechanic": "compound",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "triceps",
+   "traps"
+  ],
+  "instructions": [
+   "Stand between the handles of a viking press machine, facing the weight.",
+   "Grip the handles at shoulder height and brace your core.",
+   "Press the handles straight up until your arms lock out, then lower under control."
+  ],
+  "aliases": [
+   "viking press"
+  ]
+ },
+ {
+  "name": "Waiter Curl",
+  "equipment": "dumbbell",
+  "mechanic": "isolation",
+  "primary": [
+   "biceps"
+  ],
+  "secondary": [
+   "forearms"
+  ],
+  "instructions": [
+   "Hold one dumbbell vertically with both palms flat under the top plate.",
+   "Keep your elbows at your sides and curl the dumbbell up to your chest.",
+   "Lower slowly."
+  ],
+  "similarTo": "Dumbbell Bicep Curl"
+ },
+ {
+  "name": "Walking Knee Hugs",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "glutes"
+  ],
+  "secondary": [
+   "hamstrings"
+  ],
+  "instructions": [
+   "Step forward and pull the opposite knee up to your chest with both hands.",
+   "Rise onto the toes of your standing foot and hold briefly.",
+   "Step down and repeat on the other side as you walk."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "knee hugs",
+   "walking knee to chest"
+  ]
+ },
+ {
+  "name": "Wall Angels",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "middle back",
+   "traps"
+  ],
+  "instructions": [
+   "Stand with your back, head and hips flat against a wall.",
+   "Raise your arms into a goal-post position with the backs of your arms on the wall.",
+   "Slide your arms up overhead and back down, keeping them touching the wall."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "wall slides",
+   "wall angel"
+  ]
+ },
+ {
+  "name": "Wall Handstand Hold",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "triceps",
+   "traps",
+   "abdominals"
+  ],
+  "instructions": [
+   "Put your hands on the floor about a hand's length from a wall.",
+   "Kick up so your heels rest against the wall.",
+   "Push the floor away, keep your body straight and hold."
+  ],
+  "similarTo": "Handstand Push-Ups",
+  "aliases": [
+   "handstand hold",
+   "handstand",
+   "wall handstand"
+  ]
+ },
+ {
+  "name": "Wall Push-Up",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders"
+  ],
+  "instructions": [
+   "Stand an arm's length from a wall and place your palms on it at shoulder height.",
+   "Bend your elbows to bring your chest toward the wall, keeping your body straight.",
+   "Push back to the start."
+  ],
+  "similarTo": "Incline Push-Up",
+  "aliases": [
+   "wall push ups"
+  ]
+ },
+ {
+  "name": "Wall Walk",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "triceps",
+   "abdominals",
+   "chest"
+  ],
+  "instructions": [
+   "Lie face down with your feet against a wall.",
+   "Push up and walk your feet up the wall while walking your hands back toward it.",
+   "Get as close to the wall as you can, then walk back down slowly."
+  ],
+  "aliases": [
+   "wall walks",
+   "wall climb"
+  ]
+ },
+ {
+  "name": "Weighted Dip",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "triceps"
+  ],
+  "secondary": [
+   "chest",
+   "shoulders"
+  ],
+  "instructions": [
+   "Attach weight to a dip belt or hold a dumbbell between your feet and support yourself on parallel bars.",
+   "Lower your body until your upper arms are about parallel to the floor.",
+   "Press back up until your arms are straight."
+  ],
+  "similarTo": "Parallel Bar Dip",
+  "aliases": [
+   "weighted dips",
+   "weighted parallel bar dip"
+  ]
+ },
+ {
+  "name": "Weighted Plank",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "shoulders"
+  ],
+  "instructions": [
+   "Get into a forearm plank and have a partner place a plate on your upper back.",
+   "Keep your body in a straight line from head to heels.",
+   "Hold for time without letting your hips sag."
+  ],
+  "similarTo": "Plank"
+ },
+ {
+  "name": "Wheel Pose",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "lower back",
+   "shoulders"
+  ],
+  "secondary": [
+   "glutes",
+   "chest",
+   "quadriceps"
+  ],
+  "instructions": [
+   "Lie on your back with knees bent and feet flat, and place your hands by your ears.",
+   "Press into your hands and feet to lift your hips and chest into an arch.",
+   "Straighten your arms as far as you can, hold, then lower slowly."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "back bridge",
+   "full bridge",
+   "upward bow"
+  ]
+ },
+ {
+  "name": "Wide Chest Press (Plate-Loaded)",
+  "equipment": "machine",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "shoulders",
+   "triceps"
+  ],
+  "instructions": [
+   "Sit with your back flat against the pad and grip the wide handles at chest height.",
+   "Press the handles forward until your arms are nearly straight.",
+   "Return slowly, letting your chest stretch at the bottom."
+  ],
+  "similarTo": "Leverage Chest Press",
+  "aliases": [
+   "hammer strength wide chest press",
+   "wide chest press machine"
+  ]
+ },
+ {
+  "name": "Wide-Grip EZ-Bar Curl",
+  "equipment": "e-z curl bar",
+  "mechanic": "isolation",
+  "primary": [
+   "biceps"
+  ],
+  "secondary": [
+   "forearms"
+  ],
+  "instructions": [
+   "Hold an EZ bar on its outer bends with palms facing up.",
+   "Curl the bar to your shoulders, keeping your elbows at your sides.",
+   "Lower slowly until your arms are straight."
+  ],
+  "similarTo": "EZ-Bar Curl"
+ },
+ {
+  "name": "Wide-Grip Incline Bench Press",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "shoulders",
+   "triceps"
+  ],
+  "instructions": [
+   "Lie on an incline bench and take a grip clearly wider than shoulder width.",
+   "Lower the bar to your upper chest under control.",
+   "Press the bar back up until your arms are extended."
+  ],
+  "similarTo": "Barbell Incline Bench Press - Medium Grip",
+  "aliases": [
+   "wide grip incline barbell press"
+  ]
+ },
+ {
+  "name": "Wide-Grip Pull-Up",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "lats"
+  ],
+  "secondary": [
+   "biceps",
+   "middle back"
+  ],
+  "instructions": [
+   "Hang from the bar with an overhand grip well wider than your shoulders.",
+   "Pull your chest up toward the bar, driving your elbows down and out.",
+   "Lower under control to a full hang."
+  ],
+  "similarTo": "Pullups"
+ },
+ {
+  "name": "Wrestler's Bridge",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "neck"
+  ],
+  "secondary": [
+   "traps",
+   "glutes"
+  ],
+  "instructions": [
+   "Lie on your back with your feet flat and hands beside your head.",
+   "Lift your hips and roll onto the top of your head, supporting yourself with your hands at first.",
+   "Rock gently back and forth, then come down slowly."
+  ],
+  "aliases": [
+   "neck bridge"
+  ]
+ },
+ {
+  "name": "Wrist Extensor Stretch",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "forearms"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Hold one arm straight in front of you with your palm facing down.",
+   "Use your other hand to gently bend the wrist so your fingers point toward the floor.",
+   "Hold for 20 to 30 seconds and switch arms."
+  ],
+  "category": "stretching"
+ },
+ {
+  "name": "Zercher Carry",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "abdominals",
+   "biceps"
+  ],
+  "secondary": [
+   "quadriceps",
+   "glutes",
+   "middle back",
+   "lower back"
+  ],
+  "instructions": [
+   "Set a barbell in a rack at waist height and cradle it in the crook of your elbows.",
+   "Stand up, squeeze the bar to your body and brace your core.",
+   "Walk forward with short steps for the set distance, then set it back down."
+  ],
+  "category": "strongman"
+ }
+]

@@ -17,6 +17,11 @@ describe('extra exercises', () => {
       expect(ids.has(e.id), e.id).toBe(false);
     }
   });
+  it('have unique ids', () => {
+    const ids = EXTRA_EXERCISES.map((e) => e.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(all.length).toBeGreaterThan(1300);
+  });
   it('use known muscles and have instructions', () => {
     for (const e of EXTRA_EXERCISES) {
       for (const m of [...e.primaryMuscles, ...e.secondaryMuscles]) expect(MUSCLES, `${e.name}: ${m}`).toContain(m);
