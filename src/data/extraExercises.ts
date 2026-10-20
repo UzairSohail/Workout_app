@@ -1,4 +1,5 @@
 import type { Exercise } from '../types';
+import MORE from './moreExercises.json';
 
 /**
  * Common gym exercises missing from free-exercise-db, written for this app. No photos yet,
@@ -717,6 +718,26 @@ const ROWS: Row[] = [
 
 const slug = (s: string) => s.replace(/[^A-Za-z0-9]+/g, '_').replace(/^_|_$/g, '');
 
+/**
+ * A larger batch of common gym exercises, written for this app and kept as data.
+ * Same fields as ROWS, plus optional everyday aliases and a similar library exercise for photos.
+ */
+interface MoreRow {
+  name: string;
+  equipment: string;
+  mechanic: string;
+  primary: string[];
+  secondary: string[];
+  instructions: string[];
+  category?: string;
+  aliases?: string[];
+  similarTo?: string;
+}
+const MORE_ROWS = MORE as MoreRow[];
+for (const m of MORE_ROWS) {
+  ROWS.push([m.name, m.equipment, m.mechanic as Row[2], m.primary, m.secondary, m.instructions, m.category]);
+}
+
 export const EXTRA_EXERCISES: Exercise[] = ROWS.map(([name, equipment, mechanic, primaryMuscles, secondaryMuscles, instructions, category]) => ({
   id: `x_${slug(name)}`,
   name,
@@ -937,6 +958,11 @@ export const SIMILAR_PHOTOS: Record<string, string> = {
   "Assault Bike": "Bicycling, Stationary",
   "Jumping Jacks": "Star Jump",
 };
+
+for (const m of MORE_ROWS) {
+  if (m.aliases?.length) ALIASES[`x_${slug(m.name)}`] = m.aliases;
+  if (m.similarTo) SIMILAR_PHOTOS[m.name] = m.similarTo;
+}
 
 /**
  * Clearer names for machines that come in plate-loaded and pin-loaded versions, keyed by id.
