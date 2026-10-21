@@ -831,7 +831,7 @@ export const ALIASES: Record<string, string[]> = {
   Side_Bridge: ['side plank'],
   Leg_Press: ['sled leg press', '45 degree leg press'],
   x_Hip_Thrust_Plate_Loaded: ['glute drive', 'hip thrust machine'],
-  x_Seated_Leg_Press_Pin_Loaded: ['machine leg press', 'leg press machine', 'selectorized leg press', 'stack leg press'],
+  x_Seated_Leg_Press_Pin_Loaded: ['leg press machine', 'seated leg press', 'pin loaded leg press', 'selectorized leg press', 'stack leg press'],
   Leg_Extensions: ['quad extension'],
   'Barbell_Bench_Press_-_Medium_Grip': ['bench press', 'barbell bench press', 'flat bench press'],
   'Barbell_Incline_Bench_Press_-_Medium_Grip': ['incline bench press', 'incline barbell bench press'],
@@ -965,10 +965,12 @@ for (const m of MORE_ROWS) {
 }
 
 /**
- * Clearer names for machines that come in plate-loaded and pin-loaded versions, keyed by id.
+ * Clearer names for machines, keyed by id: pin-loaded ones start with "Machine" and plate-loaded
+ * ones end in "(Plate-Loaded)".
  * Logged workouts store ids, so renaming is safe; the old name stays searchable as an alias.
  */
 export const RENAMES: Record<string, string> = {
+  // Plate-loaded machines end in "(Plate-Loaded)".
   Leg_Press: 'Leg Press (Plate-Loaded)',
   Leverage_Chest_Press: 'Chest Press (Plate-Loaded)',
   Leverage_Incline_Chest_Press: 'Incline Chest Press (Plate-Loaded)',
@@ -976,9 +978,40 @@ export const RENAMES: Record<string, string> = {
   Leverage_Shoulder_Press: 'Shoulder Press (Plate-Loaded)',
   Leverage_Iso_Row: 'Iso-Lateral Row (Plate-Loaded)',
   Leverage_High_Row: 'High Row (Plate-Loaded)',
-  Leverage_Shrug: 'Shrug Machine (Plate-Loaded)',
-  Leverage_Deadlift: 'Deadlift Machine (Plate-Loaded)',
-  Machine_Bench_Press: 'Chest Press Machine (Pin-Loaded)',
-  Machine_Shoulder_Military_Press: 'Shoulder Press Machine (Pin-Loaded)',
-  x_Machine_Lateral_Raise: 'Lateral Raise Machine (Pin-Loaded)',
+  Leverage_Shrug: 'Shrug (Plate-Loaded)',
+  Leverage_Deadlift: 'Deadlift (Plate-Loaded)',
+  x_Triceps_Extension_Machine_Plate_Loaded: 'Triceps Extension (Plate-Loaded)',
+  // Pin-loaded (weight stack) machines start with "Machine", the way people ask for them.
+  x_Seated_Leg_Press_Pin_Loaded: 'Machine Leg Press',
+  Machine_Bench_Press: 'Machine Chest Press',
+  x_Incline_Chest_Press_Machine_Pin_Loaded: 'Machine Incline Chest Press',
+  x_Decline_Chest_Press_Machine_Pin_Loaded: 'Machine Decline Chest Press',
+  Machine_Shoulder_Military_Press: 'Machine Shoulder Press',
+  x_Machine_Lateral_Raise: 'Machine Lateral Raise',
+  x_Seated_Row_Machine_Pin_Loaded: 'Machine Seated Row',
+  x_High_Row_Pin_Loaded: 'Machine High Row',
+  x_Chest_Supported_Machine_Row: 'Machine Chest-Supported Row',
+  x_Back_Extension_Machine_Pin_Loaded: 'Machine Back Extension',
+  Machine_Preacher_Curls: 'Machine Preacher Curl',
+  Dip_Machine: 'Machine Triceps Dip',
+  Butterfly: 'Machine Chest Fly (Pec Deck)',
+  Reverse_Machine_Flyes: 'Machine Rear Delt Fly',
+  Leg_Extensions: 'Machine Leg Extension',
+  'Single-Leg_Leg_Extension': 'Machine Single-Leg Leg Extension',
+  Lying_Leg_Curls: 'Machine Lying Leg Curl',
+  Seated_Leg_Curl: 'Machine Seated Leg Curl',
+  Standing_Leg_Curl: 'Machine Standing Leg Curl',
+  x_Kneeling_Leg_Curl_Machine: 'Machine Kneeling Leg Curl',
+  x_Single_Leg_Lying_Leg_Curl: 'Machine Single-Leg Lying Leg Curl',
+  x_Single_Leg_Seated_Leg_Curl: 'Machine Single-Leg Seated Leg Curl',
+  Thigh_Abductor: 'Machine Hip Abduction',
+  Thigh_Adductor: 'Machine Hip Adduction',
+  x_Standing_Hip_Abduction_Machine: 'Machine Standing Hip Abduction',
+  x_Glute_Kickback_Machine: 'Machine Glute Kickback',
+  Ab_Crunch_Machine: 'Machine Ab Crunch',
+  x_Rotary_Torso_Machine: 'Machine Rotary Torso',
+  x_Multi_Hip_Machine: 'Machine Multi-Hip',
+  Standing_Calf_Raises: 'Machine Standing Calf Raise',
+  x_Seated_Calf_Raise_Machine: 'Machine Seated Calf Raise',
+  x_Hack_Squat_Machine: 'Machine Hack Squat',
 };
