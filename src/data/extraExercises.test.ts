@@ -45,19 +45,24 @@ describe('extra exercises', () => {
   it('are found by search, including everyday names', () => {
     const find = (q: string) => filterExercises(all, q, '', '', false).map((e) => e.name);
     expect(find('bulgarian')).toContain('Bulgarian Split Squat');
-    expect(find('pec deck')).toContain('Butterfly');
+    expect(find('pec deck')).toContain('Machine Chest Fly (Pec Deck)');
     expect(find('landmine row')).toContain('Landmine Row');
     expect(find('yates row').length).toBeGreaterThan(0);
     expect(find('dumbbell thruster')).toContain('Dumbbell Thruster');
     expect(find('rdl')).toContain('Romanian Deadlift');
     expect(find('pull up')).toContain('Assisted Pull-Up');
-    expect(find('hip abduction')).toContain('Thigh Abductor');
+    expect(find('hip abduction')).toContain('Machine Hip Abduction');
   });
   it('match equipment words, plurals and gym shorthand', () => {
     const find = (q: string) => filterExercises(all, q, '', '', false).map((e) => e.name);
-    expect(find('machine leg press')[0]).toBe('Seated Leg Press (Pin-Loaded)');
+    expect(find('machine leg press')[0]).toBe('Machine Leg Press');
+    expect(find('machine bicep curl')[0]).toBe('Machine Bicep Curl');
+    expect(find('machine preacher curl')[0]).toBe('Machine Preacher Curl');
+    expect(find('machine tricep extension')[0]).toBe('Machine Triceps Extension');
+    expect(find('machine leg curl')).toContain('Machine Seated Leg Curl');
+    expect(find('butterfly')).toContain('Machine Chest Fly (Pec Deck)');
     expect(find('plate loaded leg press')[0]).toBe('Leg Press (Plate-Loaded)');
-    expect(find('pin loaded chest press')[0]).toBe('Chest Press Machine (Pin-Loaded)');
+    expect(find('chest press machine')[0]).toBe('Machine Chest Press');
     expect(find('leverage chest press')).toContain('Chest Press (Plate-Loaded)');
     expect(find('leg presses')).toContain('Leg Press (Plate-Loaded)');
     expect(find('leg press')[0]).toBe('Leg Press (Plate-Loaded)');
