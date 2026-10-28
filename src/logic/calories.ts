@@ -1,7 +1,25 @@
-import type { Exercise, LoggedSet, Workout } from '../types';
+import type { Exercise, LoggedSet, Settings, Workout } from '../types';
 
 /** Used when no body weight is set in Settings. */
 export const DEFAULT_BODY_KG = 70;
+/** Used when no year of birth is set. */
+const DEFAULT_AGE = 30;
+
+export type Profile = Pick<Settings, 'bodyWeight' | 'height' | 'sex' | 'birthYear'>;
+
+/**
+ * Resting burn in kcal per hour. 1 MET is defined as 1 kcal/kg/h, which fits an average 70 kg adult but
+ * overstates it for women and shorter or older people. With a height, use the Mifflin-St Jeor BMR
+ * instead (weight, height, age and sex), which is what MET values are corrected by for a given person.
+ */
+export function restingKcalPerHour(p: Profile, now = Date.now()): number {
+  const kg = p.bodyWeight || DEFAULT_BODY_KG;
+  if (!p.height) return kg;
+  const age = p.birthYear ? new Date(now).getFullYear() - p.birthYear : DEFAULT_AGE;
+  // Men +5, women −161; with no sex set, halfway between.
+  const offset = p.sex === 'male' ? 5 : p.sex === 'female' ? -161 : -78;
+  return Math.max(0, 10 * kg + 6.25 * p.height - 5 * age + offset) / 24;
+}
 
 /**
  * MET values from the 2024 Compendium of Physical Activities. Like Fitbod and Hevy, they're applied to the
@@ -55,8 +73,11 @@ function sessionMet(w: Workout, byId: Map<string, Exercise>): number {
   return n ? Math.max(0, sum / n - RESTING_MET) : 0;
 }
 
-/** Estimated active calories: (MET − 1) × body weight (kg) × hours of training. Grows each time a set is ticked off. */
-export function workoutCalories(w: Workout, byId: Map<string, Exercise>, kg: number | undefined, now = Date.now()): number {
+/**
+ * Estimated active calories: (MET − 1) × resting kcal per hour × hours of training.
+ * Grows each time a set is ticked off.
+ */
+export function workoutCalories(w: Workout, byId: Map<string, Exercise>, profile: Profile, now = Date.now()): number {
   const hours = activeMs(w, now) / 3600_000;
-  return Math.round(sessionMet(w, byId) * (kg || DEFAULT_BODY_KG) * hours);
+  return Math.round(sessionMet(w, byId) * restingKcalPerHour(profile, now) * hours);
 }
