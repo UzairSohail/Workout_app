@@ -40,6 +40,8 @@ export interface Settings {
   bodyWeight?: number;
   height?: number;
   sex?: 'male' | 'female';
+  /** Year of birth, for the age in the calorie estimate. */
+  birthYear?: number;
   experience?: 'beginner' | 'intermediate' | 'advanced';
   /** Weekly weigh-in reminder day, 0 = Sunday … 6 = Saturday, -1 = off. Defaults to Sunday. */
   weighInDay?: number;

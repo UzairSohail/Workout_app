@@ -14,7 +14,8 @@ export function WorkoutDetail() {
   const { id } = useParams();
   const [params] = useSearchParams();
   const navigate = useNavigate();
-  const { units, bodyWeight } = useSettings();
+  const settings = useSettings();
+  const { units } = settings;
   const { byId } = useExercises();
   const w = useLiveQuery(() => db.workouts.get(id!), [id]);
   const finished = useFinished();
@@ -66,7 +67,7 @@ export function WorkoutDetail() {
         <div><strong>{w.finishedAt ? fmtDuration(w.finishedAt - w.startedAt) : '–'}</strong><small>Duration</small></div>
         <div><strong>{fmtWeight(workoutVolume(w), units)}</strong><small>Volume</small></div>
         <div><strong>{w.exercises.reduce((a, e) => a + e.sets.length, 0)}</strong><small>Sets</small></div>
-        <div><strong>{workoutCalories(w, byId, bodyWeight)}</strong><small>kcal (est.)</small></div>
+        <div><strong>{workoutCalories(w, byId, settings)}</strong><small>kcal (est.)</small></div>
       </div>
 
       {w.exercises.map((e, i) => (

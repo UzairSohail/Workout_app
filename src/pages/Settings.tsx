@@ -96,7 +96,7 @@ export function SettingsPage() {
 
       <section className="card form">
         <h2>About you</h2>
-        <p className="muted small">Used to suggest a starting weight the first time you do an exercise. You can always change it, and after one session the app goes by what you actually lifted.</p>
+        <p className="muted small">Used to suggest a starting weight the first time you do an exercise, and to estimate calories burned. You can always change it, and after one session the app goes by what you actually lifted.</p>
         <div className="row">
           <label className="mini-field"><span>Body weight ({s.units})</span>
             <NumInput decimal ariaLabel="Your body weight" value={s.bodyWeight ? Math.round(toDisplay(s.bodyWeight, s.units) * 10) / 10 : null}
@@ -105,6 +105,10 @@ export function SettingsPage() {
           <label className="mini-field"><span>Height ({s.units === 'kg' ? 'cm' : 'in'})</span>
             <NumInput decimal ariaLabel="Your height" value={s.height ? Math.round((s.units === 'kg' ? s.height : s.height / 2.54) * 10) / 10 : null}
               onChange={(v) => updateSettings({ height: v ? (s.units === 'kg' ? v : v * 2.54) : undefined })} />
+          </label>
+          <label className="mini-field"><span>Age</span>
+            <NumInput ariaLabel="Your age" value={s.birthYear ? new Date().getFullYear() - s.birthYear : null}
+              onChange={(v) => updateSettings({ birthYear: v && v > 0 ? new Date().getFullYear() - v : undefined })} />
           </label>
         </div>
         <div>
