@@ -67,7 +67,7 @@ export function WorkoutDetail() {
         <div><strong>{w.finishedAt ? fmtDuration(w.finishedAt - w.startedAt) : '–'}</strong><small>Duration</small></div>
         <div><strong>{fmtWeight(workoutVolume(w), units)}</strong><small>Volume</small></div>
         <div><strong>{w.exercises.reduce((a, e) => a + e.sets.length, 0)}</strong><small>Sets</small></div>
-        <div><strong>{workoutCalories(w, byId, settings)}</strong><small>kcal (est.)</small></div>
+        <div><strong>{workoutCalories(w, byId, settings, finished?.filter((x) => x.id !== w.id))}</strong><small>kcal (est.)</small></div>
       </div>
 
       {w.exercises.map((e, i) => (

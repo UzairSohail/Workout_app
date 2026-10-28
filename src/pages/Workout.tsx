@@ -221,7 +221,7 @@ export function WorkoutPage() {
           </div>
         ) : (
           <p className="muted small">
-            <Elapsed since={w.startedAt} /> · <span className="kcal" aria-label="Calories burned">🔥 {workoutCalories(w, byId, settings)} kcal</span>
+            <Elapsed since={w.startedAt} /> · <span className="kcal" aria-label="Calories burned">🔥 {workoutCalories(w, byId, settings, finished)} kcal</span>
             {!settings.bodyWeight && <> · <Link to="/settings">add your weight</Link> for accuracy</>}
           </p>
         )}
