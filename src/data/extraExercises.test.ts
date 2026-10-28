@@ -71,6 +71,11 @@ describe('extra exercises', () => {
     expect(find('back squat')).toContain('Barbell Squat');
     expect(find('side plank')).toContain('Side Bridge');
     expect(find('crunches')).toContain('Cable Crunch');
+    expect(find('incline dumbbell bench press')[0]).toBe('Incline Dumbbell Bench Press');
+    expect(find('standard grip incline dumbbell bench press')[0]).toBe('Incline Dumbbell Bench Press');
+    expect(find('dumbbell incline press')[0]).toBe('Incline Dumbbell Bench Press');
+    expect(find('flat dumbbell press')[0]).toBe('Dumbbell Bench Press');
+    expect(find('hammer grip incline dumbbell press')[0]).toBe('Hammer Grip Incline Dumbbell Bench Press');
     expect(find('lat pull down')).toContain('Wide-Grip Lat Pulldown');
     expect(find('chinup')).toContain('Chin-Up');
     expect(find('row machine')).not.toContain('Narrow Stance Hack Squats');

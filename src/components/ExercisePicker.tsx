@@ -10,9 +10,14 @@ import { MuscleTags } from './MuscleTags';
 
 const STRENGTH = new Set(['strength', 'powerlifting', 'olympic weightlifting', 'strongman', 'custom']);
 
-const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
-/** Everyday shorthand people type, mapped to the words the library uses. */
+/** Everyday shorthand, mapped to the words the library uses. Applied to queries and names alike. */
 const SYNONYMS: Record<string, string> = { db: 'dumbbell', bb: 'barbell', kb: 'kettlebell' };
+const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim().split(' ').map((w) => SYNONYMS[w] ?? w).join(' ');
+/**
+ * Words people add that names often leave out ("incline dumbbell bench press", "flat dumbbell press",
+ * "standard grip"). When nothing matches with them, search again without them.
+ */
+const OPTIONAL = new Set(['bench', 'flat', 'standard', 'regular', 'normal', 'grip', 'overhand']);
 // "presses" -> "press", "crunches" -> "crunch", "curls" -> "curl", so plurals still match.
 const stem = (w: string) => {
   if (w.length < 4) return w;
@@ -32,8 +37,14 @@ const queryWords = (q: string) => norm(q).split(' ').filter(Boolean).flatMap((w)
  * "machine leg press" finds "Leg Press" (a machine) and "db curls" finds "Dumbbell Bicep Curl".
  * Best matches first: exact name, then names starting with the query, then the rest.
  */
-export function filterExercises(all: Exercise[], q: string, muscle: string, equipment: string, strengthOnly: boolean, missing?: readonly string[]) {
-  const words = queryWords(q);
+export function filterExercises(all: Exercise[], q: string, muscle: string, equipment: string, strengthOnly: boolean, missing?: readonly string[]): Exercise[] {
+  const found = filterWords(all, queryWords(q), muscle, equipment, strengthOnly, missing);
+  if (found.length) return found;
+  const core = queryWords(q).filter((w) => !OPTIONAL.has(w));
+  return core.length ? filterWords(all, core, muscle, equipment, strengthOnly, missing) : found;
+}
+
+function filterWords(all: Exercise[], words: string[], muscle: string, equipment: string, strengthOnly: boolean, missing?: readonly string[]) {
   const phrase = words.join(' ');
   const joined = squash(phrase);
   const rank = (e: Exercise) => {

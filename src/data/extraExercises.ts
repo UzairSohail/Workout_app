@@ -827,6 +827,8 @@ export const ALIASES: Record<string, string[]> = {
   'Rope_Straight-Arm_Pulldown': ['cable pullover'],
   Air_Bike: ['bicycle crunch'],
   Weighted_Pull_Ups: ['weighted pull up'],
+  Dumbbell_Bench_Press: ['flat dumbbell press', 'flat dumbbell bench press'],
+  Incline_Dumbbell_Press: ['incline dumbbell press', 'dumbbell incline press', 'dumbbell incline bench press'],
   Barbell_Squat: ['back squat', 'barbell back squat'],
   Side_Bridge: ['side plank'],
   Leg_Press: ['sled leg press', '45 degree leg press'],
@@ -1014,4 +1016,7 @@ export const RENAMES: Record<string, string> = {
   Standing_Calf_Raises: 'Machine Standing Calf Raise',
   x_Seated_Calf_Raise_Machine: 'Machine Seated Calf Raise',
   x_Hack_Squat_Machine: 'Machine Hack Squat',
+  // Plain names for the standard versions, so they come up before the variations.
+  Incline_Dumbbell_Press: 'Incline Dumbbell Bench Press',
+  Hammer_Grip_Incline_DB_Bench_Press: 'Hammer Grip Incline Dumbbell Bench Press',
 };
