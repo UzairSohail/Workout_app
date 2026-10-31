@@ -63,4 +63,16 @@ describe('calories', () => {
     // At or below half of the best 1RM counts as light: (3.5 − 1) × 80 × 0.05 h = 10
     expect(workoutCalories(heavy(40, 10), byId, { bodyWeight: 80 }, history)).toBe(10);
   });
+  it('never goes down when a set is ticked', () => {
+    // Nacho's case: 6 kg × 10, then 5 kg × 10 twice, the last ticked a second after the one before.
+    const sets: LoggedSet[] = [
+      { weight: 6, reps: 10, type: 'working', done: true, doneAt: 3 * MIN },
+      { weight: 5, reps: 10, type: 'working', done: true, doneAt: 6 * MIN },
+      { weight: 5, reps: 10, type: 'working', done: true, doneAt: 6 * MIN + 1000 },
+      { weight: 9, reps: 10, type: 'working', done: true, doneAt: 9 * MIN },
+    ];
+    const totals = [1, 2, 3, 4].map((n) =>
+      workoutCalories(workout([le('curl', sets.map((x, i) => (i < n ? x : { ...x, done: false, doneAt: undefined })))]), byId, { bodyWeight: 80 }));
+    for (let i = 1; i < totals.length; i++) expect(totals[i]).toBeGreaterThanOrEqual(totals[i - 1]);
+  });
 });
