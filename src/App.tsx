@@ -3,6 +3,7 @@ import { Home } from './pages/Home';
 import { Programs } from './pages/Programs';
 import { ProgramEdit } from './pages/ProgramEdit';
 import { Generate } from './pages/Generate';
+import { ImportPlan } from './pages/ImportPlan';
 import { WorkoutPage } from './pages/Workout';
 import { History } from './pages/History';
 import { WorkoutDetail } from './pages/WorkoutDetail';
@@ -29,6 +30,7 @@ export function App() {
           <Route path="/programs" element={<Programs />} />
           <Route path="/programs/generate" element={<Generate />} />
           <Route path="/programs/:id" element={<ProgramEdit />} />
+          <Route path="/import" element={<ImportPlan />} />
           <Route path="/workout" element={<WorkoutPage />} />
           <Route path="/history" element={<History />} />
           <Route path="/history/:id" element={<WorkoutDetail />} />
