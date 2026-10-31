@@ -158,6 +158,7 @@ export function Home() {
           <Link to="/programs"><span className="ico"><CalendarIcon /></span>Splits</Link>
           <Link to="/history?tab=progress"><span className="ico"><HistoryIcon /></span>Progress</Link>
         </div>
+        <Link className="button secondary wide" to="/import">📷 Copy a plan from a screenshot</Link>
       </section>
 
       {!active && finished && backupDue(settings.lastBackupAt, finished.length) && (

@@ -279,3 +279,9 @@ a.list-item::after, button.list-item::after { content: '›'; margin-left: auto;
 .saved-row { display: flex; align-items: center; gap: 4px; }
 .saved-row .list-item { flex: 1; min-width: 0; }
 .saved-row .list-item strong, .saved-row .list-item small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Copy a plan from a screenshot */
+.file-button { cursor: pointer; }
+.import-name { text-align: left; color: var(--text); }
+.plan li.in-superset { border-left: 3px solid rgba(236, 72, 153, 0.6); padding-left: 10px; }
+.quick + .button { margin-top: 10px; }

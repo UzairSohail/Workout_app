@@ -773,6 +773,13 @@ export const ALIASES: Record<string, string[]> = {
   'Push-Ups_-_Close_Triceps_Position': ['diamond push up', 'close grip push up'],
   Dip_Machine: ['triceps dip machine', 'seated dip machine'],
   Dumbbell_Incline_Row: ['chest supported row', 'chest supported dumbbell row'],
+  // Plain names plan apps such as Fitbod use for the standard version.
+  'Wide-Grip_Lat_Pulldown': ['lat pulldown', 'cable lat pulldown'],
+  'One-Arm_Dumbbell_Row': ['dumbbell row', 'single arm dumbbell row'],
+  x_Seated_Row_Machine_Pin_Loaded: ['machine row', 'seated row machine'],
+  Pullups: ['pull up', 'pull-up'],
+  Cable_Crossover: ['cable fly', 'standing cable fly'],
+  Barbell_Hip_Thrust: ['hip thrust'],
   'One-Legged_Cable_Kickback': ['cable glute kickback', 'cable kickback'],
   Pull_Through: ['cable pull through'],
   Hyperextensions_Back_Extensions: ['back extension', '45 degree hyperextension', 'roman chair'],
