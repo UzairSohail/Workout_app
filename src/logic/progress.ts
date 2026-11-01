@@ -59,3 +59,52 @@ export function weekStreak(weeks: WeekSummary[]): number {
 }
 
 export const daysAgo = (n: number, now = Date.now()) => now - n * DAY;
+
+/** Local calendar day key, e.g. "2026-9-7" (month is 0-based). */
+export const dayKey = (t: number) => {
+  const d = new Date(t);
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+};
+
+/** Finished workouts grouped by local day. */
+export function workoutsByDay(workouts: Workout[]): Map<string, Workout[]> {
+  const m = new Map<string, Workout[]>();
+  for (const w of workouts) {
+    if (!w.finishedAt) continue;
+    const k = dayKey(w.startedAt);
+    m.set(k, [...(m.get(k) ?? []), w]);
+  }
+  return m;
+}
+
+/**
+ * Week streaks over all history: weeks in a row with at least one workout.
+ * The current streak still counts if this week has nothing yet but last week did.
+ */
+export function weekStreaks(workouts: Workout[], now = Date.now()): { current: number; best: number } {
+  const weeks = new Set<number>();
+  for (const w of workouts) if (w.finishedAt) weeks.add(weekStart(w.startedAt));
+  if (!weeks.size) return { current: 0, best: 0 };
+  const prevWeek = (t: number) => {
+    const d = new Date(t);
+    d.setDate(d.getDate() - 7);
+    return d.getTime();
+  };
+  let best = 0;
+  for (const start of weeks) {
+    if (weeks.has(prevWeek(start))) continue; // not the first week of a run
+    let n = 0;
+    for (let t = start; weeks.has(t); ) {
+      n++;
+      const d = new Date(t);
+      d.setDate(d.getDate() + 7);
+      t = d.getTime();
+    }
+    best = Math.max(best, n);
+  }
+  let t = weekStart(now);
+  if (!weeks.has(t)) t = prevWeek(t);
+  let current = 0;
+  for (; weeks.has(t); t = prevWeek(t)) current++;
+  return { current, best };
+}

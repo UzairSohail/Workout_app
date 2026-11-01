@@ -8,8 +8,59 @@ import { exerciseName, useExercises } from '../exercises';
 import { useSettings } from '../hooks';
 import { BAR, platesPerSide } from '../logic/plates';
 import { fmt, fromDisplay, toDisplay } from '../logic/units';
-import type { Units } from '../types';
+import type { Settings, Units } from '../types';
 import { GEAR } from '../logic/equipment';
+import { alertPrefs, askNotify, beepNow, canNotify, canVibrate, isIos, unlockAudio, vibrate } from '../logic/restAlert';
+
+function RestAlertCard({ s }: { s: Settings }) {
+  const prefs = alertPrefs(s);
+  const ios = isIos();
+  const [notifyMsg, setNotifyMsg] = useState('');
+  const toggleNotify = async (on: boolean) => {
+    setNotifyMsg('');
+    if (!on) return updateSettings({ restNotify: false });
+    const ok = await askNotify();
+    await updateSettings({ restNotify: ok });
+    if (!ok) setNotifyMsg(canNotify()
+      ? 'Notifications are blocked. Allow them for this app in your phone settings, then try again.'
+      : 'This browser does not support notifications.');
+  };
+  const test = () => {
+    unlockAudio();
+    if (prefs.sound) beepNow();
+    if (prefs.vibrate) vibrate();
+  };
+  return (
+    <section className="card form rest-alert">
+      <h2>Rest timer alert</h2>
+      <label className="toggle">
+        <input type="checkbox" checked={prefs.sound} onChange={(e) => updateSettings({ restSound: e.target.checked })} />
+        <span>Beep when rest is over</span>
+      </label>
+      {canVibrate() && (
+        <label className="toggle">
+          <input type="checkbox" checked={prefs.vibrate} onChange={(e) => updateSettings({ restVibrate: e.target.checked })} />
+          <span>Vibrate</span>
+        </label>
+      )}
+      {/* iPhone pauses web apps in the background, so a notification could never fire there. */}
+      {!ios && (
+        <label className="toggle">
+          <input type="checkbox" checked={prefs.notify} onChange={(e) => toggleNotify(e.target.checked)} />
+          <span>Notify me if I've switched to another app</span>
+        </label>
+      )}
+      {notifyMsg && <p className="error small">{notifyMsg}</p>}
+      <button className="secondary" onClick={test}>Test the alert</button>
+      <p className="muted small">
+        The workout screen keeps your phone awake, so leave the app open between sets for the alert to work every time.
+        {ios
+          ? ' On iPhone the silent switch mutes the beep, iPhone does not let web apps vibrate, and nothing can play while the phone is locked or the app is in the background.'
+          : ' If you lock the phone or switch apps, the beep and a notification usually still come through, but Android may pause the app after a few minutes.'}
+      </p>
+    </section>
+  );
+}
 
 
 const csvCell = (v: string | number) => (typeof v === 'string' && /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : String(v));
@@ -151,6 +202,8 @@ export function SettingsPage() {
           </label>
         </div>
       </section>
+
+      <RestAlertCard s={s} />
 
       <section className="card form">
         <label className="toggle big">

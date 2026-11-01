@@ -47,6 +47,10 @@ export interface Settings {
   weighInDay?: number;
   /** When the user last tapped "Skip this week" on the reminder. */
   weighInSkippedAt?: number;
+  /** End-of-rest alert. Sound and vibration default on, background notification off. */
+  restSound?: boolean;
+  restVibrate?: boolean;
+  restNotify?: boolean;
 }
 
 /**

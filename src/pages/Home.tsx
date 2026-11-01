@@ -10,6 +10,8 @@ import { liftKey, SCHEME_LABEL, uses531, WEEKS_531 } from '../logic/schemes';
 import { startWorkout } from '../logic/session';
 import { fmt, fromDisplay, toDisplay } from '../logic/units';
 import { weighInDue } from '../logic/weighIn';
+import { weekStreaks } from '../logic/progress';
+import { muscleBalance } from '../logic/balance';
 import { NumInput } from '../components/NumInput';
 import type { BodyWeight, Day, Program, Settings, Workout } from '../types';
 import { CalendarIcon, DumbbellIcon, HistoryIcon, PlusIcon } from '../components/Icons';
@@ -68,6 +70,9 @@ export function Home() {
   const weekAgo = Date.now() - 7 * 864e5;
   const thisWeek = finished?.filter((w) => w.startedAt > weekAgo).length ?? 0;
   const weekTarget = Math.max(1, program?.days.length ?? 3);
+  const streak = finished ? weekStreaks(finished).current : 0;
+  // Only nag about skipped muscles once there's a few workouts' worth of data this week.
+  const skipped = finished && byId.size > 0 && thisWeek >= 2 ? muscleBalance(finished, byId, weekAgo).skipped : [];
   const next = program?.days[settings.nextDayIndex % Math.max(1, program.days.length)];
 
   return (
@@ -84,6 +89,10 @@ export function Home() {
           <span className="muted small">{thisWeek} / {weekTarget} workouts</span>
         </div>
         <div className="meter"><span style={{ width: `${Math.min(100, (thisWeek / weekTarget) * 100)}%` }} /></div>
+        {skipped.length > 0 && (
+          <p className="small week-note muted">Not trained this week: {skipped.join(', ')}. <Link to="/history?tab=progress">Muscle balance</Link></p>
+        )}
+        {streak > 1 && <p className="small week-note">🔥 {streak}-week streak. <Link to="/history">See your calendar</Link></p>}
       </section>
 
       {active && (

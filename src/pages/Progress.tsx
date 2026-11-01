@@ -1,12 +1,16 @@
 import { useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { BarChart, HBars, LineChart } from '../components/Charts';
+import { Link } from 'react-router-dom';
+import { BarChart, LineChart } from '../components/Charts';
 import { NumInput } from '../components/NumInput';
 import { db, logBodyWeight } from '../db';
-import { cap, useExercises } from '../exercises';
+import { useExercises } from '../exercises';
 import { fmtDate } from '../format';
 import { useFinished, useSettings } from '../hooks';
-import { daysAgo, setsPerMuscle, weeklySummary, weekStreak } from '../logic/progress';
+import { allBests } from '../logic/records';
+import { muscleBalance } from '../logic/balance';
+import { MuscleBalance } from '../components/MuscleBalance';
+import { daysAgo, weeklySummary, weekStreaks } from '../logic/progress';
 import { fmt, fromDisplay, toDisplay } from '../logic/units';
 
 const shortDate = (t: number) => new Date(t).toLocaleDateString(undefined, { day: 'numeric', month: 'numeric' });
@@ -68,10 +72,14 @@ export function ProgressView() {
   const { units } = useSettings();
   const { byId } = useExercises();
   const weeks = useMemo(() => weeklySummary(finished ?? [], 12), [finished]);
-  const muscles = useMemo(() => setsPerMuscle(finished ?? [], byId, daysAgo(7)), [finished, byId]);
-  const streak = weekStreak(weeks);
+  const balance = useMemo(() => muscleBalance(finished ?? [], byId, daysAgo(7)), [finished, byId]);
+  const trainedThisWeek = (finished ?? []).some((w) => w.startedAt >= daysAgo(7));
+  const streak = useMemo(() => weekStreaks(finished ?? []).current, [finished]);
   const thisWeek = weeks[weeks.length - 1];
   const toUnits = (kg: number) => toDisplay(kg, units);
+  const bests = useMemo(() => allBests(finished ?? []), [finished]);
+  const monthAgo = daysAgo(30);
+  const recentPrs = bests.filter((b) => b.lastPrAt >= monthAgo).length;
 
   return (
     <>
@@ -80,6 +88,14 @@ export function ProgressView() {
         <div><strong>{streak}</strong><small>Week streak</small></div>
         <div><strong>{finished?.length ?? 0}</strong><small>All time</small></div>
       </div>
+
+      <Link className="list-item" to="/records">
+        <span className="pr-link-icon" aria-hidden>🏆</span>
+        <span>
+          <strong>Personal records</strong>
+          <small className="muted">{bests.length ? `Bests on ${bests.length} exercise${bests.length === 1 ? '' : 's'} · ${recentPrs} with a new best in the last 30 days` : 'Your bests show up after your first workout'}</small>
+        </span>
+      </Link>
 
       <section className="card">
         <h2>Workouts per week</h2>
@@ -95,9 +111,8 @@ export function ProgressView() {
       </section>
 
       <section className="card">
-        <h2>Sets per muscle, last 7 days</h2>
-        <p className="muted small">Around 10–20 working sets per muscle each week is a good target for growth.</p>
-        {muscles.length ? <HBars rows={muscles.map(([m, n]) => [cap(m), n])} /> : <p className="muted">No workouts in the last 7 days.</p>}
+        <h2>Muscle balance, last 7 days</h2>
+        {trainedThisWeek ? <MuscleBalance balance={balance} /> : <p className="muted">No workouts in the last 7 days.</p>}
       </section>
 
       <BodyWeightCard />

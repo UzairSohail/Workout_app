@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Exercise, LoggedSet, Settings, Workout } from '../types';
 import { DEFAULT_SETTINGS } from '../db';
-import { setsPerMuscle, weekStart, weeklySummary, weekStreak } from './progress';
+import { setsPerMuscle, weekStart, weeklySummary, weekStreak, weekStreaks } from './progress';
 import { defaultMode, newLoggedExercise, withWarmups } from './session';
 import { plateText } from './plates';
 import { workoutVolume } from './stats';
@@ -94,5 +94,19 @@ describe('plateText', () => {
   it('flags weights the plates cannot make', () => {
     expect(plateText(61, 'kg')).toBe('20 per side (0.5 kg short per side)');
     expect(plateText(10, 'kg')).toBe('Less than the 20 kg bar');
+  });
+});
+
+describe('weekStreaks', () => {
+  const at = (y: number, m: number, d: number) => wk(new Date(y, m, d, 18).getTime(), 'bench', [done(50, 5)]);
+  it('counts the current run (this week may still be empty) and the best run ever', () => {
+    // NOW is Wed 7 Oct 2026. One workout in each week from 31 Aug to the week of 5 Oct.
+    const ws = [at(2026, 8, 1), at(2026, 8, 8), at(2026, 8, 15), at(2026, 8, 22), at(2026, 9, 1), at(2026, 9, 6)];
+    expect(weekStreaks(ws, NOW)).toEqual({ current: 6, best: 6 });
+    // Weeks of 31 Aug, 7 Sep, 14 Sep, then a gap, then 28 Sep (last week); nothing yet this week.
+    const gap = [at(2026, 8, 1), at(2026, 8, 8), at(2026, 8, 15), at(2026, 9, 1)];
+    expect(weekStreaks(gap, NOW)).toEqual({ current: 1, best: 3 });
+    expect(weekStreaks([at(2026, 8, 1)], NOW)).toEqual({ current: 0, best: 1 });
+    expect(weekStreaks([], NOW)).toEqual({ current: 0, best: 0 });
   });
 });

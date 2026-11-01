@@ -3,11 +3,13 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { db } from '../db';
 import { exerciseName, useExercises } from '../exercises';
-import { fmtDateLong, fmtDuration, fmtSecs } from '../format';
+import { fmtDate, fmtDateLong, fmtDuration, fmtSecs } from '../format';
 import { useFinished, useSettings } from '../hooks';
 import { workoutCalories } from '../logic/calories';
 import { startWorkout } from '../logic/session';
+import { workoutPrs } from '../logic/records';
 import { recordsFor, sessionPrs, workoutVolume, type PrKind } from '../logic/stats';
+import { compareWorkouts, previousLike, workingSets, type Change } from '../logic/summary';
 import { fmt, fmtWeight, toDisplay } from '../logic/units';
 
 export function WorkoutDetail() {
@@ -31,6 +33,16 @@ export function WorkoutDetail() {
     });
     return m;
   }, [w, finished]);
+
+  const summary = useMemo(() => {
+    if (!w || !finished) return null;
+    const prs = workoutPrs(w, finished);
+    const prev = previousLike(w, finished);
+    const cmp = prev ? compareWorkouts(w, prev) : null;
+    const kcal = workoutCalories(w, byId, settings, finished.filter((x) => x.id !== w.id));
+    const prevKcal = prev ? workoutCalories(prev, byId, settings, finished.filter((x) => x.startedAt < prev.startedAt)) : 0;
+    return { prs, cmp, kcal, prevKcal };
+  }, [w, finished, byId, settings]);
 
   if (w === undefined) return <p className="muted">Loading…</p>;
   if (!w) return <p>Workout not found. <Link to="/history">Back to history</Link></p>;
@@ -59,16 +71,44 @@ export function WorkoutDetail() {
       {justDone && (
         <section className="card accent">
           <h2>{prCount > 0 ? `🎉 Workout done, with ${prCount} PR${prCount === 1 ? '' : 's'}!` : '💪 Workout done!'}</h2>
-          <p className="muted">Your next session will suggest weights based on today.</p>
+          {summary?.cmp && <p>{verdict(summary.cmp.volume)}</p>}
+          <p className="muted small">Your next session will suggest weights based on today.</p>
         </section>
       )}
 
       <div className="stats">
         <div><strong>{w.finishedAt ? fmtDuration(w.finishedAt - w.startedAt) : '–'}</strong><small>Duration</small></div>
         <div><strong>{fmtWeight(workoutVolume(w), units)}</strong><small>Volume</small></div>
-        <div><strong>{w.exercises.reduce((a, e) => a + e.sets.length, 0)}</strong><small>Sets</small></div>
-        <div><strong>{workoutCalories(w, byId, settings, finished?.filter((x) => x.id !== w.id))}</strong><small>kcal (est.)</small></div>
+        <div><strong>{workingSets(w)}</strong><small>Working sets</small></div>
+        <div><strong>{summary?.kcal ?? '–'}</strong><small>kcal (est.)</small></div>
       </div>
+
+      {summary && summary.prs.length > 0 && (
+        <section className="card">
+          <h2>🏆 Personal records</h2>
+          <ul className="plain">
+            {summary.prs.map((p) => (
+              <li key={p.exerciseId} className="section-head">
+                <span>{exerciseName(byId, p.exerciseId)}</span>
+                <strong>{p.timed ? fmtSecs(p.reps) : p.weight ? `${fmt(toDisplay(p.weight, units))} ${units} × ${p.reps}` : `${p.reps} reps`}</strong>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {summary?.cmp && (
+        <section className="card">
+          <h2>Compared with last time</h2>
+          <p className="muted small">{summary.cmp.prev.name}, {fmtDate(summary.cmp.prev.startedAt)}</p>
+          <ul className="plain compare">
+            <CompareRow label="Volume" c={summary.cmp.volume} show={(v) => fmtWeight(v, units)} />
+            <CompareRow label="Working sets" c={summary.cmp.sets} show={String} />
+            <CompareRow label="Duration" c={summary.cmp.duration} show={(v) => fmtDuration(v)} neutral />
+            <CompareRow label="Calories" c={{ now: summary.kcal, before: summary.prevKcal, diff: summary.kcal - summary.prevKcal, pct: null }} show={(v) => `${v} kcal`} />
+          </ul>
+        </section>
+      )}
 
       {w.exercises.map((e, i) => (
         <section key={i} className="card">
@@ -93,5 +133,28 @@ export function WorkoutDetail() {
       <Link className="button secondary wide" to={`/history/${w.id}/edit`}>Edit workout</Link>
       <button className="ghost danger wide" onClick={remove}>Delete workout</button>
     </>
+  );
+}
+
+function verdict(volume: Change): string {
+  if (volume.pct == null) return 'First time logging weights for this one.';
+  if (volume.pct >= 3) return `You moved ${volume.pct}% more weight than last time. Nice work!`;
+  if (volume.pct <= -10) return `About ${-volume.pct}% less volume than last time. Rest up and go again.`;
+  return 'About the same volume as last time. Consistency counts.';
+}
+
+function CompareRow({ label, c, show, neutral = false }: { label: string; c: Change; show: (v: number) => string; neutral?: boolean }) {
+  const up = c.diff > 0;
+  const same = Math.abs(c.diff) < 1e-9 || (neutral && Math.abs(c.diff) < 60000);
+  const sign = same ? '' : up ? '▲ ' : '▼ ';
+  const tone = same || neutral ? '' : up ? 'up' : 'down';
+  return (
+    <li className="section-head">
+      <span>{label}</span>
+      <span>
+        <strong>{show(c.now)}</strong>{' '}
+        <small className={`delta ${tone}`}>{same ? 'same' : `${sign}${show(Math.abs(c.diff))}${c.pct != null ? ` (${up ? '+' : ''}${c.pct}%)` : ''}`}</small>
+      </span>
+    </li>
   );
 }
