@@ -309,3 +309,19 @@ a.list-item::after, button.list-item::after { content: '›'; margin-left: auto;
 .delta { color: var(--muted); white-space: nowrap; }
 .delta.up { color: var(--success); }
 .delta.down { color: var(--danger); }
+
+/* Training calendar */
+.cal-summary { margin: 2px 0 0; text-align: center; }
+.calendar .cal-day {
+  background: transparent; color: var(--text); box-shadow: none; border: 0; padding: 0; min-height: 36px; border-radius: 10px;
+  font: inherit; font-size: 0.9rem; font-weight: 400; position: relative;
+}
+.calendar .cal-day:disabled { opacity: 1; cursor: default; }
+.calendar .cal-day.future { color: var(--muted); opacity: 0.5; }
+.calendar .cal-day.hit { background: var(--grad); color: var(--accent-ink); font-weight: 700; }
+.calendar .cal-day.multi::after { content: ''; position: absolute; bottom: 3px; left: 50%; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: #fff; }
+.calendar .cal-day.today { outline: 1px solid var(--muted); }
+.calendar .cal-day.picked { outline: 2px solid #fff; outline-offset: 1px; }
+.cal-picked { margin-top: 10px; }
+.streaks { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 0.95rem; }
+.week-note { margin: 10px 0 0; }

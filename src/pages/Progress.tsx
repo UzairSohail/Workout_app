@@ -8,7 +8,7 @@ import { cap, useExercises } from '../exercises';
 import { fmtDate } from '../format';
 import { useFinished, useSettings } from '../hooks';
 import { allBests } from '../logic/records';
-import { daysAgo, setsPerMuscle, weeklySummary, weekStreak } from '../logic/progress';
+import { daysAgo, setsPerMuscle, weeklySummary, weekStreaks } from '../logic/progress';
 import { fmt, fromDisplay, toDisplay } from '../logic/units';
 
 const shortDate = (t: number) => new Date(t).toLocaleDateString(undefined, { day: 'numeric', month: 'numeric' });
@@ -71,7 +71,7 @@ export function ProgressView() {
   const { byId } = useExercises();
   const weeks = useMemo(() => weeklySummary(finished ?? [], 12), [finished]);
   const muscles = useMemo(() => setsPerMuscle(finished ?? [], byId, daysAgo(7)), [finished, byId]);
-  const streak = weekStreak(weeks);
+  const streak = useMemo(() => weekStreaks(finished ?? []).current, [finished]);
   const thisWeek = weeks[weeks.length - 1];
   const toUnits = (kg: number) => toDisplay(kg, units);
   const bests = useMemo(() => allBests(finished ?? []), [finished]);
