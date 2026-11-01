@@ -1,5 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { fmtClock } from '../format';
+import { useSettings } from '../hooks';
+import { alertPrefs, beepPlayed, cancelBeep, restOver, scheduleBeep, unlockAudio } from '../logic/restAlert';
+
+/** An alert noticed later than this (e.g. coming back to the app) is skipped, the bar just says Go. */
+const STALE_MS = 20_000;
 
 const KEY = 'rest-timer';
 
@@ -23,34 +28,22 @@ function write(s: TimerState | null) {
 }
 
 export const startRest = (seconds: number) => {
+  // Called from the tap that ticks a set off, which is when browsers let us unlock audio.
+  unlockAudio();
   if (seconds > 0) write({ endAt: Date.now() + seconds * 1000, total: seconds });
 };
-export const stopRest = () => write(null);
-
-function beep() {
-  try {
-    const Ctx = window.AudioContext ?? (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-    const ctx = new Ctx();
-    [0, 0.25, 0.5].forEach((t) => {
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.frequency.value = 880;
-      g.gain.setValueAtTime(0.2, ctx.currentTime + t);
-      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.2);
-      o.connect(g).connect(ctx.destination);
-      o.start(ctx.currentTime + t);
-      o.stop(ctx.currentTime + t + 0.2);
-    });
-    setTimeout(() => ctx.close(), 1000);
-  } catch {
-    /* audio unavailable */
-  }
-}
+export const stopRest = () => {
+  cancelBeep();
+  write(null);
+};
 
 export function RestTimer() {
   const [state, setState] = useState<TimerState | null>(read);
   const [now, setNow] = useState(Date.now());
   const fired = useRef<number | null>(null);
+  const prefs = alertPrefs(useSettings());
+  const prefsRef = useRef(prefs);
+  prefsRef.current = prefs;
 
   useEffect(() => {
     const sync = () => setState(read());
@@ -62,12 +55,27 @@ export function RestTimer() {
     };
   }, []);
 
+  // Schedule the beep ahead of time so it plays on the dot, even if the page is in the background.
+  const endAt = state?.endAt;
+  useEffect(() => {
+    const plan = () => {
+      if (endAt == null || !prefsRef.current.sound) return cancelBeep();
+      if (endAt > Date.now()) scheduleBeep(endAt);
+      else cancelBeep();
+    };
+    plan();
+    // Audio time stops while iOS has the app paused, so plan again on return.
+    const onShow = () => document.visibilityState === 'visible' && plan();
+    document.addEventListener('visibilitychange', onShow);
+    return () => document.removeEventListener('visibilitychange', onShow);
+  }, [endAt, prefs.sound]);
+
   const remaining = state ? (state.endAt - now) / 1000 : 0;
   useEffect(() => {
     if (state && remaining <= 0 && fired.current !== state.endAt) {
       fired.current = state.endAt;
-      navigator.vibrate?.([300, 150, 300]);
-      beep();
+      if (Date.now() - state.endAt > STALE_MS) return cancelBeep();
+      restOver(prefsRef.current, { hidden: document.visibilityState === 'hidden', beepScheduled: beepPlayed() });
     }
   }, [state, remaining]);
 

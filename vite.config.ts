@@ -26,6 +26,8 @@ export default defineConfig({
         ],
       },
       workbox: {
+        // Rest-timer notification taps (public/sw-rest.js).
+        importScripts: ['sw-rest.js'],
         globPatterns: ['**/*.{js,css,html,svg,png,json}'],
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         runtimeCaching: [
