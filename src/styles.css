@@ -302,3 +302,10 @@ a.list-item::after, button.list-item::after { content: '›'; margin-left: auto;
 @keyframes pr-wiggle { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-14deg) scale(1.15); } 75% { transform: rotate(14deg) scale(1.15); } }
 @media (prefers-reduced-motion: reduce) { .pr-toast, .pr-toast-icon { animation: none; } }
 .pr-link-icon { font-size: 1.6rem; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 12px; background: var(--accent-soft); flex-shrink: 0; }
+
+/* Workout summary */
+.compare li { padding: 6px 0; border-top: 1px solid var(--border); }
+.compare li:first-child { border-top: 0; }
+.delta { color: var(--muted); white-space: nowrap; }
+.delta.up { color: var(--success); }
+.delta.down { color: var(--danger); }
