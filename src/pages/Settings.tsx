@@ -31,7 +31,7 @@ function RestAlertCard({ s }: { s: Settings }) {
     if (prefs.vibrate) vibrate();
   };
   return (
-    <section className="card form">
+    <section className="card form rest-alert">
       <h2>Rest timer alert</h2>
       <label className="toggle">
         <input type="checkbox" checked={prefs.sound} onChange={(e) => updateSettings({ restSound: e.target.checked })} />

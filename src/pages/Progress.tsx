@@ -1,14 +1,16 @@
 import { useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Link } from 'react-router-dom';
-import { BarChart, HBars, LineChart } from '../components/Charts';
+import { BarChart, LineChart } from '../components/Charts';
 import { NumInput } from '../components/NumInput';
 import { db, logBodyWeight } from '../db';
-import { cap, useExercises } from '../exercises';
+import { useExercises } from '../exercises';
 import { fmtDate } from '../format';
 import { useFinished, useSettings } from '../hooks';
 import { allBests } from '../logic/records';
-import { daysAgo, setsPerMuscle, weeklySummary, weekStreaks } from '../logic/progress';
+import { muscleBalance } from '../logic/balance';
+import { MuscleBalance } from '../components/MuscleBalance';
+import { daysAgo, weeklySummary, weekStreaks } from '../logic/progress';
 import { fmt, fromDisplay, toDisplay } from '../logic/units';
 
 const shortDate = (t: number) => new Date(t).toLocaleDateString(undefined, { day: 'numeric', month: 'numeric' });
@@ -70,7 +72,8 @@ export function ProgressView() {
   const { units } = useSettings();
   const { byId } = useExercises();
   const weeks = useMemo(() => weeklySummary(finished ?? [], 12), [finished]);
-  const muscles = useMemo(() => setsPerMuscle(finished ?? [], byId, daysAgo(7)), [finished, byId]);
+  const balance = useMemo(() => muscleBalance(finished ?? [], byId, daysAgo(7)), [finished, byId]);
+  const trainedThisWeek = (finished ?? []).some((w) => w.startedAt >= daysAgo(7));
   const streak = useMemo(() => weekStreaks(finished ?? []).current, [finished]);
   const thisWeek = weeks[weeks.length - 1];
   const toUnits = (kg: number) => toDisplay(kg, units);
@@ -108,9 +111,8 @@ export function ProgressView() {
       </section>
 
       <section className="card">
-        <h2>Sets per muscle, last 7 days</h2>
-        <p className="muted small">Around 10–20 working sets per muscle each week is a good target for growth.</p>
-        {muscles.length ? <HBars rows={muscles.map(([m, n]) => [cap(m), n])} /> : <p className="muted">No workouts in the last 7 days.</p>}
+        <h2>Muscle balance, last 7 days</h2>
+        {trainedThisWeek ? <MuscleBalance balance={balance} /> : <p className="muted">No workouts in the last 7 days.</p>}
       </section>
 
       <BodyWeightCard />
