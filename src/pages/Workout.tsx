@@ -87,6 +87,16 @@ export function WorkoutPage() {
   const [supersetAfter, setSupersetAfter] = useState<number | null>(null);
   const [swapIndex, setSwapIndex] = useState<number | null>(null);
   const [noteFor, setNoteFor] = useState<number | null>(null);
+  const [toast, setToast] = useState<{ id: number; title: string; detail: string } | null>(null);
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 4500);
+    return () => clearTimeout(t);
+  }, [toast]);
+  const celebrate = (title: string, detail: string) => {
+    setToast({ id: Date.now(), title, detail });
+    navigator.vibrate?.([80, 60, 80, 60, 200]);
+  };
   const notes = useLiveQuery(
     async () => new Map<string, ExerciseNote>((await db.exerciseNotes.toArray()).map((n) => [n.exerciseId, n])),
     [],
@@ -244,15 +254,23 @@ export function WorkoutPage() {
           : [];
         const fmtLast = (x: { weight: number; reps: number }) =>
           timed ? (x.weight ? `${fmt(toDisplay(x.weight, units))}×${fmtSecs(x.reps)}` : fmtSecs(x.reps)) : `${fmt(toDisplay(x.weight, units))}×${x.reps}`;
+        const hasHistory = (info?.history.length ?? 0) > 0;
+        const prsBySet = info ? sessionPrs(le.sets, info.records, hasHistory) : [];
         const markDone = (si: number, reps?: number) => {
-          mutate((d) => {
-            const x = d.exercises[ei].sets[si];
-            x.done = true;
-            if (!editing) x.doneAt = Date.now();
-            if (reps != null) x.reps = reps;
-            if (x.reps == null) x.reps = x.target ?? s?.reps ?? (timed ? le.repMax : le.repMin);
-            if (x.weight == null && s?.weight != null) x.weight = s.weight;
-          });
+          const x = { ...le.sets[si], done: true };
+          if (!editing) x.doneAt = Date.now();
+          if (reps != null) x.reps = reps;
+          if (x.reps == null) x.reps = x.target ?? s?.reps ?? (timed ? le.repMax : le.repMin);
+          if (x.weight == null && s?.weight != null) x.weight = s.weight;
+          mutate((d) => { d.exercises[ei].sets[si] = x; });
+          if (!editing && info) {
+            const sets = le.sets.map((y, j) => (j === si ? x : y));
+            const prs = (sessionPrs(sets, info.records, hasHistory)[si] ?? []).filter((p) => !timed || p === 'reps');
+            if (prs.length) {
+              const what = timed ? fmtSecs(x.reps ?? 0) : x.weight ? `${fmt(toDisplay(x.weight, units))} ${units} × ${x.reps}` : `${x.reps} reps`;
+              celebrate(`${exerciseName(byId, le.exerciseId)}: ${what}`, timed ? 'Longest hold' : prs.map((p) => PR_LABEL[p]).join(' · '));
+            }
+          }
           // In a superset, go straight to the next exercise; rest after the last one.
           if (!editing && !inSuperset) startRest(le.sets[si].type === 'warmup' ? Math.min(60, le.rest) : le.rest);
         };
@@ -265,9 +283,7 @@ export function WorkoutPage() {
             if (mode === 'reps' && e.repMin >= 20) { e.repMin = 8; e.repMax = 12; }
           });
         };
-        const hasHistory = (info?.history.length ?? 0) > 0;
         let workingIndex = 0;
-        const prsBySet = info ? sessionPrs(le.sets, info.records, hasHistory) : [];
         return (
           <section key={ei} className={`card exercise ${inSuperset ? 'superset-start' : ''} ${afterSuperset ? 'superset-cont' : ''}`}>
             {inSuperset && !afterSuperset && <span className="superset-tag">Superset</span>}
@@ -398,6 +414,15 @@ export function WorkoutPage() {
       {!editing && <button className="ghost danger wide" onClick={() => discard()}>Discard workout</button>}
 
       {!editing && <RestTimer />}
+      {toast && (
+        <div key={toast.id} className="pr-toast" role="status" onClick={() => setToast(null)}>
+          <span className="pr-toast-icon" aria-hidden>🏆</span>
+          <span>
+            <strong>New PR! {toast.detail}</strong>
+            <small>{toast.title}</small>
+          </span>
+        </div>
+      )}
 
       {swapIndex !== null && w.exercises[swapIndex] && (
         <ExercisePicker

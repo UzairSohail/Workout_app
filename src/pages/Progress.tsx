@@ -1,11 +1,13 @@
 import { useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { Link } from 'react-router-dom';
 import { BarChart, HBars, LineChart } from '../components/Charts';
 import { NumInput } from '../components/NumInput';
 import { db, logBodyWeight } from '../db';
 import { cap, useExercises } from '../exercises';
 import { fmtDate } from '../format';
 import { useFinished, useSettings } from '../hooks';
+import { allBests } from '../logic/records';
 import { daysAgo, setsPerMuscle, weeklySummary, weekStreak } from '../logic/progress';
 import { fmt, fromDisplay, toDisplay } from '../logic/units';
 
@@ -72,6 +74,9 @@ export function ProgressView() {
   const streak = weekStreak(weeks);
   const thisWeek = weeks[weeks.length - 1];
   const toUnits = (kg: number) => toDisplay(kg, units);
+  const bests = useMemo(() => allBests(finished ?? []), [finished]);
+  const monthAgo = daysAgo(30);
+  const recentPrs = bests.filter((b) => b.lastPrAt >= monthAgo).length;
 
   return (
     <>
@@ -80,6 +85,14 @@ export function ProgressView() {
         <div><strong>{streak}</strong><small>Week streak</small></div>
         <div><strong>{finished?.length ?? 0}</strong><small>All time</small></div>
       </div>
+
+      <Link className="list-item" to="/records">
+        <span className="pr-link-icon" aria-hidden>🏆</span>
+        <span>
+          <strong>Personal records</strong>
+          <small className="muted">{bests.length ? `Bests on ${bests.length} exercise${bests.length === 1 ? '' : 's'} · ${recentPrs} with a new best in the last 30 days` : 'Your bests show up after your first workout'}</small>
+        </span>
+      </Link>
 
       <section className="card">
         <h2>Workouts per week</h2>
