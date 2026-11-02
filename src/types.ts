@@ -43,7 +43,7 @@ export interface Settings {
   /** Year of birth, for the age in the calorie estimate. */
   birthYear?: number;
   experience?: 'beginner' | 'intermediate' | 'advanced';
-  /** Weekly weigh-in reminder day, 0 = Sunday … 6 = Saturday, -1 = off. Defaults to Sunday. */
+  /** Weigh-in reminder: 7 = every day (default), 0 = Sunday … 6 = Saturday once a week, -1 = off. */
   weighInDay?: number;
   /** When the user last tapped "Skip this week" on the reminder. */
   weighInSkippedAt?: number;

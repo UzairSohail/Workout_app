@@ -349,3 +349,10 @@ a.list-item::after, button.list-item::after { content: '›'; margin-left: auto;
 .set-timer-box .row { align-self: stretch; }
 .set-timer-label { font-size: 0.85rem; color: var(--muted); }
 .set-timer-clock { font-size: 2.6rem; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }
+
+/* Body weight */
+.trend.labelled .pt-value { fill: var(--text); font-size: 10px; font-weight: 600; }
+.trend.labelled .pt-label { fill: var(--muted); font-size: 9.5px; }
+.weight-today { font-size: 2rem; font-weight: 700; line-height: 1.1; }
+.weight-change { white-space: nowrap; }
+.weight-link { display: flex; flex-direction: column; gap: 2px; color: var(--text); text-decoration: none; }

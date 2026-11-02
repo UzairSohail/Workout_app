@@ -1,72 +1,19 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Link } from 'react-router-dom';
-import { BarChart, LineChart } from '../components/Charts';
-import { NumInput } from '../components/NumInput';
-import { db, logBodyWeight } from '../db';
+import { BarChart } from '../components/Charts';
+import { changeText, kgText, weekStats } from '../components/WeightSummary';
+import { db } from '../db';
 import { useExercises } from '../exercises';
-import { fmtDate } from '../format';
 import { useFinished, useSettings } from '../hooks';
 import { allBests } from '../logic/records';
 import { muscleBalance } from '../logic/balance';
 import { MuscleBalance } from '../components/MuscleBalance';
 import { daysAgo, weeklySummary, weekStreaks } from '../logic/progress';
-import { fmt, fromDisplay, toDisplay } from '../logic/units';
+import { toDisplay } from '../logic/units';
 
 const shortDate = (t: number) => new Date(t).toLocaleDateString(undefined, { day: 'numeric', month: 'numeric' });
 const compact = (n: number) => (n >= 10000 ? `${Math.round(n / 1000)}k` : n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(Math.round(n)));
-const todayInput = () => {
-  const d = new Date();
-  return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
-};
-
-function BodyWeightCard() {
-  const { units } = useSettings();
-  const entries = useLiveQuery(() => db.bodyWeight.orderBy('date').toArray(), []);
-  const [value, setValue] = useState<number | null>(null);
-  const [date, setDate] = useState(todayInput);
-
-  const add = async () => {
-    if (value == null || value <= 0) return;
-    // Noon local time, so the date never slips across a timezone boundary.
-    const t = new Date(`${date}T12:00:00`).getTime();
-    await logBodyWeight(fromDisplay(value, units), Number.isNaN(t) ? Date.now() : t);
-    setValue(null);
-  };
-
-  const latest = entries?.[entries.length - 1];
-  return (
-    <section className="card form">
-      <div className="section-head">
-        <h2>Body weight</h2>
-        {latest && <strong>{fmt(Math.round(toDisplay(latest.weight, units) * 10) / 10)} {units}</strong>}
-      </div>
-      <div className="row">
-        <label className="mini-field"><span>Weight ({units})</span><NumInput decimal value={value} onChange={setValue} ariaLabel="Body weight" /></label>
-        <label className="mini-field"><span>Date</span><input type="date" value={date} onChange={(e) => setDate(e.target.value)} /></label>
-        <button onClick={add} disabled={value == null}>Add</button>
-      </div>
-      {entries && entries.length >= 2 && (
-        <LineChart
-          label="Body weight"
-          points={entries.map((e) => ({ t: e.date, v: toDisplay(e.weight, units) }))}
-          format={(v) => `${fmt(Math.round(v * 10) / 10)} ${units}`}
-        />
-      )}
-      {entries && entries.length > 0 && (
-        <ul className="plain">
-          {[...entries].reverse().slice(0, 5).map((e) => (
-            <li key={e.id} className="section-head">
-              <span>{fmtDate(e.date)} · {fmt(Math.round(toDisplay(e.weight, units) * 10) / 10)} {units}</span>
-              <button className="ghost danger" aria-label="Delete entry" onClick={() => db.bodyWeight.delete(e.id)}>✕</button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </section>
-  );
-}
-
 export function ProgressView() {
   const finished = useFinished();
   const { units } = useSettings();
@@ -80,6 +27,10 @@ export function ProgressView() {
   const bests = useMemo(() => allBests(finished ?? []), [finished]);
   const monthAgo = daysAgo(30);
   const recentPrs = bests.filter((b) => b.lastPrAt >= monthAgo).length;
+  const weights = useLiveQuery(() => db.bodyWeight.toArray(), []);
+  const wk = weekStats(weights ?? []);
+  const weightLine = wk.thisWeek.avg != null ? `This week avg ${kgText(wk.thisWeek.avg, units)}${wk.thisWeekChange != null ? ` · ${changeText(wk.thisWeekChange, units)} vs last week` : ''}`
+    : wk.lastWeek.avg != null ? `Last week avg ${kgText(wk.lastWeek.avg, units)}` : 'Log your weight daily and see the weekly average';
 
   return (
     <>
@@ -94,6 +45,14 @@ export function ProgressView() {
         <span>
           <strong>Personal records</strong>
           <small className="muted">{bests.length ? `Bests on ${bests.length} exercise${bests.length === 1 ? '' : 's'} · ${recentPrs} with a new best in the last 30 days` : 'Your bests show up after your first workout'}</small>
+        </span>
+      </Link>
+
+      <Link className="list-item" to="/weight">
+        <span className="pr-link-icon" aria-hidden>⚖️</span>
+        <span>
+          <strong>Body weight</strong>
+          <small className="muted">{weightLine}</small>
         </span>
       </Link>
 
@@ -115,7 +74,6 @@ export function ProgressView() {
         {trainedThisWeek ? <MuscleBalance balance={balance} /> : <p className="muted">No workouts in the last 7 days.</p>}
       </section>
 
-      <BodyWeightCard />
     </>
   );
 }
