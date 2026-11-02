@@ -68,6 +68,8 @@ export interface PlannedExercise {
   repMax: number;
   rest: number;
   scheme?: SchemeKind;
+  /** 'time' = sets are held for seconds (repMin/repMax are seconds). Absent = the exercise's usual way. */
+  mode?: LogMode;
 }
 
 export interface LiftState {
