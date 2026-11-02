@@ -8,34 +8,52 @@ import { fmtDate, fmtDuration } from '../format';
 import { useActiveWorkout, useFinished, useSettings } from '../hooks';
 import { liftKey, SCHEME_LABEL, uses531, WEEKS_531 } from '../logic/schemes';
 import { startWorkout } from '../logic/session';
-import { fmt, fromDisplay, toDisplay } from '../logic/units';
-import { weighInDue } from '../logic/weighIn';
+import { fromDisplay } from '../logic/units';
+import { EVERY_DAY, todaysEntry, weighInDay, weighInDue } from '../logic/weighIn';
+import { changeText, kgText, weekStats } from '../components/WeightSummary';
 import { weekStreaks } from '../logic/progress';
 import { muscleBalance } from '../logic/balance';
 import { NumInput } from '../components/NumInput';
 import type { BodyWeight, Day, Program, Settings, Workout } from '../types';
-import { CalendarIcon, DumbbellIcon, HistoryIcon, PlusIcon } from '../components/Icons';
+import { DumbbellIcon, HistoryIcon, PlusIcon, ScaleIcon } from '../components/Icons';
 
 const greeting = (h = new Date().getHours()) => (h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening');
 
-function WeighInCard({ settings, entries }: { settings: Settings; entries: BodyWeight[] }) {
+/** Always on Home: asks for today's weight when it's due, otherwise shows the weekly averages. */
+function WeightCard({ settings, entries }: { settings: Settings; entries: BodyWeight[] }) {
   const [value, setValue] = useState<number | null>(null);
-  const last = entries.reduce<BodyWeight | undefined>((a, e) => (!a || e.date > a.date ? e : a), undefined);
   const units = settings.units;
+  const due = weighInDue(entries, settings);
+  const today = todaysEntry(entries);
+  const daily = weighInDay(settings) === EVERY_DAY;
+  const { thisWeek, lastWeek, lastWeekChange } = weekStats(entries);
+  const summary = [
+    thisWeek.avg != null && `This week avg ${kgText(thisWeek.avg, units)}`,
+    lastWeek.avg != null && `last week ${kgText(lastWeek.avg, units)}${lastWeekChange != null ? ` (${changeText(lastWeekChange, units)})` : ''}`,
+  ].filter(Boolean).join(' · ').replace(/^l/, 'L');
   return (
-    <section className="card accent">
-      <h2>⚖️ Weigh-in day</h2>
-      <p className="muted small">
-        Log your weight to keep track of how it changes week to week.
-        {last ? ` Last time: ${fmt(Math.round(toDisplay(last.weight, units) * 10) / 10)} ${units} on ${fmtDate(last.date)}.` : ''}
-      </p>
-      <div className="row">
-        <label className="mini-field"><span>Weight ({units})</span>
-          <NumInput decimal ariaLabel="Weekly weigh-in" value={value} onChange={setValue} />
-        </label>
+    <section className={`card${due ? ' accent' : ''}`}>
+      <div className="section-head">
+        <h2>⚖️ {due ? (daily ? "Today's weight" : 'Weigh-in day') : 'Body weight'}</h2>
+        <Link to="/weight">Graph ›</Link>
       </div>
-      <button className="wide" disabled={!value || value <= 0} onClick={() => value && logBodyWeight(fromDisplay(value, units))}>Save weight</button>
-      <button className="ghost wide" onClick={() => updateSettings({ weighInSkippedAt: Date.now() })}>Skip this week</button>
+      {due ? (
+        <>
+          <div className="row">
+            <label className="mini-field"><span>Weight ({units})</span>
+              <NumInput decimal ariaLabel="Today's weight" value={value} onChange={setValue} />
+            </label>
+          </div>
+          <button className="wide" disabled={!value || value <= 0} onClick={() => value && logBodyWeight(fromDisplay(value, units))}>Save weight</button>
+          {summary && <p className="muted small">{summary}</p>}
+          <button className="ghost wide" onClick={() => updateSettings({ weighInSkippedAt: Date.now() })}>{daily ? 'Not today' : 'Skip this week'}</button>
+        </>
+      ) : (
+        <Link to="/weight" className="weight-link">
+          {today && <span className="weight-today">{kgText(today.weight, units)} <small className="muted">today</small></span>}
+          <span className="muted small">{summary || 'Log your weight every day to see your weekly average.'}</span>
+        </Link>
+      )}
     </section>
   );
 }
@@ -103,7 +121,7 @@ export function Home() {
         </section>
       )}
 
-      {!active && weights && weighInDue(weights, settings) && <WeighInCard settings={settings} entries={weights} />}
+      {!active && weights && <WeightCard settings={settings} entries={weights} />}
 
       {!active && program && next && (
         <section className="card hero-card">
@@ -164,7 +182,7 @@ export function Home() {
             <button onClick={() => start({})}><span className="ico"><PlusIcon /></span>Empty workout</button>
           )}
           <Link to="/exercises"><span className="ico"><DumbbellIcon /></span>Exercises</Link>
-          <Link to="/programs"><span className="ico"><CalendarIcon /></span>Splits</Link>
+          <Link to="/weight"><span className="ico"><ScaleIcon /></span>Weight</Link>
           <Link to="/history?tab=progress"><span className="ico"><HistoryIcon /></span>Progress</Link>
         </div>
         <Link className="button secondary wide" to="/import">📷 Copy a plan from a screenshot</Link>

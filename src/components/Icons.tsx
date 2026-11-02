@@ -17,3 +17,4 @@ export const GearIcon = () => (
 );
 export const PlusIcon = () => <Svg><path d="M12 5v14M5 12h14" /></Svg>;
 export const SparkIcon = () => <Svg><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6" /></Svg>;
+export const ScaleIcon = () => <Svg><rect x="3" y="3" width="18" height="18" rx="4" /><path d="M8 9a5 5 0 0 1 8 0" /><path d="M12 9.5 13.5 7" /></Svg>;

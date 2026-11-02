@@ -1,0 +1,129 @@
+import { useMemo, useState } from 'react';
+import { useLiveQuery } from 'dexie-react-hooks';
+import { useNavigate } from 'react-router-dom';
+import { LabelledLineChart, LineChart } from '../components/Charts';
+import { NumInput } from '../components/NumInput';
+import { changeText, kgText, weekStats } from '../components/WeightSummary';
+import { db, logBodyWeight } from '../db';
+import { fmtDate } from '../format';
+import { useSettings } from '../hooks';
+import { fmt, fromDisplay, toDisplay } from '../logic/units';
+import { todaysEntry, weeklyAverages } from '../logic/weighIn';
+
+const shortDate = (t: number) => new Date(t).toLocaleDateString(undefined, { day: 'numeric', month: 'numeric' });
+const dateInput = (t = Date.now()) => {
+  const d = new Date(t);
+  return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+};
+
+/** Daily body weight log with weekly averages. */
+export function WeightPage() {
+  const { units } = useSettings();
+  const navigate = useNavigate();
+  const entries = useLiveQuery(() => db.bodyWeight.orderBy('date').toArray(), []);
+  const [value, setValue] = useState<number | null>(null);
+  const [date, setDate] = useState(() => dateInput());
+  const [showAll, setShowAll] = useState(false);
+
+  const list = entries ?? [];
+  const today = todaysEntry(list);
+  const stats = weekStats(list);
+  const weeks = useMemo(() => {
+    const all = weeklyAverages(list, 12);
+    const first = all.findIndex((w) => w.avg != null);
+    return first < 0 ? [] : all.slice(first);
+  }, [list]);
+  const monthAgo = Date.now() - 30 * 864e5;
+  const recent = list.filter((e) => e.date >= monthAgo);
+  const disp = (kg: number) => Math.round(toDisplay(kg, units) * 10) / 10;
+
+  const save = async () => {
+    if (value == null || value <= 0) return;
+    // Noon local time, so the date never slips across a timezone boundary.
+    const t = new Date(`${date}T12:00:00`).getTime();
+    await logBodyWeight(fromDisplay(value, units), Number.isNaN(t) ? Date.now() : t);
+    setValue(null);
+    setDate(dateInput());
+  };
+
+  const pastDay = date !== dateInput();
+  const shown = [...list].reverse().slice(0, showAll ? undefined : 14);
+
+  return (
+    <>
+      <header className="page-head">
+        <button className="ghost back" onClick={() => navigate(-1)}>‹ Back</button>
+        <h1>Body weight</h1>
+        <p className="muted small">Weigh yourself every day, ideally in the morning before eating. Daily numbers jump around, so the weekly average is the one to watch.</p>
+      </header>
+
+      <section className="card form">
+        <div className="section-head">
+          <h2>{pastDay ? `Weight on ${fmtDate(new Date(`${date}T12:00:00`).getTime())}` : 'Today'}</h2>
+          {today && !pastDay && <strong>✓ {kgText(today.weight, units)}</strong>}
+        </div>
+        <div className="row">
+          <label className="mini-field"><span>Weight ({units})</span>
+            <NumInput decimal value={value} onChange={setValue} ariaLabel="Body weight" placeholder={today && !pastDay ? String(disp(today.weight)) : undefined} />
+          </label>
+          <label className="mini-field"><span>Date</span>
+            <input type="date" value={date} max={dateInput()} onChange={(e) => setDate(e.target.value || dateInput())} />
+          </label>
+        </div>
+        <button className="wide" onClick={save} disabled={value == null || value <= 0}>
+          {(pastDay ? list.some((e) => dateInput(e.date) === date) : today) ? 'Update weight' : 'Save weight'}
+        </button>
+      </section>
+
+      <div className="stats">
+        <div>
+          <strong>{stats.thisWeek.avg != null ? kgText(stats.thisWeek.avg, units) : '–'}</strong>
+          <small>This week avg{stats.thisWeek.count ? ` (${stats.thisWeek.count} day${stats.thisWeek.count === 1 ? '' : 's'})` : ''}</small>
+        </div>
+        <div>
+          <strong>{stats.lastWeek.avg != null ? kgText(stats.lastWeek.avg, units) : '–'}</strong>
+          <small>Last week avg</small>
+        </div>
+        <div>
+          <strong className="weight-change">{stats.lastWeekChange != null ? changeText(stats.lastWeekChange, units) : '–'}</strong>
+          <small>Last week vs before</small>
+        </div>
+      </div>
+
+      <section className="card">
+        <h2>Weekly average</h2>
+        {weeks.length > 0 ? (
+          <>
+            <LabelledLineChart label="Weekly average body weight" format={(v) => fmt(Math.round(v * 10) / 10)}
+              points={weeks.map((w) => ({ key: w.start, label: shortDate(w.start), v: w.avg == null ? null : toDisplay(w.avg, units) }))} />
+            <p className="muted small">Average of the days you weighed in, Monday to Sunday ({units}). The last point is this week so far.</p>
+          </>
+        ) : <p className="muted">Log your weight and your weekly average shows up here.</p>}
+      </section>
+
+      {recent.length >= 2 && (
+        <section className="card">
+          <h2>Every day, last 30 days</h2>
+          <LineChart label="Daily body weight" points={recent.map((e) => ({ t: e.date, v: toDisplay(e.weight, units) }))}
+            format={(v) => `${fmt(Math.round(v * 10) / 10)} ${units}`} />
+        </section>
+      )}
+
+      {list.length > 0 && (
+        <section className="card">
+          <h2>Log</h2>
+          <ul className="plain">
+            {shown.map((e) => (
+              <li key={e.id} className="section-head">
+                <span>{fmtDate(e.date)} · {kgText(e.weight, units)}</span>
+                <button className="ghost danger" aria-label={`Delete ${fmtDate(e.date)}`}
+                  onClick={() => confirm(`Delete the weigh-in from ${fmtDate(e.date)}?`) && db.bodyWeight.delete(e.id)}>✕</button>
+              </li>
+            ))}
+          </ul>
+          {!showAll && list.length > 14 && <button className="ghost wide" onClick={() => setShowAll(true)}>Show all {list.length}</button>}
+        </section>
+      )}
+    </>
+  );
+}

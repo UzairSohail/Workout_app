@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { backupNow, saveFile } from '../backup';
 import { db, importBackup, logBodyWeight, updateSettings, type Backup } from '../db';
-import { DAYS, weighInDay } from '../logic/weighIn';
+import { DAYS, EVERY_DAY, weighInDay } from '../logic/weighIn';
 import { fmtDate } from '../format';
 import { NumInput } from '../components/NumInput';
 import { exerciseName, useExercises } from '../exercises';
@@ -178,13 +178,14 @@ export function SettingsPage() {
             ))}
           </div>
         </div>
-        <label>Weekly weigh-in reminder
+        <label>Weigh-in reminder
           <select value={weighInDay(s)} onChange={(e) => updateSettings({ weighInDay: Number(e.target.value) })}>
-            {DAYS.map((d, i) => <option key={d} value={i}>{d}s</option>)}
+            <option value={EVERY_DAY}>Every day</option>
+            {DAYS.map((d, i) => <option key={d} value={i}>Once a week, {d}s</option>)}
             <option value={-1}>Off</option>
           </select>
         </label>
-        <p className="muted small">On that day, Home asks for your weight. You can log it any other day too, on Home or in Progress.</p>
+        <p className="muted small">Home asks for your weight until you've logged it. Tap Weight on Home to see your weekly averages.</p>
       </section>
 
       <section className="card form">

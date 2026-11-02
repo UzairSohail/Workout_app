@@ -12,6 +12,7 @@ import { ExerciseDetail } from './pages/ExerciseDetail';
 import { CustomExercise } from './pages/CustomExercise';
 import { SettingsPage } from './pages/Settings';
 import { RecordsPage } from './pages/Records';
+import { WeightPage } from './pages/Weight';
 import { CalendarIcon, DumbbellIcon, GearIcon, HistoryIcon, HomeIcon } from './components/Icons';
 
 const tabs = [
@@ -41,6 +42,7 @@ export function App() {
           <Route path="/exercises/:id" element={<ExerciseDetail />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/records" element={<RecordsPage />} />
+          <Route path="/weight" element={<WeightPage />} />
         </Routes>
       </main>
       <nav className="tabbar">
