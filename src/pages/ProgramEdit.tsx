@@ -7,7 +7,8 @@ import { StartingWeights } from '../components/StartingWeights';
 import { SCHEME_LABEL } from '../logic/schemes';
 import { exerciseName, useExercises } from '../exercises';
 import { useSettings } from '../hooks';
-import type { Program, SchemeKind } from '../types';
+import { defaultMode } from '../logic/session';
+import type { LogMode, PlannedExercise, Program, SchemeKind } from '../types';
 import { copyProgram } from './Programs';
 
 function NumberField({ label, value, onChange, disabled }: {
@@ -22,6 +23,13 @@ function NumberField({ label, value, onChange, disabled }: {
       />
     </label>
   );
+}
+
+/** Switches a planned exercise between reps and a timed hold, with a sensible range for each. */
+function setPlanMode(e: PlannedExercise, mode: LogMode) {
+  e.mode = mode;
+  if (mode === 'time' && e.repMax < 20) { e.repMin = 30; e.repMax = 60; }
+  if (mode === 'reps' && e.repMin >= 20) { e.repMin = 8; e.repMax = 12; }
 }
 
 export function ProgramEdit() {
@@ -90,7 +98,10 @@ export function ProgramEdit() {
           </div>
           {day.exercises.length === 0 && <p className="muted">No exercises yet.</p>}
           <ol className="plan">
-            {day.exercises.map((e, ei) => (
+            {day.exercises.map((e, ei) => {
+              const timed = !e.scheme && (e.mode ?? defaultMode(byId.get(e.exerciseId))) === 'time';
+              const unit = timed ? 'sec' : 'reps';
+              return (
               <li key={ei}>
                 <div className="section-head">
                   <span>
@@ -106,11 +117,17 @@ export function ProgramEdit() {
                 </div>
                 <div className="row">
                   <NumberField label="Sets" value={e.sets} disabled={ro} onChange={(n) => mutate((d) => { d.days[di].exercises[ei].sets = Math.max(1, n); })} />
-                  <NumberField label="Min reps" value={e.repMin} disabled={ro} onChange={(n) => mutate((d) => { d.days[di].exercises[ei].repMin = n; })} />
-                  <NumberField label="Max reps" value={e.repMax} disabled={ro} onChange={(n) => mutate((d) => { d.days[di].exercises[ei].repMax = n; })} />
+                  <NumberField label={`Min ${unit}`} value={e.repMin} disabled={ro} onChange={(n) => mutate((d) => { d.days[di].exercises[ei].repMin = n; })} />
+                  <NumberField label={`Max ${unit}`} value={e.repMax} disabled={ro} onChange={(n) => mutate((d) => { d.days[di].exercises[ei].repMax = n; })} />
                   <NumberField label="Rest (s)" value={e.rest} disabled={ro} onChange={(n) => mutate((d) => { d.days[di].exercises[ei].rest = n; })} />
                 </div>
-                {!ro && (
+                {!ro && !e.scheme && (
+                  <div className="segmented mode-toggle" role="group" aria-label="Count sets by">
+                    <button className={timed ? '' : 'on'} aria-pressed={!timed} onClick={() => timed && mutate((d) => { setPlanMode(d.days[di].exercises[ei], 'reps'); })}>Reps</button>
+                    <button className={timed ? 'on' : ''} aria-pressed={timed} onClick={() => !timed && mutate((d) => { setPlanMode(d.days[di].exercises[ei], 'time'); })}>⏱ Time</button>
+                  </div>
+                )}
+                {!ro && !timed && (
                   <label className="mini-field">
                     <span>Progression</span>
                     <select value={e.scheme ?? ''} onChange={(ev) => mutate((d) => {
@@ -127,7 +144,8 @@ export function ProgramEdit() {
                   </label>
                 )}
               </li>
-            ))}
+              );
+            })}
           </ol>
           {!ro && <button className="secondary wide" onClick={() => setPickerFor(di)}>+ Add exercise</button>}
         </section>
@@ -147,7 +165,9 @@ export function ProgramEdit() {
           onClose={() => setPickerFor(null)}
           onPick={(ex) => {
             mutate((d) => {
-              d.days[pickerFor].exercises.push({ exerciseId: ex.id, sets: 3, repMin: 8, repMax: 12, rest: settings.defaultRest });
+              const planned: PlannedExercise = { exerciseId: ex.id, sets: 3, repMin: 8, repMax: 12, rest: settings.defaultRest };
+              if (defaultMode(ex) === 'time') setPlanMode(planned, 'time');
+              d.days[pickerFor].exercises.push(planned);
             });
             setPickerFor(null);
           }}

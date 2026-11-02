@@ -283,6 +283,11 @@ export function WorkoutPage() {
             if (mode === 'reps' && e.repMin >= 20) { e.repMin = 8; e.repMax = 12; }
           });
         };
+        const switchMode = (mode: LogMode) => {
+          // Logged numbers would change meaning (10 reps → 10 sec), so check first.
+          if (le.sets.some((x) => x.done) && !confirm(`Switch to ${mode === 'time' ? 'time' : 'reps'}? Sets you already ticked will count as ${mode === 'time' ? 'seconds' : 'reps'}.`)) return;
+          setMode(mode);
+        };
         let workingIndex = 0;
         return (
           <section key={ei} className={`card exercise ${inSuperset ? 'superset-start' : ''} ${afterSuperset ? 'superset-cont' : ''}`}>
@@ -302,11 +307,6 @@ export function WorkoutPage() {
                 <div>
                   <button className="ghost" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); setSwapIndex(ei); }}>Swap exercise</button>
                   <button className="ghost" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); setNoteFor(ei); }}>{note ? 'Edit note' : 'Add note'}</button>
-                  {!le.scheme && (
-                    <button className="ghost" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); setMode(timed ? 'reps' : 'time'); }}>
-                      {timed ? 'Log reps instead of time' : 'Log time instead of reps'}
-                    </button>
-                  )}
                   {ei < w.exercises.length - 1 && (
                     <button className="ghost" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); mutate((d) => { d.exercises[ei].supersetWithNext = !le.supersetWithNext || undefined; }); }}>
                       {le.supersetWithNext ? 'Unlink superset' : 'Superset with next'}
@@ -325,6 +325,12 @@ export function WorkoutPage() {
               </details>
             </div>
 
+            {!le.scheme && (
+              <div className="segmented mode-toggle" role="group" aria-label="Count sets by">
+                <button className={timed ? '' : 'on'} aria-pressed={!timed} onClick={() => timed && switchMode('reps')}>Reps</button>
+                <button className={timed ? 'on' : ''} aria-pressed={timed} onClick={() => !timed && switchMode('time')}>⏱ Time</button>
+              </div>
+            )}
             {s && s.kind !== 'new' && <p className={`suggestion ${s.kind}`}>{s.kind === 'increase' ? '⬆️ ' : s.kind === 'deload' ? '⬇️ ' : '➡️ '}{s.message}</p>}
             {s && s.kind === 'new' && <p className="suggestion">{s.message}</p>}
             {le.scheme && le.note && <p className="suggestion program">📋 {le.note}</p>}
@@ -387,7 +393,7 @@ export function WorkoutPage() {
               })}
             </div>
             {timed && !editing && nextSet >= 0 && (
-              <SetTimer key={nextSet} label={`set ${nextSet + 1}`} target={le.sets[nextSet].reps ?? le.repMax} onStop={(sec) => markDone(nextSet, sec)} />
+              <SetTimer key={nextSet} id={`${w.id}:${ei}:${nextSet}`} label={`set ${nextSet + 1}`} target={le.sets[nextSet].reps ?? le.repMax} onStop={(sec) => markDone(nextSet, sec)} />
             )}
             <div className="row">
               <button className="secondary grow" onClick={() => mutate((d) => {

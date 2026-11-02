@@ -135,7 +135,7 @@ export async function startWorkout(
     exercises = opts.day.exercises.map((p) =>
       p.scheme && state
         ? schemeExercise(p as PlannedExercise & { scheme: SchemeKind }, state, finished, byId, settings)
-        : newLoggedExercise(p.exerciseId, p.sets, p.repMin, p.repMax, p.rest, finished, byId, settings, modeFor(p.exerciseId)),
+        : newLoggedExercise(p.exerciseId, p.sets, p.repMin, p.repMax, p.rest, finished, byId, settings, p.mode ?? modeFor(p.exerciseId)),
     );
   } else if (opts.copyOf) {
     name = opts.copyOf.name;

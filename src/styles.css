@@ -339,3 +339,13 @@ a.list-item::after, button.list-item::after { content: '›'; margin-left: auto;
 .balance-tag.skipped { color: var(--danger); border-color: rgba(248, 113, 113, 0.5); }
 .rest-alert label.toggle { flex-direction: row; align-items: center; color: var(--text); font-size: 0.95rem; }
 .rest-alert label.toggle input { width: 20px; height: 20px; flex-shrink: 0; }
+
+/* Timed sets: reps/time switch and the countdown */
+.mode-toggle { margin: 8px 0 2px; }
+.mode-toggle button { min-height: 32px; padding: 4px 16px; font-size: 0.9rem; }
+.set-timer-box { margin-top: 10px; padding: 12px; border-radius: 14px; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; gap: 6px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--warn) 28%, transparent) var(--p, 0%), var(--surface-2) var(--p, 0%)); }
+.set-timer-box.hit { background: color-mix(in srgb, var(--success) 30%, var(--surface-2)); }
+.set-timer-box .row { align-self: stretch; }
+.set-timer-label { font-size: 0.85rem; color: var(--muted); }
+.set-timer-clock { font-size: 2.6rem; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }
