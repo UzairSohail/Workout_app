@@ -4,8 +4,8 @@ import { db, uid, updateSettings } from '../db';
 import { exerciseName, useExercises } from '../exercises';
 import { useSettings } from '../hooks';
 import { GEAR, generatorEquipment, hasGear } from '../logic/equipment';
-import { mainTargets, TARGETS } from '../logic/targets';
-import { generateProgram, weekCoverage, type Equipment, type Experience, type GeneratorInput, type Goal } from '../logic/generator';
+import { GROUP_LABEL, mainTargets, TARGETS } from '../logic/targets';
+import { generateProgram, weekCoverage, weeklySets, WEEKLY_SETS, type Equipment, type Experience, type GeneratorInput, type Goal } from '../logic/generator';
 
 function Choice<T extends string | number>({ label, value, options, onChange }: {
   label: string;
@@ -38,6 +38,8 @@ export function Generate() {
     [input, id, byId, missingEquipment],
   );
   const coverage = useMemo(() => weekCoverage(program), [program]);
+  // Muscles with real work (a few sets or more), biggest first; lower back and traps only ever get spill-over from big lifts.
+  const sets = useMemo(() => [...weeklySets(program)].filter(([g, n]) => n >= 3 && g !== 'lowerBack' && g !== 'traps').sort((a, b) => b[1] - a[1]), [program]);
   const set = <K extends keyof GeneratorInput>(k: K) => (v: GeneratorInput[K]) => setInput({ ...input, [k]: v });
 
   const save = async () => {
@@ -83,6 +85,15 @@ export function Generate() {
             ? <>, but not {coverage.missing.map((t) => TARGETS[t].label.toLowerCase()).join(', ')}. More days, more time or more equipment fills the gaps.</>
             : <>, with nothing important left out.</>}
         </p>
+        <p className="small eyebrow">Hard sets per week (aim {WEEKLY_SETS.low}–{WEEKLY_SETS.high})</p>
+        <div className="chips">
+          {sets.map(([g, n]) => (
+            <span key={g} className={`balance-tag ${n < WEEKLY_SETS.low ? 'low' : n > WEEKLY_SETS.high ? 'high' : 'good'}`}>{GROUP_LABEL[g]} {n}</span>
+          ))}
+        </div>
+        {sets.some(([, n]) => n < WEEKLY_SETS.low) && (
+          <p className="muted small">Yellow ones are under {WEEKLY_SETS.low} because there's only so much you can fit in {input.minutes} minutes. More time or another day per week brings them up.</p>
+        )}
         {program.days.map((d) => (
           <div key={d.id} className="preview-day">
             <strong>{d.name}</strong>

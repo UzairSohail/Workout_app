@@ -36,6 +36,14 @@ export interface Settings {
   warmups?: boolean;
   /** Put areas the last similar workout missed first, adding an exercise if needed. Defaults to on. */
   catchUp?: boolean;
+  /** Swap accessories done for about 5 weeks straight for one that trains the same area. Defaults to on. */
+  rotate?: boolean;
+  /** Deload week runs until this time. */
+  deloadUntil?: number;
+  /** When the last deload week started; training weeks are counted from here. */
+  lastDeloadAt?: number;
+  /** "Not now" on the deload suggestion; asks again two weeks later. */
+  deloadSnoozedAt?: number;
   /** Library equipment types the user's gym doesn't have; hidden from pickers and the generator. */
   missingEquipment?: string[];
   /** Profile used to suggest starting weights. Body weight in kg (latest), height in cm. */
@@ -131,6 +139,8 @@ export interface LoggedExercise {
   note?: string;
   /** Why this exercise was moved up or added: it trains an area the last similar workout missed. */
   focus?: string;
+  /** Part of a deload week: fewer, lighter sets, so the usual progression advice doesn't apply. */
+  deload?: boolean;
   scheme?: SchemeKind;
   /** 'time' logs seconds in the reps field. */
   mode?: LogMode;

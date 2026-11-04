@@ -204,3 +204,33 @@ export function mainTargets(exerciseId: string, min = 0.6): string[] {
     .sort((a, b) => b[1] - a[1])
     .map(([t]) => TARGETS[t].label);
 }
+
+export const GROUP_LABEL: Record<Group, string> = {
+  chest: 'Chest', delts: 'Shoulders', rearDelts: 'Rear delts', back: 'Back', lowerBack: 'Lower back', traps: 'Traps',
+  biceps: 'Biceps', triceps: 'Triceps', quads: 'Quads', hams: 'Hamstrings', glutes: 'Glutes', calves: 'Calves', core: 'Abs',
+};
+
+/**
+ * How much one set of an exercise counts toward each muscle group's weekly sets: a full set where
+ * the group is a main target, half where it's clearly worked too (the same rule as Muscle balance).
+ */
+export function groupCredit(mv: Move): Map<Group, number> {
+  const best = new Map<Group, number>();
+  for (const [t, w] of Object.entries(mv.hits) as [Target, number][]) {
+    const g = TARGETS[t].group;
+    best.set(g, Math.max(best.get(g) ?? 0, w));
+  }
+  const out = new Map<Group, number>();
+  for (const [g, w] of best) if (w >= 0.4) out.set(g, w >= 0.8 ? 1 : 0.5);
+  return out;
+}
+
+/** How alike two exercises are in what they train, from 0 (nothing shared) to 1 (the same areas). */
+export function similarity(a: Move, b: Move): number {
+  let dot = 0, na = 0, nb = 0;
+  for (const t of Object.keys(TARGETS) as Target[]) {
+    const x = a.hits[t] ?? 0, y = b.hits[t] ?? 0;
+    dot += x * y; na += x * x; nb += y * y;
+  }
+  return na && nb ? dot / Math.sqrt(na * nb) : 0;
+}

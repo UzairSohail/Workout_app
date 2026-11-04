@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react';
 import { EQUIPMENT, MUSCLES, cap, useExercises } from '../exercises';
 import { useFinished, useSettings } from '../hooks';
 import { hasGear } from '../logic/equipment';
-import { freshAlternatives } from '../logic/variety';
+import { freshAlternatives, sameAreaAlternatives } from '../logic/variety';
+import { mainTargets } from '../logic/targets';
 import type { Exercise } from '../types';
 import { CustomExerciseForm, nameFromQuery } from './CustomExerciseForm';
 import { ExerciseImage } from './ExerciseImage';
@@ -136,6 +137,11 @@ export function ExercisePicker({ onPick, onClose, title = 'Add exercise', initia
     () => (swapping ? freshAlternatives(swapping, all, finished ?? [], missingEquipment) : []),
     [swapping, all, finished, missingEquipment],
   );
+  const sameArea = useMemo(
+    () => (swapping ? sameAreaAlternatives(swapping, byId, missingEquipment) : []),
+    [swapping, byId, missingEquipment],
+  );
+  const different = fresh.filter((e) => !sameArea.includes(e));
   const pickRow = (e: Exercise) => (
     <li key={e.id}>
       <button className="list-item" onClick={() => onPick(e)}>
@@ -178,10 +184,16 @@ export function ExercisePicker({ onPick, onClose, title = 'Add exercise', initia
       <MyGearToggle missing={missingEquipment} on={mine} setOn={setMine} />
       <div className="modal-body">
         {loading && <p className="muted">Loading exercises…</p>}
-        {fresh.length > 0 && !q && (
+        {sameArea.length > 0 && !q && (
+          <>
+            <h3 className="list-head">🎯 Same area: {mainTargets(swapping!.id).join(' · ').toLowerCase()}</h3>
+            <ul className="list">{sameArea.map(pickRow)}</ul>
+          </>
+        )}
+        {different.length > 0 && !q && (
           <>
             <h3 className="list-head">🔄 Something different</h3>
-            <ul className="list">{fresh.map(pickRow)}</ul>
+            <ul className="list">{different.map(pickRow)}</ul>
             <h3 className="list-head">All matches</h3>
           </>
         )}

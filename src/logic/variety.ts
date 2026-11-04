@@ -1,6 +1,7 @@
 import type { Exercise, Workout } from '../types';
 import { GENERATOR_EXERCISES } from './generator';
 import { hasGear } from './equipment';
+import { MOVE_BY_ID, MOVES, similarity } from './targets';
 
 const STRENGTH = new Set(['strength', 'powerlifting', 'olympic weightlifting', 'strongman']);
 const COMMON = new Set(['barbell', 'dumbbell', 'cable', 'machine']);
@@ -62,4 +63,21 @@ export function freshAlternatives(
     if (!out.includes(c)) out.push(c);
   }
   return out;
+}
+
+/**
+ * Replacements that train the same parts of the muscle (incline press for incline press, not any chest
+ * exercise), best match first, for when a machine is taken. Uses the muscle-area tags, so it's empty for
+ * exercises without them.
+ */
+export function sameAreaAlternatives(ex: Exercise, byId: Map<string, Exercise>, missing: readonly string[] | undefined, count = 4): Exercise[] {
+  const me = MOVE_BY_ID.get(ex.id);
+  if (!me) return [];
+  return MOVES
+    .filter((m) => m.id !== ex.id && byId.has(m.id) && hasGear(byId.get(m.id), missing))
+    .map((m) => [similarity(me, m) * (0.8 + 0.2 * m.quality), m] as const)
+    .filter(([s]) => s >= 0.6)
+    .sort((a, b) => b[0] - a[0])
+    .slice(0, count)
+    .map(([, m]) => byId.get(m.id)!);
 }

@@ -221,6 +221,13 @@ export function SettingsPage() {
             <small className="muted">If your last push day (or pull, legs…) skipped part of a muscle, like upper chest, the next one does it first or adds an exercise for it.</small>
           </span>
         </label>
+        <label className="toggle big">
+          <input type="checkbox" checked={s.rotate !== false} onChange={(e) => updateSettings({ rotate: e.target.checked })} />
+          <span>
+            <strong>Rotate accessories</strong>
+            <small className="muted">After about 5 weeks of the same isolation exercise on a day, swap it for one that hits the same area. Main lifts stay so you keep progressing.</small>
+          </span>
+        </label>
       </section>
 
       <section className="card form">

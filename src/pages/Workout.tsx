@@ -242,7 +242,7 @@ export function WorkoutPage() {
         const info = prev.get(le.exerciseId);
         const last = info?.history[0];
         const timed = le.mode === 'time';
-        const s = finished && !le.scheme && !timed ? suggestionFor(le, finished, byId, settings, w.id) : null;
+        const s = finished && !le.scheme && !timed && !le.deload ? suggestionFor(le, finished, byId, settings, w.id) : null;
         const note = notes.get(le.exerciseId)?.note ?? '';
         const inSuperset = !!le.supersetWithNext && ei < w.exercises.length - 1;
         const afterSuperset = !!w.exercises[ei - 1]?.supersetWithNext;
@@ -302,6 +302,9 @@ export function WorkoutPage() {
                   {last && <> · Last: {countedSets(last.sets).map(fmtLast).join(', ')}</>}
                 </small>
               </div>
+              {!editing && !le.sets.some((x) => x.done) && (
+                <button className="ghost swap-btn" aria-label="Swap exercise" title="Swap exercise" onClick={() => setSwapIndex(ei)}>⇄</button>
+              )}
               <details className="menu">
                 <summary aria-label="Exercise options">⋯</summary>
                 <div>
