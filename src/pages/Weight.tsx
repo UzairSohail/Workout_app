@@ -1,14 +1,14 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useNavigate } from 'react-router-dom';
-import { LabelledLineChart, TimeChart } from '../components/Charts';
+import { TimeChart } from '../components/Charts';
 import { NumInput } from '../components/NumInput';
 import { changeText, kgText, weekStats } from '../components/WeightSummary';
 import { db, logBodyWeight } from '../db';
 import { fmtDate } from '../format';
 import { useSettings } from '../hooks';
 import { fmt, fromDisplay, toDisplay } from '../logic/units';
-import { todaysEntry, weeklyAverages } from '../logic/weighIn';
+import { todaysEntry } from '../logic/weighIn';
 
 const dayMonth = (t: number) => new Date(t).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
 const weekdayDate = (t: number) => new Date(t).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
@@ -38,11 +38,6 @@ export function WeightPage() {
   const list = entries ?? [];
   const today = todaysEntry(list);
   const stats = weekStats(list);
-  const weeks = useMemo(() => {
-    const all = weeklyAverages(list, 12);
-    const first = all.findIndex((w) => w.avg != null);
-    return first < 0 ? [] : all.slice(first);
-  }, [list]);
   const days = RANGES.find((r) => r.key === range)!.days;
   const endOfToday = new Date().setHours(23, 59, 59, 999);
   const rangeFrom = days == null
@@ -103,17 +98,6 @@ export function WeightPage() {
           <small>Last week vs before</small>
         </div>
       </div>
-
-      <section className="card">
-        <h2>Weekly average</h2>
-        {weeks.length > 0 ? (
-          <>
-            <LabelledLineChart label="Weekly average body weight" format={(v) => fmt(Math.round(v * 10) / 10)}
-              points={weeks.map((w, i) => ({ key: w.start, label: i === weeks.length - 1 ? 'This wk' : dayMonth(w.start), v: w.avg == null ? null : toDisplay(w.avg, units) }))} />
-            <p className="muted small">Average of the days you weighed in, Monday to Sunday ({units}). Each date is the Monday the week starts; the last point is this week so far.</p>
-          </>
-        ) : <p className="muted">Log your weight and your weekly average shows up here.</p>}
-      </section>
 
       {list.length > 0 && (
         <section className="card">
