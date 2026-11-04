@@ -6,6 +6,7 @@ import { countedSets, LOWER_BODY } from './stats';
 import { applyCatchUp, lastSimilar, missedTargets, type CatchUpExercise } from './catchUp';
 import { hasGear } from './equipment';
 import { applyRotations, rotationsFor } from './rotation';
+import { deloadActive, deloadExercise } from './deload';
 import { startingWeight } from './startWeight';
 import { wantsWarmup, warmupSets } from './warmup';
 
@@ -170,6 +171,12 @@ export async function startWorkout(
       ),
       ...(e.supersetWithNext ? { supersetWithNext: true } : {}),
     }));
+  }
+  if (deloadActive(settings) && (opts.day || opts.copyOf)) {
+    exercises = exercises.map((e) => {
+      const d = deloadExercise(e, incrementFor(byId.get(e.exerciseId), settings), settings.units);
+      return d.deload ? { ...d, focus: ['Deload week: half the sets, about 10% lighter', e.focus].filter(Boolean).join(' · ') } : d;
+    });
   }
   if (settings.warmups !== false) exercises = exercises.map((e, i) => withWarmups(e, byId.get(e.exerciseId), i === 0, settings));
   const w: Workout = {

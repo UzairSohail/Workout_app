@@ -13,6 +13,7 @@ import { EVERY_DAY, todaysEntry, weighInDay, weighInDue } from '../logic/weighIn
 import { changeText, kgText, weekStats } from '../components/WeightSummary';
 import { weekStreaks } from '../logic/progress';
 import { muscleBalance } from '../logic/balance';
+import { deloadActive, deloadDue, DELOAD_AFTER_WEEKS } from '../logic/deload';
 import { fresherDay, recentLoad, recoveryNote, tiredGroups } from '../logic/recovery';
 import { NumInput } from '../components/NumInput';
 import type { BodyWeight, Day, Program, Settings, Workout } from '../types';
@@ -93,6 +94,9 @@ export function Home() {
   // Only nag about skipped muscles once there's a few workouts' worth of data this week.
   const skipped = finished && byId.size > 0 && thisWeek >= 2 ? muscleBalance(finished, byId, weekAgo).skipped : [];
   const next = program?.days[settings.nextDayIndex % Math.max(1, program.days.length)];
+  // 5/3/1 has its own deload week built in.
+  const deloadNow = deloadActive(settings);
+  const suggestDeload = !is531 && !!finished && deloadDue(finished, settings);
   // Don't hammer muscles that were trained hard in the last two days; offer a rested day instead.
   const load = finished ? recentLoad(finished, byId) : new Map();
   const tired = program && next ? tiredGroups(next, load, byId) : [];
@@ -123,6 +127,22 @@ export function Home() {
           <h2>Workout in progress</h2>
           <p className="muted">{active.name}, started {new Date(active.startedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</p>
           <Link className="button wide" to="/workout">Resume</Link>
+        </section>
+      )}
+
+      {!active && suggestDeload && (
+        <section className="card accent">
+          <h2>🧘 Time for a lighter week</h2>
+          <p className="muted small">You've trained hard for {DELOAD_AFTER_WEEKS}+ weeks in a row. A deload week (half the sets, about 10% lighter) lets your joints and muscles catch up, and you usually come back stronger.</p>
+          <button className="wide" onClick={() => { const now = Date.now(); updateSettings({ deloadUntil: now + 7 * 864e5, lastDeloadAt: now }); }}>Start a deload week</button>
+          <button className="ghost wide" onClick={() => updateSettings({ deloadSnoozedAt: Date.now() })}>Not now</button>
+        </section>
+      )}
+      {deloadNow && (
+        <section className="card">
+          <h2>🧘 Deload week</h2>
+          <p className="muted small">Until {new Date(settings.deloadUntil!).toLocaleDateString([], { weekday: 'long' })}: workouts start with half the sets at about 10% less weight. Normal training after that.</p>
+          <button className="ghost wide" onClick={() => updateSettings({ deloadUntil: Date.now() })}>End it early</button>
         </section>
       )}
 
