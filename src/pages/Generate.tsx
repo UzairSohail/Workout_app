@@ -4,7 +4,8 @@ import { db, uid, updateSettings } from '../db';
 import { exerciseName, useExercises } from '../exercises';
 import { useSettings } from '../hooks';
 import { GEAR, generatorEquipment, hasGear } from '../logic/equipment';
-import { generateProgram, type Equipment, type Experience, type GeneratorInput, type Goal } from '../logic/generator';
+import { mainTargets, TARGETS } from '../logic/targets';
+import { generateProgram, weekCoverage, type Equipment, type Experience, type GeneratorInput, type Goal } from '../logic/generator';
 
 function Choice<T extends string | number>({ label, value, options, onChange }: {
   label: string;
@@ -36,6 +37,7 @@ export function Generate() {
     () => generateProgram(input, id, Date.now(), (exId) => hasGear(byId.get(exId), missingEquipment)),
     [input, id, byId, missingEquipment],
   );
+  const coverage = useMemo(() => weekCoverage(program), [program]);
   const set = <K extends keyof GeneratorInput>(k: K) => (v: GeneratorInput[K]) => setInput({ ...input, [k]: v });
 
   const save = async () => {
@@ -75,12 +77,21 @@ export function Generate() {
         <p className="eyebrow">Your routine</p>
         <h2>{program.name}</h2>
         <p className="muted small">{program.description}</p>
+        <p className="small">
+          Picked so each muscle gets hit from different angles over the week: covers {coverage.covered.length} muscle areas
+          {coverage.missing.length
+            ? <>, but not {coverage.missing.map((t) => TARGETS[t].label.toLowerCase()).join(', ')}. More days, more time or more equipment fills the gaps.</>
+            : <>, with nothing important left out.</>}
+        </p>
         {program.days.map((d) => (
           <div key={d.id} className="preview-day">
             <strong>{d.name}</strong>
             <ul className="plain">
               {d.exercises.map((e, i) => (
-                <li key={i}>{exerciseName(byId, e.exerciseId)} <span className="muted">{e.sets} × {e.repMin}–{e.repMax}</span></li>
+                <li key={i}>
+                  {exerciseName(byId, e.exerciseId)} <span className="muted">{e.sets} × {e.repMin}–{e.repMax}</span>
+                  {mainTargets(e.exerciseId).length > 0 && <div className="muted small">{mainTargets(e.exerciseId).join(' · ')}</div>}
+                </li>
               ))}
             </ul>
           </div>
