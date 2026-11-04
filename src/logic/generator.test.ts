@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import type { Exercise } from '../types';
-import { GENERATOR_EXERCISES, generateProgram, weekCoverage, type GeneratorInput } from './generator';
+import { GENERATOR_EXERCISES, generateProgram, weekCoverage, weeklySets, WEEKLY_SETS, type GeneratorInput } from './generator';
 import { MOVE_BY_ID } from './targets';
 import { warmupSets } from './warmup';
 import { toDisplay } from './units';
@@ -82,6 +82,28 @@ describe('generateProgram', () => {
     const p = generateProgram({ ...base, days: 4 }, 'p', 0, (id) => MOVE_BY_ID.get(id)!.pattern !== 'press-incline');
     const used = p.days.flatMap((d) => d.exercises.map((e) => MOVE_BY_ID.get(e.exerciseId)!.pattern));
     expect(used).not.toContain('press-incline');
+  });
+
+  it('aims for 10–20 weekly sets on the big muscles when there is time', () => {
+    const p = generateProgram({ ...base, days: 4, experience: 'intermediate', minutes: 60 }, 'p');
+    const sets = weeklySets(p);
+    for (const g of ['chest', 'back', 'delts', 'quads', 'hams', 'glutes'] as const) {
+      expect(sets.get(g)).toBeGreaterThanOrEqual(WEEKLY_SETS.low);
+      expect(sets.get(g)).toBeLessThanOrEqual(WEEKLY_SETS.high);
+    }
+  });
+
+  it('never goes over 20 weekly sets or past the session time', () => {
+    for (const days of [2, 3, 4, 5, 6]) {
+      for (const minutes of [30, 45, 60, 90]) {
+        const p = generateProgram({ ...base, days, minutes, experience: 'intermediate' }, 'p');
+        for (const n of weeklySets(p).values()) expect(n).toBeLessThanOrEqual(WEEKLY_SETS.high);
+        for (const d of p.days) {
+          expect(d.exercises.reduce((n, e) => n + e.sets, 0)).toBeLessThanOrEqual({ 30: 12, 45: 16, 60: 20, 90: 28 }[minutes]!);
+          for (const e of d.exercises) expect(e.sets).toBeGreaterThanOrEqual(2);
+        }
+      }
+    }
   });
 
   it('uses heavier, lower-rep work for strength', () => {

@@ -1,5 +1,5 @@
 import type { Day, PlannedExercise, Program } from '../types';
-import { MOVE_BY_ID, MOVES, TARGETS, type Equipment, type Group, type Move, type Target } from './targets';
+import { groupCredit, MOVE_BY_ID, MOVES, TARGETS, type Equipment, type Group, type Move, type Target } from './targets';
 
 export type { Equipment } from './targets';
 export type Goal = 'strength' | 'muscle' | 'general';
@@ -138,6 +138,8 @@ export function generateProgram(input: GeneratorInput, id: string, now = Date.no
     return { id: `${id}-d${di}`, name, exercises };
   });
 
+  balanceWeeklySets(days, perSession, input.minutes);
+
   const goalText = { strength: 'strength', muscle: 'muscle', general: 'general fitness' }[input.goal];
   const eqText = { gym: 'a full gym', dumbbells: 'dumbbells', bodyweight: 'bodyweight only' }[input.equipment];
   return {
@@ -166,4 +168,64 @@ export function weekCoverage(program: Pick<Program, 'days'>): { covered: Target[
     // Small extras (traps, side glutes, front delts that every press already trains) aren't flagged.
     missing: all.filter((t) => !done(t) && TARGETS[t].priority >= 0.5),
   };
+}
+
+/** Weekly working sets aimed for per muscle: the usual range for growth (as on the Muscle balance page). */
+export const WEEKLY_SETS = { low: 10, high: 20 };
+const SETS_PER_SESSION: Record<number, number> = { 30: 12, 45: 16, 60: 20, 90: 28 };
+const MAX_SETS = 5;
+const SMALL = new Set<Group>(['biceps', 'triceps', 'rearDelts', 'calves', 'core', 'lowerBack', 'traps']);
+const MIN_SETS = 2;
+
+/** Weekly sets per muscle group, counting a full set for a main target and half for a clear secondary one. */
+export function weeklySets(program: Pick<Program, 'days'>): Map<Group, number> {
+  const out = new Map<Group, number>();
+  for (const d of program.days) for (const e of d.exercises) {
+    const mv = MOVE_BY_ID.get(e.exerciseId);
+    if (!mv) continue;
+    for (const [g, c] of groupCredit(mv)) out.set(g, (out.get(g) ?? 0) + c * e.sets);
+  }
+  return out;
+}
+
+/**
+ * Nudges set counts so every muscle the week trains as a main target gets 10–20 sets, within each
+ * session's time. Adds sets where a muscle is short (isolation work first, it's cheaper to recover
+ * from), then trims where one is over, never pushing another muscle out of range.
+ */
+function balanceWeeklySets(days: Day[], perSession: number, minutes: number) {
+  const cap = Math.max(SETS_PER_SESSION[minutes] ?? 20, perSession * MIN_SETS);
+  const entries = days.flatMap((d) => d.exercises.map((e) => ({ day: d, e, mv: MOVE_BY_ID.get(e.exerciseId)! }))).filter((x) => x.mv);
+  const dayTotal = (d: Day) => d.exercises.reduce((n, e) => n + e.sets, 0);
+  const trained = new Set(entries.flatMap(({ mv }) => [...groupCredit(mv)].filter(([, c]) => c === 1).map(([g]) => g)));
+  const sets = () => weeklySets({ days });
+
+  for (let guard = 0; guard < 200; guard++) {
+    const now = sets();
+    // Big muscles first when time is tight, then whichever is furthest behind.
+    const short = [...trained].filter((g) => (now.get(g) ?? 0) < WEEKLY_SETS.low)
+      .sort((a, b) => Number(SMALL.has(a)) - Number(SMALL.has(b)) || (now.get(a) ?? 0) - (now.get(b) ?? 0));
+    let added = false;
+    for (const g of short) {
+      const pick = entries
+        .filter(({ day, e, mv }) => groupCredit(mv).get(g) === 1 && e.sets < MAX_SETS && dayTotal(day) < cap
+          && [...groupCredit(mv)].every(([og, c]) => (now.get(og) ?? 0) + c <= WEEKLY_SETS.high))
+        .sort((a, b) => Number(a.mv.compound) - Number(b.mv.compound) || a.e.sets - b.e.sets)[0];
+      if (pick) { pick.e.sets++; added = true; break; }
+    }
+    if (!added) break;
+  }
+  for (let guard = 0; guard < 200; guard++) {
+    const now = sets();
+    const over = [...now].filter(([, n]) => n > WEEKLY_SETS.high).sort((a, b) => b[1] - a[1]).map(([g]) => g);
+    let removed = false;
+    for (const g of over) {
+      const pick = entries
+        .filter(({ e, mv }) => (groupCredit(mv).get(g) ?? 0) > 0 && e.sets > MIN_SETS
+          && [...groupCredit(mv)].every(([og, c]) => og === g || !trained.has(og) || (now.get(og) ?? 0) - c >= WEEKLY_SETS.low))
+        .sort((a, b) => b.e.sets - a.e.sets)[0];
+      if (pick) { pick.e.sets--; removed = true; break; }
+    }
+    if (!removed) break;
+  }
 }
