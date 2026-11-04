@@ -103,6 +103,7 @@ textarea { min-height: 80px; resize: vertical; }
 .card.accent { border-color: var(--accent); background: var(--surface); }
 .card > .button, .card > button.wide { margin-top: 10px; }
 .notice { background: var(--accent-soft); border: 1px solid rgba(236, 72, 153, 0.35); border-radius: 12px; padding: 10px 12px; font-size: 0.9rem; }
+.notice > button { margin-top: 8px; }
 .plain { list-style: none; padding: 0; margin: 8px 0; display: flex; flex-direction: column; gap: 4px; }
 .plan { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; margin: 10px 0; }
 .plan li { border-top: 1px solid var(--border); padding-top: 10px; }

@@ -13,6 +13,7 @@ import { EVERY_DAY, todaysEntry, weighInDay, weighInDue } from '../logic/weighIn
 import { changeText, kgText, weekStats } from '../components/WeightSummary';
 import { weekStreaks } from '../logic/progress';
 import { muscleBalance } from '../logic/balance';
+import { fresherDay, recentLoad, recoveryNote, tiredGroups } from '../logic/recovery';
 import { NumInput } from '../components/NumInput';
 import type { BodyWeight, Day, Program, Settings, Workout } from '../types';
 import { DumbbellIcon, HistoryIcon, PlusIcon, ScaleIcon } from '../components/Icons';
@@ -92,6 +93,10 @@ export function Home() {
   // Only nag about skipped muscles once there's a few workouts' worth of data this week.
   const skipped = finished && byId.size > 0 && thisWeek >= 2 ? muscleBalance(finished, byId, weekAgo).skipped : [];
   const next = program?.days[settings.nextDayIndex % Math.max(1, program.days.length)];
+  // Don't hammer muscles that were trained hard in the last two days; offer a rested day instead.
+  const load = finished ? recentLoad(finished, byId) : new Map();
+  const tired = program && next ? tiredGroups(next, load, byId) : [];
+  const fresher = tired.length && program && next ? fresherDay(program.days, next, load, byId) : undefined;
 
   return (
     <>
@@ -130,6 +135,12 @@ export function Home() {
             <p className="notice">Set your training maxes first so the app can work out your weights. <Link to={`/programs/${program.id}`}>Set them</Link></p>
           )}
           <h2>{next.name}</h2>
+          {tired.length > 0 && (
+            <div className="notice">
+              💤 {recoveryNote(tired, load)} {fresher ? <>{fresher.name} is fresher today.</> : <>A rest day or a lighter session would help.</>}
+              {fresher && <button className="secondary wide" onClick={() => start({ program, day: fresher })}>Do {fresher.name} instead</button>}
+            </div>
+          )}
           <ul className="plain">
             {next.exercises.map((e, i) => (
               <li key={i}>{exerciseName(byId, e.exerciseId)} <span className="muted">{e.scheme ? SCHEME_LABEL[e.scheme] : `${e.sets} × ${e.repMin}–${e.repMax}`}</span></li>
