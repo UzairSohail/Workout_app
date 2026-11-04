@@ -1,6 +1,7 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import type { Exercise, Workout } from '../types';
-import { freshAlternatives, isStale } from './variety';
+import { freshAlternatives, isStale, sameAreaAlternatives } from './variety';
 
 const ex = (id: string, muscle: string, equipment = 'barbell', extra: Partial<Exercise> = {}) =>
   ({ id, name: id, category: 'strength', equipment, mechanic: 'compound', primaryMuscles: [muscle], secondaryMuscles: [], instructions: [], images: [], ...extra }) as Exercise;
@@ -49,5 +50,22 @@ describe('freshAlternatives', () => {
     const picks = freshAlternatives(bench, all, [w(2, 'Dumbbell_Bench_Press', 'Incline_Dumbbell_Press')], ['cable'], 2, NOW).map((e) => e.id);
     expect(picks[0]).toBe('Pushups');
     expect(picks).not.toContain('Cable_Crossover');
+  });
+});
+
+describe('sameAreaAlternatives', () => {
+  const library: Exercise[] = JSON.parse(readFileSync(new URL('../../public/exercises.json', import.meta.url), 'utf8'));
+  const lib = new Map(library.map((e) => [e.id, e]));
+  it('swaps an incline press for other incline presses, not flat ones', () => {
+    const out = sameAreaAlternatives(lib.get('Incline_Dumbbell_Press')!, lib, undefined).map((e) => e.id);
+    expect(out.slice(0, 2)).toEqual(expect.arrayContaining(['Barbell_Incline_Bench_Press_-_Medium_Grip']));
+    expect(out.indexOf('Barbell_Incline_Bench_Press_-_Medium_Grip')).toBeLessThan(out.indexOf('Dumbbell_Bench_Press') >>> 0);
+  });
+  it('keeps to the same biceps head', () => {
+    expect(sameAreaAlternatives(lib.get('Preacher_Curl')!, lib, undefined)[0].id).toMatch(/Preacher|Concentration/);
+  });
+  it('leaves out equipment the gym is missing', () => {
+    const out = sameAreaAlternatives(lib.get('Incline_Dumbbell_Press')!, lib, ['barbell', 'machine']);
+    expect(out.every((e) => !['barbell', 'machine'].includes(e.equipment))).toBe(true);
   });
 });

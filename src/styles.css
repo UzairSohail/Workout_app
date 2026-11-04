@@ -154,6 +154,7 @@ a.list-item::after, button.list-item::after { content: '›'; margin-left: auto;
 .menu { position: relative; }
 .menu summary { list-style: none; cursor: pointer; padding: 8px 12px; font-size: 1.3rem; color: var(--muted); }
 .menu summary::-webkit-details-marker { display: none; }
+.swap-btn { padding: 8px 10px; font-size: 1.2rem; color: var(--muted); min-height: 0; }
 .menu > div {
   position: absolute; right: 0; top: 100%; z-index: 4; background: var(--surface-2); border: 1px solid var(--border);
   border-radius: 14px; display: flex; flex-direction: column; min-width: 170px; padding: 4px; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);

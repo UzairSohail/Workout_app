@@ -302,6 +302,9 @@ export function WorkoutPage() {
                   {last && <> · Last: {countedSets(last.sets).map(fmtLast).join(', ')}</>}
                 </small>
               </div>
+              {!editing && !le.sets.some((x) => x.done) && (
+                <button className="ghost swap-btn" aria-label="Swap exercise" title="Swap exercise" onClick={() => setSwapIndex(ei)}>⇄</button>
+              )}
               <details className="menu">
                 <summary aria-label="Exercise options">⋯</summary>
                 <div>
