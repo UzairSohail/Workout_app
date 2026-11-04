@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useNavigate } from 'react-router-dom';
-import { LabelledLineChart, LineChart } from '../components/Charts';
+import { LabelledLineChart, TimeChart } from '../components/Charts';
 import { NumInput } from '../components/NumInput';
 import { changeText, kgText, weekStats } from '../components/WeightSummary';
 import { db, logBodyWeight } from '../db';
@@ -10,7 +10,16 @@ import { useSettings } from '../hooks';
 import { fmt, fromDisplay, toDisplay } from '../logic/units';
 import { todaysEntry, weeklyAverages } from '../logic/weighIn';
 
-const shortDate = (t: number) => new Date(t).toLocaleDateString(undefined, { day: 'numeric', month: 'numeric' });
+const dayMonth = (t: number) => new Date(t).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+const weekdayDate = (t: number) => new Date(t).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
+const DAY = 864e5;
+const RANGES = [
+  { key: '1W', label: '1W', days: 7 },
+  { key: '1M', label: '1M', days: 30 },
+  { key: '3M', label: '3M', days: 91 },
+  { key: 'All', label: 'All', days: null },
+] as const;
+type RangeKey = (typeof RANGES)[number]['key'];
 const dateInput = (t = Date.now()) => {
   const d = new Date(t);
   return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
@@ -24,6 +33,7 @@ export function WeightPage() {
   const [value, setValue] = useState<number | null>(null);
   const [date, setDate] = useState(() => dateInput());
   const [showAll, setShowAll] = useState(false);
+  const [range, setRange] = useState<RangeKey>('1M');
 
   const list = entries ?? [];
   const today = todaysEntry(list);
@@ -33,8 +43,12 @@ export function WeightPage() {
     const first = all.findIndex((w) => w.avg != null);
     return first < 0 ? [] : all.slice(first);
   }, [list]);
-  const monthAgo = Date.now() - 30 * 864e5;
-  const recent = list.filter((e) => e.date >= monthAgo);
+  const days = RANGES.find((r) => r.key === range)!.days;
+  const endOfToday = new Date().setHours(23, 59, 59, 999);
+  const rangeFrom = days == null
+    ? (list.length ? new Date(list[0].date).setHours(0, 0, 0, 0) : endOfToday - 7 * DAY)
+    : new Date(endOfToday - days * DAY + 1).getTime();
+  const recent = list.filter((e) => e.date >= rangeFrom);
   const disp = (kg: number) => Math.round(toDisplay(kg, units) * 10) / 10;
 
   const save = async () => {
@@ -95,17 +109,25 @@ export function WeightPage() {
         {weeks.length > 0 ? (
           <>
             <LabelledLineChart label="Weekly average body weight" format={(v) => fmt(Math.round(v * 10) / 10)}
-              points={weeks.map((w) => ({ key: w.start, label: shortDate(w.start), v: w.avg == null ? null : toDisplay(w.avg, units) }))} />
-            <p className="muted small">Average of the days you weighed in, Monday to Sunday ({units}). The last point is this week so far.</p>
+              points={weeks.map((w, i) => ({ key: w.start, label: i === weeks.length - 1 ? 'This wk' : dayMonth(w.start), v: w.avg == null ? null : toDisplay(w.avg, units) }))} />
+            <p className="muted small">Average of the days you weighed in, Monday to Sunday ({units}). Each date is the Monday the week starts; the last point is this week so far.</p>
           </>
         ) : <p className="muted">Log your weight and your weekly average shows up here.</p>}
       </section>
 
-      {recent.length >= 2 && (
+      {list.length > 0 && (
         <section className="card">
-          <h2>Every day, last 30 days</h2>
-          <LineChart label="Daily body weight" points={recent.map((e) => ({ t: e.date, v: toDisplay(e.weight, units) }))}
-            format={(v) => `${fmt(Math.round(v * 10) / 10)} ${units}`} />
+          <h2>Every day</h2>
+          <div className="segmented range-chips" role="group" aria-label="Date range">
+            {RANGES.map((r) => (
+              <button key={r.key} className={range === r.key ? 'on' : ''} aria-pressed={range === r.key} onClick={() => setRange(r.key)}>{r.label}</button>
+            ))}
+          </div>
+          {recent.length > 0 ? (
+            <TimeChart label="Daily body weight" from={rangeFrom} to={endOfToday} dateLabel={dayMonth} pointDate={weekdayDate}
+              points={recent.map((e) => ({ t: e.date, v: toDisplay(e.weight, units) }))}
+              format={(v) => `${fmt(Math.round(v * 10) / 10)} ${units}`} valueLabel={(v) => fmt(Math.round(v * 10) / 10)} />
+          ) : <p className="muted">No weigh-ins in this range. Try a longer one.</p>}
         </section>
       )}
 

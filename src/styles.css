@@ -358,3 +358,9 @@ a.list-item::after, button.list-item::after { content: '›'; margin-left: auto;
 .weight-today { font-size: 2rem; font-weight: 700; line-height: 1.1; }
 .weight-change { white-space: nowrap; }
 .weight-link { display: flex; flex-direction: column; gap: 2px; color: var(--text); text-decoration: none; }
+.trend .grid { stroke: var(--border); stroke-width: 1; }
+.trend .grid.sel { stroke: currentColor; stroke-opacity: 0.35; stroke-dasharray: 3 3; }
+.trend figcaption { color: var(--text); margin-top: 4px; }
+.range-chips { margin: 4px 0 2px; }
+.range-chips button { padding: 6px 14px; }
+.trend.labelled .pt-value.dim { fill: var(--muted); font-weight: 500; }
