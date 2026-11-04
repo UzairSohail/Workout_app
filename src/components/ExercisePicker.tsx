@@ -141,6 +141,7 @@ export function ExercisePicker({ onPick, onClose, title = 'Add exercise', initia
     () => (swapping ? sameAreaAlternatives(swapping, byId, missingEquipment) : []),
     [swapping, byId, missingEquipment],
   );
+  const different = fresh.filter((e) => !sameArea.includes(e));
   const pickRow = (e: Exercise) => (
     <li key={e.id}>
       <button className="list-item" onClick={() => onPick(e)}>
@@ -189,10 +190,10 @@ export function ExercisePicker({ onPick, onClose, title = 'Add exercise', initia
             <ul className="list">{sameArea.map(pickRow)}</ul>
           </>
         )}
-        {fresh.length > 0 && !q && (
+        {different.length > 0 && !q && (
           <>
             <h3 className="list-head">🔄 Something different</h3>
-            <ul className="list">{fresh.map(pickRow)}</ul>
+            <ul className="list">{different.map(pickRow)}</ul>
             <h3 className="list-head">All matches</h3>
           </>
         )}

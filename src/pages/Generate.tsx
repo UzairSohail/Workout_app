@@ -38,8 +38,8 @@ export function Generate() {
     [input, id, byId, missingEquipment],
   );
   const coverage = useMemo(() => weekCoverage(program), [program]);
-  // Only muscles with real work (a few sets or more), biggest first.
-  const sets = useMemo(() => [...weeklySets(program)].filter(([, n]) => n >= 3).sort((a, b) => b[1] - a[1]), [program]);
+  // Muscles with real work (a few sets or more), biggest first; lower back and traps only ever get spill-over from big lifts.
+  const sets = useMemo(() => [...weeklySets(program)].filter(([g, n]) => n >= 3 && g !== 'lowerBack' && g !== 'traps').sort((a, b) => b[1] - a[1]), [program]);
   const set = <K extends keyof GeneratorInput>(k: K) => (v: GeneratorInput[K]) => setInput({ ...input, [k]: v });
 
   const save = async () => {
