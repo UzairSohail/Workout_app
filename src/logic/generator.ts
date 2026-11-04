@@ -1,8 +1,9 @@
 import type { Day, PlannedExercise, Program } from '../types';
+import { MOVE_BY_ID, MOVES, TARGETS, type Equipment, type Group, type Move, type Target } from './targets';
 
+export type { Equipment } from './targets';
 export type Goal = 'strength' | 'muscle' | 'general';
 export type Experience = 'beginner' | 'intermediate';
-export type Equipment = 'gym' | 'dumbbells' | 'bodyweight';
 
 export interface GeneratorInput {
   goal: Goal;
@@ -12,35 +13,8 @@ export interface GeneratorInput {
   minutes: number; // 30 | 45 | 60 | 90
 }
 
-type Pattern =
-  | 'squat' | 'hinge' | 'hpush' | 'vpush' | 'hpull' | 'vpull' | 'lunge' | 'glute'
-  | 'quad' | 'ham' | 'calf' | 'chest-iso' | 'side-delt' | 'rear-delt' | 'biceps' | 'triceps' | 'core';
-
-const COMPOUND: Set<Pattern> = new Set(['squat', 'hinge', 'hpush', 'vpush', 'hpull', 'vpull', 'lunge', 'glute']);
-
-/** Exercise options per movement pattern, best first, tagged with the least equipment they need. */
-const OPTIONS: Record<Pattern, [string, Equipment][]> = {
-  squat: [['Barbell_Squat', 'gym'], ['Leg_Press', 'gym'], ['Goblet_Squat', 'dumbbells'], ['Dumbbell_Squat', 'dumbbells'], ['Bodyweight_Squat', 'bodyweight']],
-  hinge: [['Romanian_Deadlift', 'gym'], ['Barbell_Deadlift', 'gym'], ['Stiff-Legged_Dumbbell_Deadlift', 'dumbbells'], ['Single_Leg_Glute_Bridge', 'bodyweight']],
-  hpush: [['Barbell_Bench_Press_-_Medium_Grip', 'gym'], ['Dumbbell_Bench_Press', 'dumbbells'], ['Incline_Dumbbell_Press', 'dumbbells'], ['Machine_Bench_Press', 'gym'], ['Pushups', 'bodyweight'], ['Decline_Push-Up', 'bodyweight']],
-  vpush: [['Dumbbell_Shoulder_Press', 'dumbbells'], ['Standing_Military_Press', 'gym'], ['Leverage_Shoulder_Press', 'gym'], ['Decline_Push-Up', 'bodyweight']],
-  hpull: [['Seated_Cable_Rows', 'gym'], ['Bent_Over_Barbell_Row', 'gym'], ['One-Arm_Dumbbell_Row', 'dumbbells'], ['Bent_Over_Two-Dumbbell_Row', 'dumbbells'], ['Inverted_Row', 'bodyweight']],
-  vpull: [['Wide-Grip_Lat_Pulldown', 'gym'], ['Close-Grip_Front_Lat_Pulldown', 'gym'], ['Pullups', 'bodyweight'], ['Chin-Up', 'bodyweight']],
-  lunge: [['Split_Squat_with_Dumbbells', 'dumbbells'], ['Dumbbell_Lunges', 'dumbbells'], ['Dumbbell_Rear_Lunge', 'dumbbells'], ['Bodyweight_Walking_Lunge', 'bodyweight']],
-  glute: [['Barbell_Hip_Thrust', 'gym'], ['Barbell_Glute_Bridge', 'gym'], ['Single_Leg_Glute_Bridge', 'bodyweight']],
-  quad: [['Leg_Extensions', 'gym'], ['Goblet_Squat', 'dumbbells'], ['Bodyweight_Squat', 'bodyweight']],
-  ham: [['Lying_Leg_Curls', 'gym'], ['Seated_Leg_Curl', 'gym'], ['Stiff-Legged_Dumbbell_Deadlift', 'dumbbells'], ['Single_Leg_Glute_Bridge', 'bodyweight']],
-  calf: [['Standing_Calf_Raises', 'gym'], ['Seated_Calf_Raise', 'gym'], ['Calf_Raise_On_A_Dumbbell', 'dumbbells']],
-  'chest-iso': [['Cable_Crossover', 'gym'], ['Butterfly', 'gym'], ['Dumbbell_Flyes', 'dumbbells'], ['Incline_Push-Up', 'bodyweight']],
-  'side-delt': [['Side_Lateral_Raise', 'dumbbells'], ['Cable_Seated_Lateral_Raise', 'gym']],
-  'rear-delt': [['Face_Pull', 'gym'], ['Reverse_Machine_Flyes', 'gym'], ['Reverse_Flyes', 'dumbbells']],
-  biceps: [['Dumbbell_Bicep_Curl', 'dumbbells'], ['Barbell_Curl', 'gym'], ['Hammer_Curls', 'dumbbells'], ['Chin-Up', 'bodyweight']],
-  triceps: [['Triceps_Pushdown_-_Rope_Attachment', 'gym'], ['Triceps_Pushdown', 'gym'], ['Standing_Dumbbell_Triceps_Extension', 'dumbbells'], ['Bench_Dips', 'bodyweight']],
-  core: [['Hanging_Leg_Raise', 'bodyweight'], ['Cable_Crunch', 'gym'], ['Dead_Bug', 'bodyweight'], ['Reverse_Crunch', 'bodyweight']],
-};
-
 /** Every exercise id the generator can choose, for checking against the library. */
-export const GENERATOR_EXERCISES = [...new Set(Object.values(OPTIONS).flat().map(([id]) => id))];
+export const GENERATOR_EXERCISES = MOVES.map((mv) => mv.id);
 
 const ALLOWED: Record<Equipment, Equipment[]> = {
   gym: ['gym', 'dumbbells', 'bodyweight'],
@@ -48,32 +22,35 @@ const ALLOWED: Record<Equipment, Equipment[]> = {
   bodyweight: ['bodyweight'],
 };
 
-// Day templates: movement patterns in priority order (time limits cut from the end).
-const T = {
-  fullA: ['squat', 'hpush', 'hpull', 'hinge', 'vpush', 'core', 'biceps', 'triceps'],
-  fullB: ['hinge', 'vpush', 'vpull', 'lunge', 'hpush', 'calf', 'rear-delt', 'core'],
-  fullC: ['squat', 'hpull', 'hpush', 'glute', 'vpull', 'side-delt', 'triceps', 'biceps'],
-  upper: ['hpush', 'hpull', 'vpush', 'vpull', 'side-delt', 'biceps', 'triceps', 'rear-delt'],
-  lower: ['squat', 'hinge', 'lunge', 'ham', 'calf', 'glute', 'quad', 'core'],
-  push: ['hpush', 'vpush', 'hpush', 'chest-iso', 'side-delt', 'triceps', 'triceps', 'core'],
-  pull: ['vpull', 'hpull', 'hinge', 'rear-delt', 'biceps', 'hpull', 'biceps', 'core'],
-  legs: ['squat', 'hinge', 'lunge', 'ham', 'quad', 'calf', 'glute', 'core'],
-} satisfies Record<string, Pattern[]>;
+/**
+ * What a kind of day trains: how much it cares about each muscle group (1 = this day's job, absent =
+ * not today), and how strongly it spreads across groups. A full-body day wants one exercise per big
+ * muscle; a push day has room to hit the chest from two angles.
+ */
+interface Focus { groups: Partial<Record<Group, number>>; spread: number }
+const F = {
+  full: { spread: 2, groups: { chest: 1, back: 1, quads: 1, hams: 0.9, glutes: 0.8, delts: 0.7, rearDelts: 0.5, biceps: 0.5, triceps: 0.5, calves: 0.4, core: 0.5 } },
+  upper: { spread: 1, groups: { chest: 1, back: 1, delts: 1, rearDelts: 0.8, biceps: 0.75, triceps: 0.75, traps: 0.3 } },
+  lower: { spread: 0.4, groups: { quads: 1, hams: 1, glutes: 1, calves: 1, core: 0.8, lowerBack: 0.4 } },
+  push: { spread: 0.35, groups: { chest: 1, delts: 1, triceps: 1 } },
+  pull: { spread: 0.35, groups: { back: 1, rearDelts: 1, biceps: 1, traps: 0.5, lowerBack: 0.3 } },
+  legs: { spread: 0.4, groups: { quads: 1, hams: 1, glutes: 1, calves: 1, core: 0.8, lowerBack: 0.4 } },
+} satisfies Record<string, Focus>;
 
-function splitFor(days: number, experience: Experience): { name: string; days: [string, Pattern[]][] } {
+function splitFor(days: number, experience: Experience): { name: string; days: [string, Focus][] } {
   switch (Math.max(2, Math.min(6, days))) {
     case 2:
-      return { name: 'Full Body', days: [['Full Body A', T.fullA], ['Full Body B', T.fullB]] };
+      return { name: 'Full Body', days: [['Full Body A', F.full], ['Full Body B', F.full]] };
     case 3:
       return experience === 'beginner'
-        ? { name: 'Full Body', days: [['Full Body A', T.fullA], ['Full Body B', T.fullB], ['Full Body C', T.fullC]] }
-        : { name: 'Push / Pull / Legs', days: [['Push', T.push], ['Pull', T.pull], ['Legs', T.legs]] };
+        ? { name: 'Full Body', days: [['Full Body A', F.full], ['Full Body B', F.full], ['Full Body C', F.full]] }
+        : { name: 'Push / Pull / Legs', days: [['Push', F.push], ['Pull', F.pull], ['Legs', F.legs]] };
     case 4:
-      return { name: 'Upper / Lower', days: [['Upper A', T.upper], ['Lower A', T.lower], ['Upper B', T.upper], ['Lower B', T.lower]] };
+      return { name: 'Upper / Lower', days: [['Upper A', F.upper], ['Lower A', F.lower], ['Upper B', F.upper], ['Lower B', F.lower]] };
     case 5:
-      return { name: 'PPL + Upper / Lower', days: [['Push', T.push], ['Pull', T.pull], ['Legs', T.legs], ['Upper', T.upper], ['Lower', T.lower]] };
+      return { name: 'PPL + Upper / Lower', days: [['Push', F.push], ['Pull', F.pull], ['Legs', F.legs], ['Upper', F.upper], ['Lower', F.lower]] };
     default:
-      return { name: 'Push / Pull / Legs ×2', days: [['Push A', T.push], ['Pull A', T.pull], ['Legs A', T.legs], ['Push B', T.push], ['Pull B', T.pull], ['Legs B', T.legs]] };
+      return { name: 'Push / Pull / Legs ×2', days: [['Push A', F.push], ['Pull A', F.pull], ['Legs A', F.legs], ['Push B', F.push], ['Pull B', F.pull], ['Legs B', F.legs]] };
   }
 }
 
@@ -89,27 +66,75 @@ function prescription(goal: Goal, experience: Experience, compound: boolean) {
   return experience === 'beginner' && base.sets >= 4 ? { ...base, sets: base.sets - 1 } : base;
 }
 
-/** Builds a program from quiz answers. Pure and deterministic, so the same answers give the same routine. */
+type Tally = Partial<Record<Target | Group, number>>;
+const add = (tally: Tally, mv: Move) => {
+  const groups = new Map<Group, number>();
+  for (const [t, w] of Object.entries(mv.hits) as [Target, number][]) {
+    tally[t] = (tally[t] ?? 0) + w;
+    const g = TARGETS[t].group;
+    groups.set(g, Math.max(groups.get(g) ?? 0, w));
+  }
+  for (const [g, w] of groups) tally[g] = (tally[g] ?? 0) + w;
+};
+
+/**
+ * How much picking this exercise now would add. Each part of a muscle the day is meant to train is
+ * worth its priority, and that worth falls quickly once it's been trained today and more slowly once
+ * it's been trained earlier in the week. So the second chest exercise of a day goes after the part the
+ * first one missed (incline after flat), and Upper B covers what Upper A didn't.
+ */
+function score(mv: Move, focus: Focus, today: Tally, week: Tally, patternsToday: Set<string>, usedThisWeek: Set<string>, goal: Goal): number {
+  let value = 0;
+  for (const [t, w] of Object.entries(mv.hits) as [Target, number][]) {
+    const { group, priority } = TARGETS[t];
+    const relevance = focus.groups[group] ?? 0;
+    if (!relevance) continue;
+    value += w * priority * relevance
+      / (1 + 2 * (today[t] ?? 0))
+      / (1 + focus.spread * (today[group] ?? 0))
+      / (1 + 0.25 * (week[t] ?? 0));
+  }
+  let s = value * mv.quality;
+  if (patternsToday.has(mv.pattern)) s *= 0.4;
+  if (usedThisWeek.has(mv.id)) s *= 0.75;
+  if (goal === 'strength' && mv.compound) s *= 1.15;
+  return s;
+}
+
+/**
+ * Builds a program from quiz answers by covering every part of each muscle the split trains: upper,
+ * mid and lower chest, all three delt heads, lats and mid back, both biceps and triceps heads, and so on.
+ * Pure and deterministic, so the same answers give the same routine.
+ */
 export function generateProgram(input: GeneratorInput, id: string, now = Date.now(), available: (exerciseId: string) => boolean = () => true): Program {
   const split = splitFor(input.days, input.experience);
   const allowed = new Set(ALLOWED[input.equipment]);
   const perSession = EXERCISES_PER_SESSION[input.minutes] ?? 6;
-  // Repeated day names (Upper A / Upper B) and repeated patterns in a day pick the next option, for variety.
-  const seenTemplate = new Map<Pattern[], number>();
+  const pool = MOVES.filter((mv) => allowed.has(mv.eq) && available(mv.id));
+  const week: Tally = {};
+  const usedThisWeek = new Set<string>();
 
-  const days: Day[] = split.days.map(([name, template], di) => {
-    const variant = seenTemplate.get(template) ?? 0;
-    seenTemplate.set(template, variant + 1);
-    const used = new Set<string>();
-    const exercises: PlannedExercise[] = [];
-    for (const pattern of template) {
-      if (exercises.length >= perSession) break;
-      const options = OPTIONS[pattern].filter(([ex, eq]) => allowed.has(eq) && !used.has(ex) && available(ex)).map(([ex]) => ex);
-      if (options.length === 0) continue;
-      const exerciseId = options[variant % options.length];
-      used.add(exerciseId);
-      exercises.push({ exerciseId, ...prescription(input.goal, input.experience, COMPOUND.has(pattern)) });
+  const days: Day[] = split.days.map(([name, focus], di) => {
+    const today: Tally = {};
+    const patterns = new Set<string>();
+    const picked: Move[] = [];
+    while (picked.length < perSession) {
+      let best: Move | undefined;
+      let bestScore = 0;
+      for (const mv of pool) {
+        if (picked.includes(mv)) continue;
+        const s = score(mv, focus, today, week, patterns, usedThisWeek, input.goal);
+        if (s > bestScore) { best = mv; bestScore = s; }
+      }
+      if (!best) break;
+      picked.push(best);
+      add(today, best);
+      patterns.add(best.pattern);
     }
+    for (const mv of picked) { add(week, mv); usedThisWeek.add(mv.id); }
+    // Heavy compound lifts first while fresh, then isolation work, otherwise in the order picked.
+    const ordered = [...picked.filter((mv) => mv.compound), ...picked.filter((mv) => !mv.compound)];
+    const exercises: PlannedExercise[] = ordered.map((mv) => ({ exerciseId: mv.id, ...prescription(input.goal, input.experience, mv.compound) }));
     return { id: `${id}-d${di}`, name, exercises };
   });
 
@@ -121,5 +146,24 @@ export function generateProgram(input: GeneratorInput, id: string, now = Date.no
     description: `Built for ${goalText}: ${input.days} days a week, about ${input.minutes} min, ${eqText}, ${input.experience}.`,
     days,
     createdAt: now,
+  };
+}
+
+/**
+ * Which muscle parts a week of this program trains (a solid share of at least one exercise,
+ * counting the share from compound lifts), and which important ones it leaves out.
+ */
+export function weekCoverage(program: Pick<Program, 'days'>): { covered: Target[]; missing: Target[] } {
+  const week: Tally = {};
+  for (const d of program.days) for (const e of d.exercises) {
+    const mv = MOVE_BY_ID.get(e.exerciseId);
+    if (mv) add(week, mv);
+  }
+  const all = Object.keys(TARGETS) as Target[];
+  const done = (t: Target) => (week[t] ?? 0) >= 0.6;
+  return {
+    covered: all.filter(done),
+    // Small extras (traps, side glutes, front delts that every press already trains) aren't flagged.
+    missing: all.filter((t) => !done(t) && TARGETS[t].priority >= 0.5),
   };
 }

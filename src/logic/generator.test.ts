@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import type { Exercise } from '../types';
-import { GENERATOR_EXERCISES, generateProgram, type GeneratorInput } from './generator';
+import { GENERATOR_EXERCISES, generateProgram, weekCoverage, type GeneratorInput } from './generator';
+import { MOVE_BY_ID } from './targets';
 import { warmupSets } from './warmup';
 import { toDisplay } from './units';
 
@@ -42,6 +43,45 @@ describe('generateProgram', () => {
     expect(ul.days.map((d) => d.name)).toEqual(['Upper A', 'Lower A', 'Upper B', 'Lower B']);
     expect(ul.days[0].exercises[0].exerciseId).not.toBe(ul.days[2].exercises[0].exerciseId);
     expect(generateProgram({ ...base, experience: 'intermediate' }, 'p').days.map((d) => d.name)).toEqual(['Push', 'Pull', 'Legs']);
+  });
+
+  it('hits the chest from more than one angle on a push day', () => {
+    const push = generateProgram({ ...base, experience: 'intermediate' }, 'p').days[0];
+    const patterns = push.exercises.map((e) => MOVE_BY_ID.get(e.exerciseId)!.pattern);
+    expect(patterns).toContain('press-incline');
+    expect(patterns.some((p) => p === 'press-flat' || p === 'press-decline')).toBe(true);
+  });
+
+  it('covers upper and mid chest every week, even with one chest exercise per day', () => {
+    for (const days of [2, 3, 4, 5, 6]) {
+      for (const equipment of ['gym', 'dumbbells'] as const) {
+        const { covered } = weekCoverage(generateProgram({ ...base, days, equipment, minutes: 60 }, 'p'));
+        expect(covered).toEqual(expect.arrayContaining(['chestUpper', 'chestMid']));
+      }
+    }
+  });
+
+  it('trains each head of the arms and both jobs of the hamstrings on a split', () => {
+    const p = generateProgram({ ...base, experience: 'intermediate', minutes: 60 }, 'p');
+    expect(weekCoverage(p).missing).toEqual([]);
+    const pull = p.days[1].exercises.map((e) => MOVE_BY_ID.get(e.exerciseId)!);
+    expect(pull.some((m) => (m.hits.bicepsLong ?? 0) >= 0.8)).toBe(true);
+    expect(pull.some((m) => (m.hits.bicepsShort ?? 0) >= 1)).toBe(true);
+    const legs = p.days[2].exercises.map((e) => MOVE_BY_ID.get(e.exerciseId)!.pattern);
+    expect(legs).toEqual(expect.arrayContaining(['hinge', 'leg-curl']));
+  });
+
+  it('puts compound lifts before isolation work', () => {
+    for (const d of generateProgram({ ...base, days: 6, experience: 'intermediate', minutes: 90 }, 'p').days) {
+      const compound = d.exercises.map((e) => MOVE_BY_ID.get(e.exerciseId)!.compound);
+      expect(compound).toEqual([...compound].sort((a, b) => Number(b) - Number(a)));
+    }
+  });
+
+  it('skips exercises the gym is missing', () => {
+    const p = generateProgram({ ...base, days: 4 }, 'p', 0, (id) => MOVE_BY_ID.get(id)!.pattern !== 'press-incline');
+    const used = p.days.flatMap((d) => d.exercises.map((e) => MOVE_BY_ID.get(e.exerciseId)!.pattern));
+    expect(used).not.toContain('press-incline');
   });
 
   it('uses heavier, lower-rep work for strength', () => {
