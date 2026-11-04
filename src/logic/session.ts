@@ -3,6 +3,8 @@ import type { Day, Exercise, ExerciseNote, LoggedExercise, LoggedSet, LogMode, P
 import { suggest } from './progression';
 import { advance, completeDay, emptyLift, GZCL_STAGES, liftKey, prescribe } from './schemes';
 import { countedSets, LOWER_BODY } from './stats';
+import { applyCatchUp, lastSimilar, missedTargets, type CatchUpExercise } from './catchUp';
+import { hasGear } from './equipment';
 import { startingWeight } from './startWeight';
 import { wantsWarmup, warmupSets } from './warmup';
 
@@ -132,11 +134,18 @@ export async function startWorkout(
   if (opts.day) {
     name = opts.day.name;
     const state = opts.program ? await getProgramState(opts.program.id) : undefined;
-    exercises = opts.day.exercises.map((p) =>
-      p.scheme && state
+    // If the last workout of this kind missed part of a muscle, do that part first (or add it) today.
+    const last = settings.catchUp === false ? undefined : lastSimilar(opts.day.exercises, finished);
+    const planned: CatchUpExercise[] = last
+      ? applyCatchUp(opts.day.exercises, missedTargets(opts.day.exercises, last), last.name,
+        (id) => byId.has(id) && hasGear(byId.get(id), settings.missingEquipment))
+      : opts.day.exercises;
+    exercises = planned.map((p) => {
+      const le = p.scheme && state
         ? schemeExercise(p as PlannedExercise & { scheme: SchemeKind }, state, finished, byId, settings)
-        : newLoggedExercise(p.exerciseId, p.sets, p.repMin, p.repMax, p.rest, finished, byId, settings, p.mode ?? modeFor(p.exerciseId)),
-    );
+        : newLoggedExercise(p.exerciseId, p.sets, p.repMin, p.repMax, p.rest, finished, byId, settings, p.mode ?? modeFor(p.exerciseId));
+      return p.catchUpNote ? { ...le, focus: p.catchUpNote } : le;
+    });
   } else if (opts.copyOf) {
     name = opts.copyOf.name;
     exercises = opts.copyOf.exercises.map((e) => ({

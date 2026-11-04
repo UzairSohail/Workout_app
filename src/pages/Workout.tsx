@@ -334,6 +334,7 @@ export function WorkoutPage() {
             {s && s.kind !== 'new' && <p className={`suggestion ${s.kind}`}>{s.kind === 'increase' ? '⬆️ ' : s.kind === 'deload' ? '⬇️ ' : '➡️ '}{s.message}</p>}
             {s && s.kind === 'new' && <p className="suggestion">{s.message}</p>}
             {le.scheme && le.note && <p className="suggestion program">📋 {le.note}</p>}
+            {le.focus && <p className="suggestion">🎯 {le.focus}</p>}
             {ideas.length > 0 && (
               <div className="suggestion variety">
                 🔄 You've done this the last 4 times you trained {ex!.primaryMuscles[0]}. Mix it up with:
