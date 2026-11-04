@@ -214,6 +214,13 @@ export function SettingsPage() {
             <small className="muted">Add lighter ramp-up sets before heavy barbell lifts and the first exercise of each workout.</small>
           </span>
         </label>
+        <label className="toggle big">
+          <input type="checkbox" checked={s.catchUp !== false} onChange={(e) => updateSettings({ catchUp: e.target.checked })} />
+          <span>
+            <strong>Catch up on missed areas</strong>
+            <small className="muted">If your last push day (or pull, legs…) skipped part of a muscle, like upper chest, the next one does it first or adds an exercise for it.</small>
+          </span>
+        </label>
       </section>
 
       <section className="card form">

@@ -34,6 +34,8 @@ export interface Settings {
   lastBackupAt?: number;
   /** Add ramp-up warm-up sets before heavy compound lifts. Defaults to on. */
   warmups?: boolean;
+  /** Put areas the last similar workout missed first, adding an exercise if needed. Defaults to on. */
+  catchUp?: boolean;
   /** Library equipment types the user's gym doesn't have; hidden from pickers and the generator. */
   missingEquipment?: string[];
   /** Profile used to suggest starting weights. Body weight in kg (latest), height in cm. */
@@ -127,6 +129,8 @@ export interface LoggedExercise {
   rest: number;
   sets: LoggedSet[];
   note?: string;
+  /** Why this exercise was moved up or added: it trains an area the last similar workout missed. */
+  focus?: string;
   scheme?: SchemeKind;
   /** 'time' logs seconds in the reps field. */
   mode?: LogMode;
