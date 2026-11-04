@@ -36,6 +36,8 @@ export interface Settings {
   warmups?: boolean;
   /** Put areas the last similar workout missed first, adding an exercise if needed. Defaults to on. */
   catchUp?: boolean;
+  /** Swap accessories done for about 5 weeks straight for one that trains the same area. Defaults to on. */
+  rotate?: boolean;
   /** Library equipment types the user's gym doesn't have; hidden from pickers and the generator. */
   missingEquipment?: string[];
   /** Profile used to suggest starting weights. Body weight in kg (latest), height in cm. */

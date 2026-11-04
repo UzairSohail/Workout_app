@@ -5,6 +5,7 @@ import { advance, completeDay, emptyLift, GZCL_STAGES, liftKey, prescribe } from
 import { countedSets, LOWER_BODY } from './stats';
 import { applyCatchUp, lastSimilar, missedTargets, type CatchUpExercise } from './catchUp';
 import { hasGear } from './equipment';
+import { applyRotations, rotationsFor } from './rotation';
 import { startingWeight } from './startWeight';
 import { wantsWarmup, warmupSets } from './warmup';
 
@@ -134,17 +135,30 @@ export async function startWorkout(
   if (opts.day) {
     name = opts.day.name;
     const state = opts.program ? await getProgramState(opts.program.id) : undefined;
+    const available = (id: string) => byId.has(id) && hasGear(byId.get(id), settings.missingEquipment);
+    // Accessories done for about 5 weeks straight get swapped for one hitting the same area, in the program too.
+    let day = opts.day;
+    const rotations = settings.rotate === false ? [] : rotationsFor(day, finished, Date.now(), available);
+    if (rotations.length) {
+      day = applyRotations(day, rotations);
+      if (opts.program) {
+        const program = { ...opts.program, days: opts.program.days.map((d) => (d.id === day.id ? day : d)) };
+        await db.programs.put(program);
+      }
+    }
+    const rotatedNote = new Map(rotations.map((r) => [r.to.id,
+      `New for the next few weeks: replaces ${byId.get(r.from)?.name ?? r.from} after 5 weeks, same muscle area`]));
     // If the last workout of this kind missed part of a muscle, do that part first (or add it) today.
-    const last = settings.catchUp === false ? undefined : lastSimilar(opts.day.exercises, finished);
+    const last = settings.catchUp === false ? undefined : lastSimilar(day.exercises, finished);
     const planned: CatchUpExercise[] = last
-      ? applyCatchUp(opts.day.exercises, missedTargets(opts.day.exercises, last), last.name,
-        (id) => byId.has(id) && hasGear(byId.get(id), settings.missingEquipment))
-      : opts.day.exercises;
+      ? applyCatchUp(day.exercises, missedTargets(day.exercises, last), last.name, available)
+      : day.exercises;
     exercises = planned.map((p) => {
       const le = p.scheme && state
         ? schemeExercise(p as PlannedExercise & { scheme: SchemeKind }, state, finished, byId, settings)
         : newLoggedExercise(p.exerciseId, p.sets, p.repMin, p.repMax, p.rest, finished, byId, settings, p.mode ?? modeFor(p.exerciseId));
-      return p.catchUpNote ? { ...le, focus: p.catchUpNote } : le;
+      const focus = [rotatedNote.get(p.exerciseId), p.catchUpNote].filter(Boolean).join(' · ');
+      return focus ? { ...le, focus } : le;
     });
   } else if (opts.copyOf) {
     name = opts.copyOf.name;
