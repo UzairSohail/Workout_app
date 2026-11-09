@@ -119,7 +119,7 @@ export const MOVES: Move[] = [
   m('Inverted_Row', 'bodyweight', true, 'row', 0.85, { upperBack: 1, lats: 0.5, deltRear: 0.4, bicepsLong: 0.3 }),
   m('Barbell_Shrug', 'gym', false, 'shrug', 0.8, { traps: 1 }),
   m('Dumbbell_Shrug', 'dumbbells', false, 'shrug', 0.8, { traps: 1 }),
-  m('Hyperextensions_Back_Extensions', 'gym', false, 'back-ext', 0.75, { lowerBack: 1, glutes: 0.5, hamsHip: 0.5 }),
+  m('Hyperextensions_Back_Extensions', 'gym', false, 'back-ext', 0.9, { lowerBack: 1, glutes: 0.5, hamsHip: 0.5 }),
 
   // Biceps: arms behind the body (incline curl) for the long head, arms in front (preacher,
   // concentration) for the short head, neutral grip (hammer) for the brachialis.
@@ -191,6 +191,15 @@ export const MOVES: Move[] = [
   m('Dead_Bug', 'bodyweight', false, 'anti-ext', 0.8, { abs: 0.7, lowerAbs: 0.5, obliques: 0.3 }),
   m('Pallof_Press', 'gym', false, 'anti-rot', 0.95, { obliques: 1, abs: 0.3 }),
   m('Side_Bridge', 'bodyweight', false, 'anti-rot', 0.8, { obliques: 1 }),
+  m('Ab_Crunch_Machine', 'gym', false, 'crunch', 0.9, { abs: 1 }),
+  m('Ab_Roller', 'bodyweight', false, 'anti-ext', 0.95, { abs: 1, lowerAbs: 0.5 }),
+  m('Plank', 'bodyweight', false, 'anti-ext', 0.75, { abs: 0.8, lowerAbs: 0.4, obliques: 0.3 }),
+  m('Russian_Twist', 'bodyweight', false, 'rotation', 0.7, { obliques: 1, abs: 0.4 }),
+
+  // Lower back: extensions for the spinal erectors, finished off at the end of a workout.
+  m('Superman', 'bodyweight', false, 'back-ext', 0.75, { lowerBack: 1, glutes: 0.4 }),
+  m('Hyperextensions_With_No_Hyperextension_Bench', 'bodyweight', false, 'back-ext', 0.7, { lowerBack: 1, glutes: 0.4, hamsHip: 0.3 }),
+  m('Reverse_Hyperextension', 'gym', false, 'back-ext', 0.7, { lowerBack: 1, glutes: 0.7, hamsHip: 0.4 }),
 ];
 
 export const MOVE_BY_ID = new Map(MOVES.map((mv) => [mv.id, mv]));

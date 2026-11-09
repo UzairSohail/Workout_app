@@ -10,7 +10,7 @@ export interface GeneratorInput {
   days: number; // 2–6
   experience: Experience;
   equipment: Equipment;
-  minutes: number; // 30 | 45 | 60 | 90
+  minutes: number; // how long each session is, e.g. 30–120
 }
 
 /** Every exercise id the generator can choose, for checking against the library. */
@@ -54,7 +54,62 @@ function splitFor(days: number, experience: Experience): { name: string; days: [
   }
 }
 
-const EXERCISES_PER_SESSION: Record<number, number> = { 30: 4, 45: 5, 60: 6, 90: 8 };
+/** Session lengths the generator offers, in minutes. */
+export const SESSION_MINUTES = [30, 45, 60, 75, 90, 120];
+
+/**
+ * Rough timing for planning a session: about 45 s of work per set, the planned rest between sets,
+ * and a minute and a half per exercise to set up, load and move to the next one.
+ */
+const WORK_SECONDS = 45;
+const SETUP_SECONDS = 90;
+/** Main exercises a day always gets, however short the session, and the most it gets however long. */
+const MIN_MAIN = 2;
+const MAX_MAIN = 10;
+
+export function exerciseSeconds(e: Pick<PlannedExercise, 'sets' | 'rest' | 'mode' | 'repMin' | 'repMax'>): number {
+  const work = e.mode === 'time' ? (e.repMin + e.repMax) / 2 : WORK_SECONDS;
+  return SETUP_SECONDS + e.sets * work + Math.max(0, e.sets - 1) * e.rest;
+}
+
+/** About how many minutes a day of the program takes, rests included. */
+export function estimateMinutes(day: Pick<Day, 'exercises'>): number {
+  return Math.round(day.exercises.reduce((n, e) => n + exerciseSeconds(e), 0) / 60);
+}
+
+/**
+ * Every generated day ends with the same core finisher: two ab exercises (different movements, say a
+ * crunch and a leg raise) and one lower back exercise. They rotate across the week for variety.
+ */
+const AB_PATTERNS = new Set(['crunch', 'leg-raise', 'anti-ext', 'anti-rot', 'rotation']);
+const OBLIQUE_PATTERNS = new Set(['anti-rot', 'rotation']);
+const LOWER_BACK_PATTERNS = new Set(['back-ext']);
+export const isFinisherMove = (mv: Move) => AB_PATTERNS.has(mv.pattern) || LOWER_BACK_PATTERNS.has(mv.pattern);
+
+function finisherPrescription(mv: Move, minutes: number): PlannedExercise {
+  const sets = minutes >= 60 ? 3 : 2;
+  if (mv.id === 'Plank' || mv.id === 'Side_Bridge') return { exerciseId: mv.id, sets, repMin: 30, repMax: 60, rest: 45, mode: 'time' };
+  return LOWER_BACK_PATTERNS.has(mv.pattern)
+    ? { exerciseId: mv.id, sets: 2, repMin: 12, repMax: 15, rest: 60 }
+    : { exerciseId: mv.id, sets, repMin: 12, repMax: 20, rest: 45 };
+}
+
+function pickFinisher(pool: Move[], uses: Map<string, number>, patternUses: Map<string, number>): Move[] {
+  const fresh = (mv: Move) => mv.quality / (1 + uses.get(mv.id)!) / (1 + 0.5 * patternUses.get(mv.pattern)!);
+  const best = (cands: Move[]) => cands.reduce<Move | undefined>((b, mv) => (!b || fresh(mv) > fresh(b) ? mv : b), undefined);
+  for (const mv of pool) { if (!uses.has(mv.id)) uses.set(mv.id, 0); if (!patternUses.has(mv.pattern)) patternUses.set(mv.pattern, 0); }
+  const abs = pool.filter((mv) => AB_PATTERNS.has(mv.pattern));
+  const first = best(abs);
+  // The second ab exercise is a different kind of movement, so the two cover different parts of the core.
+  // Two oblique movements would leave the front of the abs out, so at most one of them.
+  const oblique = (mv: Move) => OBLIQUE_PATTERNS.has(mv.pattern);
+  const second = first && (best(abs.filter((mv) => mv.pattern !== first.pattern && !(oblique(mv) && oblique(first))))
+    ?? best(abs.filter((mv) => mv !== first)));
+  const back = best(pool.filter((mv) => LOWER_BACK_PATTERNS.has(mv.pattern)));
+  const out = [first, second, back].filter((mv): mv is Move => !!mv);
+  for (const mv of out) { uses.set(mv.id, uses.get(mv.id)! + 1); patternUses.set(mv.pattern, patternUses.get(mv.pattern)! + 1); }
+  return out;
+}
 
 function prescription(goal: Goal, experience: Experience, compound: boolean) {
   const base = {
@@ -109,24 +164,41 @@ function score(mv: Move, focus: Focus, today: Tally, week: Tally, patternsToday:
 export function generateProgram(input: GeneratorInput, id: string, now = Date.now(), available: (exerciseId: string) => boolean = () => true): Program {
   const split = splitFor(input.days, input.experience);
   const allowed = new Set(ALLOWED[input.equipment]);
-  const perSession = EXERCISES_PER_SESSION[input.minutes] ?? 6;
-  const pool = MOVES.filter((mv) => allowed.has(mv.eq) && available(mv.id));
+  const budget = input.minutes * 60;
+  const usable = MOVES.filter((mv) => allowed.has(mv.eq) && available(mv.id));
+  const pool = usable.filter((mv) => !isFinisherMove(mv));
+  const finisherPool = usable.filter(isFinisherMove);
+  const finisherUses = new Map<string, number>();
+  const finisherPatterns = new Map<string, number>();
   const week: Tally = {};
   const usedThisWeek = new Set<string>();
+  // Weekly sets per muscle if every exercise so far were cut to its minimum. A long session only adds
+  // exercises while that stays within the useful weekly range; past it, extra time is junk volume.
+  const floorSets = new Map<Group, number>();
+  const fitsWeek = (mv: Move) => [...groupCredit(mv)].every(([g, c]) => (floorSets.get(g) ?? 0) + c * MIN_SETS <= WEEKLY_SETS.high);
+  const plan = (mv: Move): PlannedExercise => ({ exerciseId: mv.id, ...prescription(input.goal, input.experience, mv.compound) });
 
+  const finishers: PlannedExercise[][] = [];
   const days: Day[] = split.days.map(([name, focus], di) => {
+    const finisher = pickFinisher(finisherPool, finisherUses, finisherPatterns).map((mv) => finisherPrescription(mv, input.minutes));
+    finishers.push(finisher);
+    // The core finisher's time comes off the top; main exercises fill the rest of the session.
+    let left = budget - finisher.reduce((n, e) => n + exerciseSeconds(e), 0);
     const today: Tally = {};
     const patterns = new Set<string>();
     const picked: Move[] = [];
-    while (picked.length < perSession) {
+    while (picked.length < MAX_MAIN) {
       let best: Move | undefined;
       let bestScore = 0;
       for (const mv of pool) {
         if (picked.includes(mv)) continue;
+        if (picked.length >= MIN_MAIN && (exerciseSeconds(plan(mv)) > left || !fitsWeek(mv))) continue;
         const s = score(mv, focus, today, week, patterns, usedThisWeek, input.goal);
         if (s > bestScore) { best = mv; bestScore = s; }
       }
       if (!best) break;
+      left -= exerciseSeconds(plan(best));
+      for (const [g, c] of groupCredit(best)) floorSets.set(g, (floorSets.get(g) ?? 0) + c * MIN_SETS);
       picked.push(best);
       add(today, best);
       patterns.add(best.pattern);
@@ -134,11 +206,11 @@ export function generateProgram(input: GeneratorInput, id: string, now = Date.no
     for (const mv of picked) { add(week, mv); usedThisWeek.add(mv.id); }
     // Heavy compound lifts first while fresh, then isolation work, otherwise in the order picked.
     const ordered = [...picked.filter((mv) => mv.compound), ...picked.filter((mv) => !mv.compound)];
-    const exercises: PlannedExercise[] = ordered.map((mv) => ({ exerciseId: mv.id, ...prescription(input.goal, input.experience, mv.compound) }));
-    return { id: `${id}-d${di}`, name, exercises };
+    return { id: `${id}-d${di}`, name, exercises: ordered.map(plan) };
   });
 
-  balanceWeeklySets(days, perSession, input.minutes);
+  balanceWeeklySets(days, (di) => budget - finishers[di].reduce((n, e) => n + exerciseSeconds(e), 0));
+  days.forEach((d, di) => d.exercises.push(...finishers[di]));
 
   const goalText = { strength: 'strength', muscle: 'muscle', general: 'general fitness' }[input.goal];
   const eqText = { gym: 'a full gym', dumbbells: 'dumbbells', bodyweight: 'bodyweight only' }[input.equipment];
@@ -172,7 +244,6 @@ export function weekCoverage(program: Pick<Program, 'days'>): { covered: Target[
 
 /** Weekly working sets aimed for per muscle: the usual range for growth (as on the Muscle balance page). */
 export const WEEKLY_SETS = { low: 10, high: 20 };
-const SETS_PER_SESSION: Record<number, number> = { 30: 12, 45: 16, 60: 20, 90: 28 };
 const MAX_SETS = 5;
 const SMALL = new Set<Group>(['biceps', 'triceps', 'rearDelts', 'calves', 'core', 'lowerBack', 'traps']);
 const MIN_SETS = 2;
@@ -193,10 +264,9 @@ export function weeklySets(program: Pick<Program, 'days'>): Map<Group, number> {
  * session's time. Adds sets where a muscle is short (isolation work first, it's cheaper to recover
  * from), then trims where one is over, never pushing another muscle out of range.
  */
-function balanceWeeklySets(days: Day[], perSession: number, minutes: number) {
-  const cap = Math.max(SETS_PER_SESSION[minutes] ?? 20, perSession * MIN_SETS);
-  const entries = days.flatMap((d) => d.exercises.map((e) => ({ day: d, e, mv: MOVE_BY_ID.get(e.exerciseId)! }))).filter((x) => x.mv);
-  const dayTotal = (d: Day) => d.exercises.reduce((n, e) => n + e.sets, 0);
+function balanceWeeklySets(days: Day[], secondsFor: (dayIndex: number) => number) {
+  const entries = days.flatMap((d, di) => d.exercises.map((e) => ({ day: d, di, e, mv: MOVE_BY_ID.get(e.exerciseId)! }))).filter((x) => x.mv);
+  const daySeconds = (d: Day) => d.exercises.reduce((n, e) => n + exerciseSeconds(e), 0);
   const trained = new Set(entries.flatMap(({ mv }) => [...groupCredit(mv)].filter(([, c]) => c === 1).map(([g]) => g)));
   const sets = () => weeklySets({ days });
 
@@ -208,7 +278,7 @@ function balanceWeeklySets(days: Day[], perSession: number, minutes: number) {
     let added = false;
     for (const g of short) {
       const pick = entries
-        .filter(({ day, e, mv }) => groupCredit(mv).get(g) === 1 && e.sets < MAX_SETS && dayTotal(day) < cap
+        .filter(({ day, di, e, mv }) => groupCredit(mv).get(g) === 1 && e.sets < MAX_SETS && daySeconds(day) + WORK_SECONDS + e.rest <= secondsFor(di)
           && [...groupCredit(mv)].every(([og, c]) => (now.get(og) ?? 0) + c <= WEEKLY_SETS.high))
         .sort((a, b) => Number(a.mv.compound) - Number(b.mv.compound) || a.e.sets - b.e.sets)[0];
       if (pick) { pick.e.sets++; added = true; break; }
@@ -220,12 +290,22 @@ function balanceWeeklySets(days: Day[], perSession: number, minutes: number) {
     const over = [...now].filter(([, n]) => n > WEEKLY_SETS.high).sort((a, b) => b[1] - a[1]).map(([g]) => g);
     let removed = false;
     for (const g of over) {
-      const pick = entries
-        .filter(({ e, mv }) => (groupCredit(mv).get(g) ?? 0) > 0 && e.sets > MIN_SETS
-          && [...groupCredit(mv)].every(([og, c]) => og === g || !trained.has(og) || (now.get(og) ?? 0) - c >= WEEKLY_SETS.low))
-        .sort((a, b) => b.e.sets - a.e.sets)[0];
+      const cuttable = entries.filter(({ e, mv }) => (groupCredit(mv).get(g) ?? 0) > 0 && e.sets > MIN_SETS);
+      // Rather a set that leaves every other muscle in range; failing that, staying under 20 wins.
+      const pick = cuttable
+        .filter(({ mv }) => [...groupCredit(mv)].every(([og, c]) => og === g || !trained.has(og) || (now.get(og) ?? 0) - c >= WEEKLY_SETS.low))
+        .sort((a, b) => b.e.sets - a.e.sets)[0]
+        ?? cuttable.sort((a, b) => Number(a.mv.compound) - Number(b.mv.compound) || b.e.sets - a.e.sets)[0];
       if (pick) { pick.e.sets--; removed = true; break; }
     }
     if (!removed) break;
   }
+  // A short session with long rests can still run over: take sets off the biggest exercises until it fits.
+  days.forEach((d, di) => {
+    while (daySeconds(d) > secondsFor(di)) {
+      const pick = [...d.exercises].filter((e) => e.sets > MIN_SETS).sort((a, b) => b.sets - a.sets || b.rest - a.rest)[0];
+      if (!pick) break;
+      pick.sets--;
+    }
+  });
 }

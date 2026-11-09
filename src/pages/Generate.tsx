@@ -5,7 +5,8 @@ import { exerciseName, useExercises } from '../exercises';
 import { useSettings } from '../hooks';
 import { GEAR, generatorEquipment, hasGear } from '../logic/equipment';
 import { GROUP_LABEL, mainTargets, TARGETS } from '../logic/targets';
-import { generateProgram, weekCoverage, weeklySets, WEEKLY_SETS, type Equipment, type Experience, type GeneratorInput, type Goal } from '../logic/generator';
+import { estimateMinutes, generateProgram, isFinisherMove, SESSION_MINUTES, weekCoverage, weeklySets, WEEKLY_SETS, type Equipment, type Experience, type GeneratorInput, type Goal } from '../logic/generator';
+import { MOVE_BY_ID } from '../logic/targets';
 
 function Choice<T extends string | number>({ label, value, options, onChange }: {
   label: string;
@@ -38,8 +39,11 @@ export function Generate() {
     [input, id, byId, missingEquipment],
   );
   const coverage = useMemo(() => weekCoverage(program), [program]);
-  // Muscles with real work (a few sets or more), biggest first; lower back and traps only ever get spill-over from big lifts.
-  const sets = useMemo(() => [...weeklySets(program)].filter(([g, n]) => n >= 3 && g !== 'lowerBack' && g !== 'traps').sort((a, b) => b[1] - a[1]), [program]);
+  // Muscles with real work (a few sets or more), biggest first. Lower back and traps only get spill-over
+  // from big lifts, and abs are the daily core finisher, so they aren't counted against the 10–20 range.
+  const sets = useMemo(() => [...weeklySets(program)].filter(([g, n]) => n >= 3 && g !== 'lowerBack' && g !== 'traps' && g !== 'core').sort((a, b) => b[1] - a[1]), [program]);
+  const finisher = (id: string) => { const mv = MOVE_BY_ID.get(id); return !!mv && isFinisherMove(mv); };
+  const shortDays = program.days.filter((d) => estimateMinutes(d) <= input.minutes - 15);
   const set = <K extends keyof GeneratorInput>(k: K) => (v: GeneratorInput[K]) => setInput({ ...input, [k]: v });
 
   const save = async () => {
@@ -61,8 +65,9 @@ export function Generate() {
           options={[['muscle', 'Build muscle'], ['strength', 'Get stronger'], ['general', 'General fitness']]} />
         <Choice<number> label="Days per week" value={input.days} onChange={set('days')}
           options={[[2, '2'], [3, '3'], [4, '4'], [5, '5'], [6, '6']]} />
-        <Choice<number> label="Time per workout" value={input.minutes} onChange={set('minutes')}
-          options={[[30, '30 min'], [45, '45 min'], [60, '60 min'], [90, '90 min']]} />
+        <Choice<number> label="How long is each session?" value={input.minutes} onChange={set('minutes')}
+          options={SESSION_MINUTES.map((m) => [m, m < 120 ? `${m} min` : '2 hours'] as [number, string])} />
+        <p className="muted small">Longer sessions get more exercises. Every workout ends with a core finisher: 2 ab exercises and 1 lower back exercise.</p>
         <Choice<Experience> label="Experience" value={input.experience} onChange={set('experience')}
           options={[['beginner', 'New / under 1 year'], ['intermediate', '1+ years']]} />
         <Choice<Equipment> label="Equipment" value={input.equipment} onChange={set('equipment')}
@@ -94,19 +99,31 @@ export function Generate() {
         {sets.some(([, n]) => n < WEEKLY_SETS.low) && (
           <p className="muted small">Yellow ones are under {WEEKLY_SETS.low} because there's only so much you can fit in {input.minutes} minutes. More time or another day per week brings them up.</p>
         )}
-        {program.days.map((d) => (
-          <div key={d.id} className="preview-day">
-            <strong>{d.name}</strong>
-            <ul className="plain">
-              {d.exercises.map((e, i) => (
-                <li key={i}>
-                  {exerciseName(byId, e.exerciseId)} <span className="muted">{e.sets} × {e.repMin}–{e.repMax}</span>
-                  {mainTargets(e.exerciseId).length > 0 && <div className="muted small">{mainTargets(e.exerciseId).join(' · ')}</div>}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+        {shortDays.length > 0 && (
+          <p className="muted small">
+            {shortDays.map((d) => d.name).join(', ')} {shortDays.length === 1 ? 'comes' : 'come'} in under {input.minutes} minutes: those muscles already
+            get a full week of sets, and piling on more exercises past that doesn't build more muscle.
+          </p>
+        )}
+        {program.days.map((d) => {
+          const item = (e: (typeof d.exercises)[number], i: number) => (
+            <li key={i}>
+              {exerciseName(byId, e.exerciseId)} <span className="muted">{e.sets} × {e.repMin}–{e.repMax}{e.mode === 'time' ? ' s' : ''}</span>
+              {mainTargets(e.exerciseId).length > 0 && <div className="muted small">{mainTargets(e.exerciseId).join(' · ')}</div>}
+            </li>
+          );
+          const core = d.exercises.filter((e) => finisher(e.exerciseId));
+          return (
+            <div key={d.id} className="preview-day">
+              <strong>{d.name}</strong> <span className="muted small">about {estimateMinutes(d)} min</span>
+              <ul className="plain">{d.exercises.filter((e) => !finisher(e.exerciseId)).map(item)}</ul>
+              {core.length > 0 && <>
+                <p className="small eyebrow">Core finisher</p>
+                <ul className="plain">{core.map(item)}</ul>
+              </>}
+            </div>
+          );
+        })}
       </section>
 
       <button className="wide" onClick={save}>Save and start using it</button>
