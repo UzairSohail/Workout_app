@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import type { Exercise } from '../types';
-import { GENERATOR_EXERCISES, generateProgram, weekCoverage, weeklySets, WEEKLY_SETS, type GeneratorInput } from './generator';
+import { estimateMinutes, GENERATOR_EXERCISES, generateProgram, isFinisherMove, SESSION_MINUTES, weekCoverage, weeklySets, WEEKLY_SETS, type GeneratorInput } from './generator';
 import { MOVE_BY_ID } from './targets';
 import { warmupSets } from './warmup';
 import { toDisplay } from './units';
@@ -15,18 +15,54 @@ describe('generateProgram', () => {
     expect(GENERATOR_EXERCISES.filter((id) => !byId.has(id))).toEqual([]);
   });
 
-  it('makes one day per training day, up to the time limit, with no repeats in a day', () => {
+  const main = <E extends { exerciseId: string }>(d: { exercises: E[] }) => d.exercises.filter((e) => !isFinisherMove(MOVE_BY_ID.get(e.exerciseId)!));
+
+  it('makes one day per training day, fitting the session length, with no repeats in a day', () => {
     for (const days of [2, 3, 4, 5, 6]) {
-      for (const minutes of [30, 45, 60, 90]) {
-        const p = generateProgram({ ...base, days, minutes }, 'p');
-        expect(p.days).toHaveLength(days);
-        for (const d of p.days) {
-          expect(d.exercises.length).toBeGreaterThanOrEqual(3);
-          expect(d.exercises.length).toBeLessThanOrEqual({ 30: 4, 45: 5, 60: 6, 90: 8 }[minutes]!);
-          expect(new Set(d.exercises.map((e) => e.exerciseId)).size).toBe(d.exercises.length);
+      for (const minutes of SESSION_MINUTES) {
+        for (const goal of ['muscle', 'strength', 'general'] as const) {
+          const p = generateProgram({ ...base, days, minutes, goal }, 'p');
+          expect(p.days).toHaveLength(days);
+          for (const d of p.days) {
+            expect(main(d).length).toBeGreaterThanOrEqual(2);
+            expect(estimateMinutes(d)).toBeLessThanOrEqual(minutes);
+            expect(new Set(d.exercises.map((e) => e.exerciseId)).size).toBe(d.exercises.length);
+          }
         }
       }
     }
+  });
+
+  it('fits more exercises into longer sessions', () => {
+    const count = (minutes: number) => generateProgram({ ...base, minutes }, 'p').days.reduce((n, d) => n + main(d).length, 0);
+    // Up to 90 minutes each step adds exercises; past that the week can already be full of useful sets.
+    for (let i = 1; i < SESSION_MINUTES.length; i++) {
+      const [shorter, longer] = [count(SESSION_MINUTES[i - 1]), count(SESSION_MINUTES[i])];
+      if (SESSION_MINUTES[i] <= 90) expect(longer).toBeGreaterThan(shorter);
+      else expect(longer).toBeGreaterThanOrEqual(shorter);
+    }
+  });
+
+  it('ends every day with two different ab exercises and a lower back exercise', () => {
+    for (const equipment of ['gym', 'dumbbells', 'bodyweight'] as const) {
+      for (const days of [2, 3, 4, 5, 6]) {
+        for (const minutes of SESSION_MINUTES) {
+          for (const d of generateProgram({ ...base, days, minutes, equipment }, 'p').days) {
+            const end = d.exercises.slice(-3).map((e) => MOVE_BY_ID.get(e.exerciseId)!);
+            expect(end.slice(0, 2).every((m) => m.hits.abs || m.hits.lowerAbs || m.hits.obliques)).toBe(true);
+            expect(end[0].pattern).not.toBe(end[1].pattern);
+            expect(end[2].pattern).toBe('back-ext');
+            expect(main(d)).toHaveLength(d.exercises.length - 3);
+          }
+        }
+      }
+    }
+  });
+
+  it('rotates the core finisher across the week', () => {
+    const p = generateProgram({ ...base, days: 3 }, 'p');
+    const finishers = p.days.map((d) => d.exercises.slice(-3).map((e) => e.exerciseId).join());
+    expect(new Set(finishers).size).toBe(3);
   });
 
   it('respects the equipment available', () => {
@@ -73,7 +109,7 @@ describe('generateProgram', () => {
 
   it('puts compound lifts before isolation work', () => {
     for (const d of generateProgram({ ...base, days: 6, experience: 'intermediate', minutes: 90 }, 'p').days) {
-      const compound = d.exercises.map((e) => MOVE_BY_ID.get(e.exerciseId)!.compound);
+      const compound = main(d).map((e) => MOVE_BY_ID.get(e.exerciseId)!.compound);
       expect(compound).toEqual([...compound].sort((a, b) => Number(b) - Number(a)));
     }
   });
@@ -93,13 +129,14 @@ describe('generateProgram', () => {
     }
   });
 
-  it('never goes over 20 weekly sets or past the session time', () => {
+  it('never goes over 20 weekly sets (outside the core finisher) or past the session time', () => {
     for (const days of [2, 3, 4, 5, 6]) {
-      for (const minutes of [30, 45, 60, 90]) {
+      for (const minutes of SESSION_MINUTES) {
         const p = generateProgram({ ...base, days, minutes, experience: 'intermediate' }, 'p');
-        for (const n of weeklySets(p).values()) expect(n).toBeLessThanOrEqual(WEEKLY_SETS.high);
+        const sets = weeklySets({ days: p.days.map((d) => ({ ...d, exercises: main(d) })) });
+        for (const n of sets.values()) expect(n).toBeLessThanOrEqual(WEEKLY_SETS.high);
         for (const d of p.days) {
-          expect(d.exercises.reduce((n, e) => n + e.sets, 0)).toBeLessThanOrEqual({ 30: 12, 45: 16, 60: 20, 90: 28 }[minutes]!);
+          expect(estimateMinutes(d)).toBeLessThanOrEqual(minutes);
           for (const e of d.exercises) expect(e.sets).toBeGreaterThanOrEqual(2);
         }
       }
