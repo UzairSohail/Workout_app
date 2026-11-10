@@ -1,11 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { db, uid, updateSettings } from '../db';
 import { exerciseName, useExercises } from '../exercises';
-import { useSettings } from '../hooks';
+import { useFinished, useSettings } from '../hooks';
+import { startWorkout, suggestionFor } from '../logic/session';
+import { fmtWeight } from '../logic/units';
+import type { Day } from '../types';
 import { GEAR, generatorEquipment, hasGear } from '../logic/equipment';
 import { GROUP_LABEL, mainTargets, TARGETS } from '../logic/targets';
-import { estimateMinutes, generateProgram, isFinisherMove, SESSION_MINUTES, weekCoverage, weeklySets, WEEKLY_SETS, type Equipment, type Experience, type GeneratorInput, type Goal } from '../logic/generator';
+import { estimateMinutes, generateProgram, generateToday, isFinisherMove, SESSION_MINUTES, weekCoverage, weeklySets, WEEKLY_SETS, type Equipment, type Experience, type GeneratorInput, type Goal } from '../logic/generator';
 import { MOVE_BY_ID } from '../logic/targets';
 
 function Choice<T extends string | number>({ label, value, options, onChange }: {
@@ -27,6 +30,119 @@ function Choice<T extends string | number>({ label, value, options, onChange }: 
 }
 
 export function Generate() {
+  const [params, setParams] = useSearchParams();
+  const today = params.get('mode') !== 'week';
+  return (
+    <>
+      <header className="page-head">
+        <BackButton />
+        <h1>{today ? "Today's workout" : 'Build my routine'}</h1>
+        <p className="muted">{today
+          ? 'Made from your logged workouts: muscles that need rest sit this one out, the ones behind on the week come first, and weights follow your last sessions.'
+          : 'Answer a few questions and get a split you can start today. You can tweak it afterwards.'}</p>
+        <div className="segmented">
+          <button className={today ? 'on' : ''} onClick={() => setParams({ mode: 'today' }, { replace: true })}>Just today</button>
+          <button className={today ? '' : 'on'} onClick={() => setParams({ mode: 'week' }, { replace: true })}>Weekly routine</button>
+        </div>
+      </header>
+      {today ? <TodayGenerator /> : <WeekGenerator />}
+    </>
+  );
+}
+
+function BackButton() {
+  const navigate = useNavigate();
+  return <button className="ghost back" onClick={() => navigate(-1)}>‹ Back</button>;
+}
+
+function GearNote({ missingEquipment }: { missingEquipment?: string[] }) {
+  return (
+    <p className="muted small">
+      {missingEquipment?.length
+        ? <>Leaving out {missingEquipment.map((m) => (GEAR.find(([k]) => k === m)?.[1] ?? m).toLowerCase()).join(', ')}. </>
+        : <>Missing something, like a cable machine? </>}
+      <Link to="/settings">Set your gym's equipment in Settings</Link>.
+    </p>
+  );
+}
+
+const groupList = (gs: string[]) => {
+  const names = gs.map((g) => GROUP_LABEL[g as keyof typeof GROUP_LABEL].toLowerCase());
+  return names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}` : names[0];
+};
+
+function TodayGenerator() {
+  const navigate = useNavigate();
+  const { byId } = useExercises();
+  const settings = useSettings();
+  const { missingEquipment } = settings;
+  const finished = useFinished();
+  const [input, setInput] = useState<Omit<GeneratorInput, 'days'>>({ goal: 'muscle', experience: 'beginner', equipment: 'gym', minutes: 60 });
+  useEffect(() => setInput((i) => ({
+    ...i,
+    equipment: generatorEquipment(missingEquipment),
+    experience: settings.experience && settings.experience !== 'beginner' ? 'intermediate' : i.experience,
+  })), [missingEquipment, settings.experience]);
+  const [now] = useState(Date.now);
+  const plan = useMemo(
+    () => finished && generateToday(input, finished, byId, now, (exId) => byId.has(exId) && hasGear(byId.get(exId), missingEquipment)),
+    [input, finished, byId, now, missingEquipment],
+  );
+  const set = <K extends keyof typeof input>(k: K) => (v: (typeof input)[K]) => setInput({ ...input, [k]: v });
+  const [starting, setStarting] = useState(false);
+  const start = async (day: Day) => {
+    setStarting(true);
+    await startWorkout({ day, generated: true }, byId);
+    navigate('/workout', { replace: true });
+  };
+  const finisher = (id: string) => { const mv = MOVE_BY_ID.get(id); return !!mv && isFinisherMove(mv); };
+
+  return (
+    <>
+      <section className="card form">
+        <Choice<Goal> label="Main goal" value={input.goal} onChange={set('goal')}
+          options={[['muscle', 'Build muscle'], ['strength', 'Get stronger'], ['general', 'General fitness']]} />
+        <Choice<number> label="How long have you got?" value={input.minutes} onChange={set('minutes')}
+          options={SESSION_MINUTES.map((m) => [m, m < 120 ? `${m} min` : '2 hours'] as [number, string])} />
+        <Choice<Experience> label="Experience" value={input.experience} onChange={set('experience')}
+          options={[['beginner', 'New / under 1 year'], ['intermediate', '1+ years']]} />
+        <Choice<Equipment> label="Equipment" value={input.equipment} onChange={set('equipment')}
+          options={[['gym', 'Full gym'], ['dumbbells', 'Dumbbells'], ['bodyweight', 'Bodyweight']]} />
+        <GearNote missingEquipment={missingEquipment} />
+      </section>
+
+      {plan && (
+        <section className="card">
+          <p className="eyebrow">Today · about {estimateMinutes(plan.day)} min</p>
+          <h2>{plan.kind}</h2>
+          {finished!.length === 0 && <p className="small">No workouts logged yet, so this is a full-body start. It gets smarter with every workout you log.</p>}
+          {plan.resting.length > 0 && <p className="small">💤 Resting your {groupList(plan.resting)}: trained hard in the last 2 days.</p>}
+          {plan.behind.length > 0 && finished!.length > 0 && <p className="small">🎯 Catching up your {groupList(plan.behind)}, the furthest behind this week.</p>}
+          {plan.restDay && <p className="notice">Almost everything was trained hard in the last 2 days. A rest day would probably do more for you than this session.</p>}
+          <ul className="plain">
+            {plan.day.exercises.map((e, i) => {
+              const s = !finisher(e.exerciseId) && e.mode !== 'time' ? suggestionFor(e, finished!, byId, settings) : null;
+              const arrow = s?.kind === 'increase' ? '⬆️ ' : s?.kind === 'deload' ? '⬇️ ' : '';
+              return (
+                <li key={e.exerciseId}>
+                  {i > 0 && finisher(e.exerciseId) && !finisher(plan.day.exercises[i - 1].exerciseId) && <p className="small eyebrow">Core finisher</p>}
+                  {exerciseName(byId, e.exerciseId)} <span className="muted">{e.sets} × {e.repMin}–{e.repMax}{e.mode === 'time' ? ' s' : ''}</span>
+                  {s?.weight != null && <span> · {arrow}{fmtWeight(s.weight, settings.units)}</span>}
+                  {mainTargets(e.exerciseId).length > 0 && <div className="muted small">{mainTargets(e.exerciseId).join(' · ')}</div>}
+                </li>
+              );
+            })}
+          </ul>
+          <p className="muted small">Weights go up only after you hit the top of the rep range on every set. If you miss reps at a new weight, the next one drops back until every set is done.</p>
+        </section>
+      )}
+
+      {plan && <button className="wide" disabled={starting} onClick={() => start(plan.day)}>Start this workout</button>}
+    </>
+  );
+}
+
+function WeekGenerator() {
   const navigate = useNavigate();
   const { byId } = useExercises();
   const { missingEquipment } = useSettings();
@@ -54,12 +170,6 @@ export function Generate() {
 
   return (
     <>
-      <header className="page-head">
-        <button className="ghost back" onClick={() => navigate(-1)}>‹ Back</button>
-        <h1>Build my routine</h1>
-        <p className="muted">Answer a few questions and get a split you can start today. You can tweak it afterwards.</p>
-      </header>
-
       <section className="card form">
         <Choice<Goal> label="Main goal" value={input.goal} onChange={set('goal')}
           options={[['muscle', 'Build muscle'], ['strength', 'Get stronger'], ['general', 'General fitness']]} />
@@ -72,12 +182,7 @@ export function Generate() {
           options={[['beginner', 'New / under 1 year'], ['intermediate', '1+ years']]} />
         <Choice<Equipment> label="Equipment" value={input.equipment} onChange={set('equipment')}
           options={[['gym', 'Full gym'], ['dumbbells', 'Dumbbells'], ['bodyweight', 'Bodyweight']]} />
-        <p className="muted small">
-          {missingEquipment?.length
-            ? <>Leaving out {missingEquipment.map((m) => (GEAR.find(([k]) => k === m)?.[1] ?? m).toLowerCase()).join(', ')}. </>
-            : <>Missing something, like a cable machine? </>}
-          <Link to="/settings">Set your gym's equipment in Settings</Link>.
-        </p>
+        <GearNote missingEquipment={missingEquipment} />
       </section>
 
       <section className="card">

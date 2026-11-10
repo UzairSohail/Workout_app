@@ -33,11 +33,38 @@ describe('suggest (double progression)', () => {
     expect(s.kind).toBe('increase');
   });
 
-  it('deloads after missing the bottom of the range twice', () => {
-    const h = [session([set(100, 6), set(100, 5)]), session([set(100, 7)])];
-    const s = suggest(h, 8, 12, 5, 'kg');
+  it('scales back to the last weight that worked when a jump is missed', () => {
+    // 60 kg went 12, 12 so it suggested 62.5; only 6 reps came at 62.5.
+    const h = [session([set(62.5, 6), set(62.5, 5)]), session([set(60, 12), set(60, 12)])];
+    const s = suggest(h, 8, 12, 2.5, 'kg');
+    expect(s.kind).toBe('deload');
+    expect(s.weight).toBeCloseTo(60);
+  });
+
+  it('keeps scaling back while sets still fall short', () => {
+    // Missed at 62.5, dropped to 60, and still short at 60: go down again.
+    const h = [session([set(60, 7), set(60, 6)]), session([set(62.5, 6)]), session([set(60, 12), set(60, 12)])];
+    const s = suggest(h, 8, 12, 2.5, 'kg');
+    expect(s.kind).toBe('deload');
+    expect(s.weight).toBeCloseTo(57.5);
+  });
+
+  it('holds after scaling back until every set reaches the top of the range', () => {
+    const h = [session([set(60, 12), set(60, 10)]), session([set(62.5, 6)]), session([set(60, 12), set(60, 12)])];
+    expect(suggest(h, 8, 12, 2.5, 'kg')).toMatchObject({ kind: 'hold', weight: 60 });
+    const done = [session([set(60, 12), set(60, 12)]), ...h];
+    expect(suggest(done, 8, 12, 2.5, 'kg')).toMatchObject({ kind: 'increase', weight: 62.5 });
+  });
+
+  it('drops about 10% when the reps were far off and nothing lighter worked before', () => {
+    const s = suggest([session([set(100, 4), set(100, 3)])], 8, 12, 5, 'kg');
     expect(s.kind).toBe('deload');
     expect(s.weight).toBeCloseTo(90);
+  });
+
+  it('steps down one increment for a small miss', () => {
+    const s = suggest([session([set(100, 8), set(100, 7)])], 8, 12, 5, 'kg');
+    expect(s.weight).toBeCloseTo(95);
   });
 
   it('works in pounds', () => {

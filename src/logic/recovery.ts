@@ -23,9 +23,14 @@ export function exerciseGroups(exerciseId: string, byId: Map<string, Exercise>):
 
 /** Hard (ticked, non-warm-up) sets per muscle group in the last 48 hours. */
 export function recentLoad(finished: Workout[], byId: Map<string, Exercise>, now = Date.now()): Map<Group, number> {
+  return loadSince(finished, byId, now, RECOVERY_HOURS);
+}
+
+/** Hard (ticked, non-warm-up) sets per muscle group in the last `hours`. */
+export function loadSince(finished: Workout[], byId: Map<string, Exercise>, now: number, hours: number): Map<Group, number> {
   const out = new Map<Group, number>();
   for (const w of finished) {
-    if (!w.finishedAt || now - w.startedAt > RECOVERY_HOURS * 36e5 || w.startedAt > now) continue;
+    if (!w.finishedAt || now - w.startedAt > hours * 36e5 || w.startedAt > now) continue;
     for (const e of w.exercises) {
       const n = e.sets.filter((s) => s.done && s.type !== 'warmup').length;
       if (!n) continue;

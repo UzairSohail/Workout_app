@@ -1,4 +1,5 @@
-import type { Day, PlannedExercise, Program } from '../types';
+import type { Day, Exercise, PlannedExercise, Program, Workout } from '../types';
+import { HARD_SETS, loadSince, RECOVERY_HOURS } from './recovery';
 import { groupCredit, MOVE_BY_ID, MOVES, TARGETS, type Equipment, type Group, type Move, type Target } from './targets';
 
 export type { Equipment } from './targets';
@@ -157,6 +158,37 @@ function score(mv: Move, focus: Focus, today: Tally, week: Tally, patternsToday:
 }
 
 /**
+ * Picks a day's main exercises one at a time, each the one that adds the most for what the day trains,
+ * until the session's time runs out (always at least MIN_MAIN). `bonus` scales an exercise's score.
+ */
+function fillMain(o: {
+  pool: Move[]; focus: Focus; seconds: number; week: Tally; usedThisWeek: Set<string>; goal: Goal;
+  plan: (mv: Move) => PlannedExercise; fitsWeek: (mv: Move) => boolean; onPick?: (mv: Move) => void; bonus?: (mv: Move) => number;
+}): Move[] {
+  let left = o.seconds;
+  const today: Tally = {};
+  const patterns = new Set<string>();
+  const picked: Move[] = [];
+  while (picked.length < MAX_MAIN) {
+    let best: Move | undefined;
+    let bestScore = 0;
+    for (const mv of o.pool) {
+      if (picked.includes(mv)) continue;
+      if (picked.length >= MIN_MAIN && (exerciseSeconds(o.plan(mv)) > left || !o.fitsWeek(mv))) continue;
+      const s = score(mv, o.focus, today, o.week, patterns, o.usedThisWeek, o.goal) * (o.bonus?.(mv) ?? 1);
+      if (s > bestScore) { best = mv; bestScore = s; }
+    }
+    if (!best) break;
+    left -= exerciseSeconds(o.plan(best));
+    o.onPick?.(best);
+    picked.push(best);
+    add(today, best);
+    patterns.add(best.pattern);
+  }
+  return picked;
+}
+
+/**
  * Builds a program from quiz answers by covering every part of each muscle the split trains: upper,
  * mid and lower chest, all three delt heads, lats and mid back, both biceps and triceps heads, and so on.
  * Pure and deterministic, so the same answers give the same routine.
@@ -183,26 +215,11 @@ export function generateProgram(input: GeneratorInput, id: string, now = Date.no
     const finisher = pickFinisher(finisherPool, finisherUses, finisherPatterns).map((mv) => finisherPrescription(mv, input.minutes));
     finishers.push(finisher);
     // The core finisher's time comes off the top; main exercises fill the rest of the session.
-    let left = budget - finisher.reduce((n, e) => n + exerciseSeconds(e), 0);
-    const today: Tally = {};
-    const patterns = new Set<string>();
-    const picked: Move[] = [];
-    while (picked.length < MAX_MAIN) {
-      let best: Move | undefined;
-      let bestScore = 0;
-      for (const mv of pool) {
-        if (picked.includes(mv)) continue;
-        if (picked.length >= MIN_MAIN && (exerciseSeconds(plan(mv)) > left || !fitsWeek(mv))) continue;
-        const s = score(mv, focus, today, week, patterns, usedThisWeek, input.goal);
-        if (s > bestScore) { best = mv; bestScore = s; }
-      }
-      if (!best) break;
-      left -= exerciseSeconds(plan(best));
-      for (const [g, c] of groupCredit(best)) floorSets.set(g, (floorSets.get(g) ?? 0) + c * MIN_SETS);
-      picked.push(best);
-      add(today, best);
-      patterns.add(best.pattern);
-    }
+    const left = budget - finisher.reduce((n, e) => n + exerciseSeconds(e), 0);
+    const picked = fillMain({
+      pool, focus, seconds: left, week, usedThisWeek, goal: input.goal, plan, fitsWeek,
+      onPick: (mv) => { for (const [g, c] of groupCredit(mv)) floorSets.set(g, (floorSets.get(g) ?? 0) + c * MIN_SETS); },
+    });
     for (const mv of picked) { add(week, mv); usedThisWeek.add(mv.id); }
     // Heavy compound lifts first while fresh, then isolation work, otherwise in the order picked.
     const ordered = [...picked.filter((mv) => mv.compound), ...picked.filter((mv) => !mv.compound)];
@@ -308,4 +325,137 @@ function balanceWeeklySets(days: Day[], secondsFor: (dayIndex: number) => number
       pick.sets--;
     }
   });
+}
+
+/* ---------- Today's workout, built from what you've logged ---------- */
+
+export type TodayInput = Omit<GeneratorInput, 'days'>;
+
+export interface TodayPlan {
+  day: Day;
+  /** What kind of session it picked, e.g. "Pull". */
+  kind: string;
+  /** Main muscles left out because they were trained hard in the last 2 days, most-worked first. */
+  resting: Group[];
+  /** Main muscles furthest behind on this week's sets that today works on. */
+  behind: Group[];
+  /** True when nearly everything is still recovering, so a rest day may be the better call. */
+  restDay: boolean;
+}
+
+const TODAY_KINDS: [string, Focus][] = [
+  ['Full Body', F.full], ['Upper Body', F.upper], ['Lower Body', F.lower], ['Push', F.push], ['Pull', F.pull],
+];
+const DAY = 864e5;
+
+/**
+ * Builds one workout for today from the workout history instead of a fixed list:
+ *  - muscles with 6+ hard sets in the last 48 hours rest; ones with a few sets count for less
+ *  - muscles with the fewest sets over the last 7 days come first, and ones already at 20 are left alone
+ *  - areas the week hasn't trained yet (upper chest, biceps long head, …) win over ones it has
+ *  - exercises you've done before are preferred, so the weights come from your own numbers, with the
+ *    ones done in the last few days swapped for a different angle
+ * It still fills the session to its length and ends with the core finisher.
+ */
+export function generateToday(
+  input: TodayInput,
+  finished: Workout[],
+  byId: Map<string, Exercise>,
+  now = Date.now(),
+  available: (exerciseId: string) => boolean = () => true,
+): TodayPlan {
+  const recent = loadSince(finished, byId, now, RECOVERY_HOURS);
+  const weekSets = loadSince(finished, byId, now, 7 * 24);
+  const readiness = (g: Group) => {
+    const n = recent.get(g) ?? 0;
+    return n >= HARD_SETS ? 0 : n >= 3 ? 0.4 : 1;
+  };
+  const need = (g: Group) => {
+    const n = weekSets.get(g) ?? 0;
+    return n >= WEEKLY_SETS.high ? 0 : 0.35 + 0.65 * Math.max(0, 1 - n / WEEKLY_SETS.low);
+  };
+  const want = (g: Group) => readiness(g) * need(g);
+  // Abs and lower back get the core finisher every day, so they don't decide the kind of session.
+  const mainOf = (f: Focus) => (Object.entries(f.groups) as [Group, number][]).filter(([g, r]) => r >= 0.75 && g !== 'core' && g !== 'lowerBack').map(([g]) => g);
+
+  // The kind of session whose main muscles are most rested and most behind for the week.
+  const rated = TODAY_KINDS.map(([name, focus]) => {
+    const main = mainOf(focus);
+    return { name, focus, value: main.reduce((n, g) => n + want(g), 0) / main.length };
+  });
+  const best = rated.reduce((b, r) => (r.value > b.value + 1e-9 ? r : b));
+  const focus: Focus = {
+    spread: best.focus.spread,
+    groups: Object.fromEntries((Object.entries(best.focus.groups) as [Group, number][])
+      .map(([g, r]) => [g, r * want(g)]).filter(([, r]) => (r as number) > 0)),
+  };
+
+  // What the last 7 days already trained, down to the part of the muscle.
+  const week: Tally = {};
+  const usedThisWeek = new Set<string>();
+  const usedLately = new Set<string>();
+  const known = new Set<string>();
+  const finisherUses = new Map<string, number>();
+  const finisherPatterns = new Map<string, number>();
+  for (const w of finished) {
+    if (!w.finishedAt || w.startedAt > now) continue;
+    for (const e of w.exercises) {
+      if (!e.sets.some((x) => x.done && x.type !== 'warmup')) continue;
+      known.add(e.exerciseId);
+      if (now - w.startedAt > 7 * DAY) continue;
+      const mv = MOVE_BY_ID.get(e.exerciseId);
+      if (!mv) continue;
+      add(week, mv);
+      usedThisWeek.add(mv.id);
+      if (now - w.startedAt < 3 * DAY) usedLately.add(mv.id);
+      if (isFinisherMove(mv)) {
+        finisherUses.set(mv.id, (finisherUses.get(mv.id) ?? 0) + 1);
+        finisherPatterns.set(mv.pattern, (finisherPatterns.get(mv.pattern) ?? 0) + 1);
+      }
+    }
+  }
+
+  const allowed = new Set(ALLOWED[input.equipment]);
+  const usable = MOVES.filter((mv) => allowed.has(mv.eq) && available(mv.id));
+  const pool = usable.filter((mv) => !isFinisherMove(mv));
+  const finisher = pickFinisher(usable.filter(isFinisherMove), finisherUses, finisherPatterns).map((mv) => finisherPrescription(mv, input.minutes));
+  const plan = (mv: Move): PlannedExercise => ({ exerciseId: mv.id, ...prescription(input.goal, input.experience, mv.compound) });
+  const seconds = input.minutes * 60 - finisher.reduce((n, e) => n + exerciseSeconds(e), 0);
+  // Sets each muscle would have this week if today's exercises got their minimum.
+  const floorSets = new Map(weekSets);
+  const fitsWeek = (mv: Move) => [...groupCredit(mv)].every(([g, c]) => c < 1 || (floorSets.get(g) ?? 0) + c * MIN_SETS <= WEEKLY_SETS.high);
+  const picked = fillMain({
+    pool, focus, seconds, week, usedThisWeek, goal: input.goal, plan, fitsWeek,
+    onPick: (mv) => { for (const [g, c] of groupCredit(mv)) floorSets.set(g, (floorSets.get(g) ?? 0) + c * MIN_SETS); },
+    // Lifts you know come with your own weights; ones from the last few days give way to another angle.
+    bonus: (mv) => (known.has(mv.id) ? 1.3 : 1) * (usedLately.has(mv.id) ? 0.6 : 1),
+  });
+  const main = [...picked.filter((mv) => mv.compound), ...picked.filter((mv) => !mv.compound)].map(plan);
+
+  // Spare time goes to extra sets for muscles still short of 10 for the week, smaller exercises first.
+  const total = () => [...main, ...finisher].reduce((n, e) => n + exerciseSeconds(e), 0);
+  const setsNow = new Map(weekSets);
+  for (const e of main) for (const [g, c] of groupCredit(MOVE_BY_ID.get(e.exerciseId)!)) setsNow.set(g, (setsNow.get(g) ?? 0) + c * e.sets);
+  for (let guard = 0; guard < 40; guard++) {
+    const pick = main
+      .filter((e) => e.sets < 4 && total() + WORK_SECONDS + e.rest <= input.minutes * 60)
+      .filter((e) => [...groupCredit(MOVE_BY_ID.get(e.exerciseId)!)].some(([g, c]) => c === 1 && (setsNow.get(g) ?? 0) < WEEKLY_SETS.low)
+        && [...groupCredit(MOVE_BY_ID.get(e.exerciseId)!)].every(([g, c]) => (setsNow.get(g) ?? 0) + c <= WEEKLY_SETS.high))
+      .sort((a, b) => a.sets - b.sets)[0];
+    if (!pick) break;
+    pick.sets++;
+    for (const [g, c] of groupCredit(MOVE_BY_ID.get(pick.exerciseId)!)) setsNow.set(g, (setsNow.get(g) ?? 0) + c);
+  }
+
+  const kindMain = mainOf(best.focus);
+  const trainedToday = new Set(picked.flatMap((mv) => [...groupCredit(mv)].filter(([, c]) => c === 1).map(([g]) => g)));
+  const everyMain = [...new Set(TODAY_KINDS.flatMap(([, f]) => mainOf(f)))];
+  return {
+    day: { id: `today-${now}`, name: best.name, exercises: [...main, ...finisher] },
+    kind: best.name,
+    resting: everyMain.filter((g) => readiness(g) === 0).sort((a, b) => recent.get(b)! - recent.get(a)!),
+    behind: kindMain.filter((g) => trainedToday.has(g) && (weekSets.get(g) ?? 0) < WEEKLY_SETS.low / 2)
+      .sort((a, b) => (weekSets.get(a) ?? 0) - (weekSets.get(b) ?? 0)),
+    restDay: best.value < 0.2,
+  };
 }

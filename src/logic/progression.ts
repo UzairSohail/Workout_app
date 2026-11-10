@@ -13,9 +13,11 @@ export interface Suggestion {
 }
 
 /**
- * Double progression:
+ * Double progression with a scale-back:
  *  - every working set at the top weight hit repMax  -> add one increment
- *  - fell below repMin at the same weight in the last two sessions -> deload 10%
+ *  - any set at the top weight fell short of repMin   -> scale back: to the last lighter weight where
+ *    every set reached repMin, or one increment down (10% if the reps were far off). Each miss steps down
+ *    again, so it keeps coming down until every set is done, and only goes up again once every set hits repMax.
  *  - otherwise keep the weight and aim for one more rep
  *
  * @param history  this exercise's previous sessions, most recent first
@@ -64,15 +66,13 @@ export function suggest(
     };
   }
 
-  const missed = (s: { weight: number; reps: number }[]) =>
-    s.some((x) => x.weight === top && x.reps < repMin);
-  if (sessions.length >= 2 && missed(last) && missed(sessions[1])) {
-    const next = roundTo(topDisplay * 0.9, increment);
+  if (minReps < repMin) {
+    const next = scaleBack(sessions.slice(1, 6), top, minReps, repMin, increment, units);
     return {
       kind: 'deload',
       weight: fromDisplay(next, units),
-      reps: repMax,
-      message: `Below ${repMin} reps twice in a row. Drop to ${fmt(next)} ${units} and build back up.`,
+      reps: repMin,
+      message: `${minReps} reps at ${fmt(topDisplay)} ${units} is under ${repMin}. Drop back to ${fmt(next)} ${units}, and the weight goes up again once you get ${repMax} on every set.`,
     };
   }
 
@@ -83,4 +83,31 @@ export function suggest(
     reps: target,
     message: `Stay at ${fmt(topDisplay)} ${units} and aim for ${target} reps per set.`,
   };
+}
+
+/**
+ * Where to go after missing reps at `top` (kg): the most recent lighter weight in the last few sessions at
+ * which every set reached repMin, or else one increment below (about 10% below when the reps were far off).
+ * Returns display units.
+ */
+function scaleBack(
+  earlier: { weight: number; reps: number }[][],
+  top: number,
+  minReps: number,
+  repMin: number,
+  increment: number,
+  units: Units,
+): number {
+  const topDisplay = toDisplay(top, units);
+  const oneDown = roundTo(topDisplay - increment, increment);
+  for (const s of earlier) {
+    const w = Math.max(...s.map((x) => x.weight));
+    if (w <= 0 || w >= top) continue;
+    if (s.filter((x) => x.weight === w).every((x) => x.reps >= repMin)) {
+      return Math.min(oneDown, roundTo(toDisplay(w, units), increment));
+    }
+  }
+  const farOff = minReps < repMin * 0.6;
+  const next = farOff ? Math.min(oneDown, roundTo(topDisplay * 0.9, increment)) : oneDown;
+  return Math.max(increment, next);
 }

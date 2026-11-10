@@ -181,7 +181,7 @@ export function Home() {
         <section className="card">
           <h2>Pick a split</h2>
           <p className="muted">Choose a built-in program or build your own, and the app will line up each day for you.</p>
-          <Link className="button wide" to="/programs/generate">✨ Build a routine for me</Link>
+          <Link className="button wide" to="/programs/generate?mode=week">✨ Build a routine for me</Link>
           <Link className="button secondary wide" to="/programs">Choose a split</Link>
         </section>
       )}
@@ -216,6 +216,7 @@ export function Home() {
           <Link to="/weight"><span className="ico"><ScaleIcon /></span>Weight</Link>
           <Link to="/history?tab=progress"><span className="ico"><HistoryIcon /></span>Progress</Link>
         </div>
+        {!active && <Link className="button wide" to="/programs/generate?mode=today">✨ Make today's workout from my history</Link>}
         <Link className="button secondary wide" to="/import">📷 Copy a plan from a screenshot</Link>
       </section>
 
