@@ -122,7 +122,8 @@ async function allFinished() {
 }
 
 export async function startWorkout(
-  opts: { program?: Program; day?: Day; copyOf?: Workout },
+  /** generated: a one-off day built from history, which already handles rotation and missed areas. */
+  opts: { program?: Program; day?: Day; copyOf?: Workout; generated?: boolean },
   byId: Map<string, Exercise>,
 ): Promise<string> {
   const existing = (await db.workouts.toArray()).find((w) => !w.finishedAt);
@@ -139,7 +140,7 @@ export async function startWorkout(
     const available = (id: string) => byId.has(id) && hasGear(byId.get(id), settings.missingEquipment);
     // Accessories done for about 5 weeks straight get swapped for one hitting the same area, in the program too.
     let day = opts.day;
-    const rotations = settings.rotate === false ? [] : rotationsFor(day, finished, Date.now(), available);
+    const rotations = settings.rotate === false || opts.generated ? [] : rotationsFor(day, finished, Date.now(), available);
     if (rotations.length) {
       day = applyRotations(day, rotations);
       if (opts.program) {
@@ -150,7 +151,7 @@ export async function startWorkout(
     const rotatedNote = new Map(rotations.map((r) => [r.to.id,
       `New for the next few weeks: replaces ${byId.get(r.from)?.name ?? r.from} after 5 weeks, same muscle area`]));
     // If the last workout of this kind missed part of a muscle, do that part first (or add it) today.
-    const last = settings.catchUp === false ? undefined : lastSimilar(day.exercises, finished);
+    const last = settings.catchUp === false || opts.generated ? undefined : lastSimilar(day.exercises, finished);
     const planned: CatchUpExercise[] = last
       ? applyCatchUp(day.exercises, missedTargets(day.exercises, last), last.name, available)
       : day.exercises;

@@ -44,7 +44,7 @@ export function Programs() {
         <h1>Splits</h1>
         <p className="muted">Pick the program you're running. Copy a built-in one to change it.</p>
       </header>
-      <Link className="button wide" to="/programs/generate">✨ Build a routine for me</Link>
+      <Link className="button wide" to="/programs/generate?mode=week">✨ Build a routine for me</Link>
       <button className="secondary wide" onClick={create}>+ Build your own split</button>
       <ul className="stack">
         {programs?.map((p) => {
