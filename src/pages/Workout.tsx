@@ -3,7 +3,6 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, saveForLater } from '../db';
 import { ExerciseImage } from '../components/ExerciseImage';
-import { MuscleTags } from '../components/MuscleTags';
 import { ExercisePicker } from '../components/ExercisePicker';
 import { NumInput } from '../components/NumInput';
 import { RestTimer, startRest, stopRest } from '../components/RestTimer';
@@ -24,6 +23,7 @@ import type { Exercise, ExerciseNote, LoggedExercise, LogMode, SetType, Workout 
 
 const TYPE_LABEL: Record<SetType, string> = { warmup: 'W', working: '', drop: 'D' };
 const NEXT_TYPE: Record<SetType, SetType> = { working: 'warmup', warmup: 'drop', drop: 'working' };
+const complete = (e: LoggedExercise) => e.sets.length > 0 && e.sets.every((x) => x.done);
 const PR_LABEL: Record<PrKind, string> = { weight: 'Heaviest', e1rm: 'Best 1RM', reps: 'Most reps' };
 
 function useWakeLock(enabled: boolean) {
@@ -87,6 +87,8 @@ export function WorkoutPage() {
   const [supersetAfter, setSupersetAfter] = useState<number | null>(null);
   const [swapIndex, setSwapIndex] = useState<number | null>(null);
   const [noteFor, setNoteFor] = useState<number | null>(null);
+  /** Exercises the user opened or closed by hand, keyed by position and id so a reorder forgets them. */
+  const [openOverride, setOpenOverride] = useState<Record<string, boolean>>({});
   const [toast, setToast] = useState<{ id: number; title: string; detail: string } | null>(null);
   useEffect(() => {
     if (!toast) return;
@@ -204,12 +206,29 @@ export function WorkoutPage() {
     navigate('/', { replace: true });
   };
 
+  // Supersets open and close together; the first unfinished one is the one you're on.
+  const group: number[] = [];
+  w.exercises.forEach((_, i) => { group[i] = i > 0 && w.exercises[i - 1].supersetWithNext ? group[i - 1] : i; });
+  const current = w.exercises.findIndex((e) => !complete(e));
+  const currentGroup = current >= 0 ? group[current] : -1;
+
   return (
     <>
       <header className="page-head sticky">
         <div className="section-head">
           <input className="title-input" value={w.name} onChange={(e) => mutate((d) => { d.name = e.target.value; })} />
-          <button onClick={editing ? saveEdit : finish}>{editing ? 'Save' : 'Finish'}</button>
+          <div className="row tight">
+            {!editing && (
+              <details className="menu">
+                <summary aria-label="Workout options">⋯</summary>
+                <div>
+                  {w.exercises.length > 0 && <button className="ghost" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); saveLater(); }}>💾 Save for later</button>}
+                  <button className="ghost danger" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); discard(); }}>Discard workout</button>
+                </div>
+              </details>
+            )}
+            <button onClick={editing ? saveEdit : finish}>{editing ? 'Save' : 'Finish'}</button>
+          </div>
         </div>
         {editing ? (
           <div className="row">
@@ -232,13 +251,32 @@ export function WorkoutPage() {
         ) : (
           <p className="muted small">
             <Elapsed since={w.startedAt} /> · <span className="kcal" aria-label="Calories burned">🔥 {workoutCalories(w, byId, settings, finished)} kcal</span>
-            {!settings.bodyWeight && <> · <Link to="/settings">add your weight</Link> for accuracy</>}
+            {' · '}{w.exercises.filter(complete).length}/{w.exercises.length} exercises done
           </p>
         )}
       </header>
 
       {w.exercises.map((le, ei) => {
         const ex = byId.get(le.exerciseId);
+        const key = `${ei}:${le.exerciseId}`;
+        const open = editing || (openOverride[key] ?? group[ei] === currentGroup);
+        const setOpen = (v: boolean) => setOpenOverride((o) => ({ ...o, [key]: v }));
+        if (!open) {
+          const done = le.sets.filter((x) => x.done).length;
+          const all = complete(le);
+          const rowSuperset = (le.supersetWithNext && ei < w.exercises.length - 1) || w.exercises[ei - 1]?.supersetWithNext;
+          return (
+            <button key={ei} className={`ex-row ${all ? 'complete' : ''} ${rowSuperset ? (w.exercises[ei - 1]?.supersetWithNext ? 'superset-cont' : 'superset-start') : ''}`}
+              onClick={() => setOpen(true)} aria-label={`Open ${exerciseName(byId, le.exerciseId)}`}>
+              <ExerciseImage exercise={ex} />
+              <span className="grow">
+                <strong>{exerciseName(byId, le.exerciseId)}</strong>
+                <small className="muted">{le.scheme ? SCHEME_LABEL[le.scheme] : `${le.sets.filter((x) => x.type !== 'warmup').length} × ${le.repMin}–${le.repMax}${le.mode === 'time' ? ' sec' : ''}`}</small>
+              </span>
+              <span className="ex-count">{all ? '✓ Done' : `${done}/${le.sets.length} sets`}</span>
+            </button>
+          );
+        }
         const info = prev.get(le.exerciseId);
         const last = info?.history[0];
         const timed = le.mode === 'time';
@@ -295,8 +333,9 @@ export function WorkoutPage() {
             <div className="exercise-head">
               <Link to={`/exercises/${le.exerciseId}`}><ExerciseImage exercise={ex} /></Link>
               <div className="grow">
-                <strong>{exerciseName(byId, le.exerciseId)}</strong>
-                <MuscleTags exercise={ex} />
+                {editing ? <strong>{exerciseName(byId, le.exerciseId)}</strong> : (
+                  <button className="link ex-title" onClick={() => setOpen(false)} aria-label={`Collapse ${exerciseName(byId, le.exerciseId)}`}>{exerciseName(byId, le.exerciseId)}</button>
+                )}
                 <small className="muted">
                   {le.scheme ? SCHEME_LABEL[le.scheme] : timed ? `Target ${le.repMin}–${le.repMax} sec` : `Target ${le.repMin}–${le.repMax} reps`}
                   {last && <> · Last: {countedSets(last.sets).map(fmtLast).join(', ')}</>}
@@ -310,6 +349,15 @@ export function WorkoutPage() {
                 <div>
                   <button className="ghost" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); setSwapIndex(ei); }}>Swap exercise</button>
                   <button className="ghost" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); setNoteFor(ei); }}>{note ? 'Edit note' : 'Add note'}</button>
+                  <Link className="button ghost" to={`/exercises/${le.exerciseId}`}>Exercise info and muscles</Link>
+                  {!le.scheme && (
+                    <button className="ghost" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); switchMode(timed ? 'reps' : 'time'); }}>
+                      {timed ? 'Count reps instead of time' : '⏱ Count time instead of reps'}
+                    </button>
+                  )}
+                  {!le.supersetWithNext && (
+                    <button className="ghost" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); setSupersetAfter(ei); }}>Add a superset exercise</button>
+                  )}
                   {ei < w.exercises.length - 1 && (
                     <button className="ghost" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); mutate((d) => { d.exercises[ei].supersetWithNext = !le.supersetWithNext || undefined; }); }}>
                       {le.supersetWithNext ? 'Unlink superset' : 'Superset with next'}
@@ -328,12 +376,6 @@ export function WorkoutPage() {
               </details>
             </div>
 
-            {!le.scheme && (
-              <div className="segmented mode-toggle" role="group" aria-label="Count sets by">
-                <button className={timed ? '' : 'on'} aria-pressed={!timed} onClick={() => timed && switchMode('reps')}>Reps</button>
-                <button className={timed ? 'on' : ''} aria-pressed={timed} onClick={() => !timed && switchMode('time')}>⏱ Time</button>
-              </div>
-            )}
             {s && s.kind !== 'new' && <p className={`suggestion ${s.kind}`}>{s.kind === 'increase' ? '⬆️ ' : s.kind === 'deload' ? '⬇️ ' : '➡️ '}{s.message}</p>}
             {s && s.kind === 'new' && <p className="suggestion">{s.message}</p>}
             {le.scheme && le.note && <p className="suggestion program">📋 {le.note}</p>}
@@ -408,20 +450,19 @@ export function WorkoutPage() {
               {le.sets.length > 1 && (
                 <button className="ghost" onClick={() => mutate((d) => { d.exercises[ei].sets.pop(); })}>− Set</button>
               )}
-              {!le.supersetWithNext && (
-                <button className="ghost" onClick={() => setSupersetAfter(ei)} aria-label="Add a superset exercise">+ Superset</button>
-              )}
             </div>
           </section>
         );
       })}
 
       <button className="secondary wide" onClick={() => setPicker(true)}>+ Add exercise</button>
-      <textarea placeholder="Workout notes" value={w.notes ?? ''} onChange={(e) => mutate((d) => { d.notes = e.target.value; })} />
-      {!editing && w.exercises.length > 0 && (
-        <button className="secondary wide" onClick={saveLater}>💾 Save workout for later</button>
+      <details className="peek" open={!!w.notes}>
+        <summary className="muted small">Workout notes</summary>
+        <textarea placeholder="How did it go?" value={w.notes ?? ''} onChange={(e) => mutate((d) => { d.notes = e.target.value; })} />
+      </details>
+      {!editing && current < 0 && w.exercises.length > 0 && (
+        <button className="wide" onClick={finish}>Finish workout</button>
       )}
-      {!editing && <button className="ghost danger wide" onClick={() => discard()}>Discard workout</button>}
 
       {!editing && <RestTimer />}
       {toast && (

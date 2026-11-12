@@ -37,9 +37,9 @@ export function Generate() {
       <header className="page-head">
         <BackButton />
         <h1>{today ? "Today's workout" : 'Build my routine'}</h1>
-        <p className="muted">{today
-          ? 'Made from your logged workouts: muscles that need rest sit this one out, the ones behind on the week come first, and weights follow your last sessions.'
-          : 'Answer a few questions and get a split you can start today. You can tweak it afterwards.'}</p>
+        <p className="muted small">{today
+          ? 'Rested muscles first, weights from your last sessions.'
+          : 'A weekly split you can tweak afterwards.'}</p>
         <div className="segmented">
           <button className={today ? 'on' : ''} onClick={() => setParams({ mode: 'today' }, { replace: true })}>Just today</button>
           <button className={today ? '' : 'on'} onClick={() => setParams({ mode: 'week' }, { replace: true })}>Weekly routine</button>
@@ -47,6 +47,24 @@ export function Generate() {
       </header>
       {today ? <TodayGenerator /> : <WeekGenerator />}
     </>
+  );
+}
+
+const GOAL_TEXT: Record<Goal, string> = { muscle: 'Build muscle', strength: 'Get stronger', general: 'General fitness' };
+const GEAR_TEXT: Record<Equipment, string> = { gym: 'Full gym', dumbbells: 'Dumbbells', bodyweight: 'Bodyweight' };
+const minutesText = (m: number) => (m < 120 ? `${m} min` : '2 hours');
+
+/** Keeps the questions folded into one line so the result is the first thing you see. */
+function OptionsFold({ summary, children }: { summary: string; children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <section className="card form">
+      <div className="options-line">
+        <span className="small"><span className="muted">Options:</span> {summary}</span>
+        <button className="link small" onClick={() => setOpen(!open)}>{open ? 'Done' : 'Change'}</button>
+      </div>
+      {open && children}
+    </section>
   );
 }
 
@@ -61,7 +79,7 @@ function GearNote({ missingEquipment }: { missingEquipment?: string[] }) {
       {missingEquipment?.length
         ? <>Leaving out {missingEquipment.map((m) => (GEAR.find(([k]) => k === m)?.[1] ?? m).toLowerCase()).join(', ')}. </>
         : <>Missing something, like a cable machine? </>}
-      <Link to="/settings">Set your gym's equipment in Settings</Link>.
+      <Link to="/settings/gym">Set your gym's equipment in Settings</Link>.
     </p>
   );
 }
@@ -99,7 +117,7 @@ function TodayGenerator() {
 
   return (
     <>
-      <section className="card form">
+      <OptionsFold summary={`${GOAL_TEXT[input.goal]} · ${minutesText(input.minutes)} · ${GEAR_TEXT[input.equipment]}`}>
         <Choice<Goal> label="Main goal" value={input.goal} onChange={set('goal')}
           options={[['muscle', 'Build muscle'], ['strength', 'Get stronger'], ['general', 'General fitness']]} />
         <Choice<number> label="How long have you got?" value={input.minutes} onChange={set('minutes')}
@@ -109,7 +127,7 @@ function TodayGenerator() {
         <Choice<Equipment> label="Equipment" value={input.equipment} onChange={set('equipment')}
           options={[['gym', 'Full gym'], ['dumbbells', 'Dumbbells'], ['bodyweight', 'Bodyweight']]} />
         <GearNote missingEquipment={missingEquipment} />
-      </section>
+      </OptionsFold>
 
       {plan && (
         <section className="card">
@@ -133,7 +151,6 @@ function TodayGenerator() {
               );
             })}
           </ul>
-          <p className="muted small">Weights go up only after you hit the top of the rep range on every set. If you miss reps at a new weight, the next one drops back until every set is done.</p>
         </section>
       )}
 
@@ -170,7 +187,7 @@ function WeekGenerator() {
 
   return (
     <>
-      <section className="card form">
+      <OptionsFold summary={`${input.days} days · ${minutesText(input.minutes)} · ${GOAL_TEXT[input.goal]} · ${GEAR_TEXT[input.equipment]}`}>
         <Choice<Goal> label="Main goal" value={input.goal} onChange={set('goal')}
           options={[['muscle', 'Build muscle'], ['strength', 'Get stronger'], ['general', 'General fitness']]} />
         <Choice<number> label="Days per week" value={input.days} onChange={set('days')}
@@ -183,12 +200,14 @@ function WeekGenerator() {
         <Choice<Equipment> label="Equipment" value={input.equipment} onChange={set('equipment')}
           options={[['gym', 'Full gym'], ['dumbbells', 'Dumbbells'], ['bodyweight', 'Bodyweight']]} />
         <GearNote missingEquipment={missingEquipment} />
-      </section>
+      </OptionsFold>
 
       <section className="card">
         <p className="eyebrow">Your routine</p>
         <h2>{program.name}</h2>
         <p className="muted small">{program.description}</p>
+        <details className="peek">
+          <summary className="muted small">Why this routine</summary>
         <p className="small">
           Picked so each muscle gets hit from different angles over the week: covers {coverage.covered.length} muscle areas
           {coverage.missing.length
@@ -210,6 +229,7 @@ function WeekGenerator() {
             get a full week of sets, and piling on more exercises past that doesn't build more muscle.
           </p>
         )}
+        </details>
         {program.days.map((d) => {
           const item = (e: (typeof d.exercises)[number], i: number) => (
             <li key={i}>

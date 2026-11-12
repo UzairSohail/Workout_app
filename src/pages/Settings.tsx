@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { backupNow, saveFile } from '../backup';
 import { db, importBackup, logBodyWeight, updateSettings, type Backup } from '../db';
 import { DAYS, EVERY_DAY, weighInDay } from '../logic/weighIn';
@@ -84,8 +85,19 @@ function PlateCalculator({ units }: { units: Units }) {
   );
 }
 
+const SECTIONS = [
+  { key: 'profile', icon: '🙂', title: 'Profile', blurb: 'Name, units, body weight, height, age, weigh-in reminder' },
+  { key: 'training', icon: '📈', title: 'Training', blurb: 'Weight increases, default rest, warm-ups, catch-up, rotation' },
+  { key: 'rest', icon: '⏱', title: 'Rest timer alert', blurb: 'Beep, vibrate or notify when rest is over' },
+  { key: 'gym', icon: '🏋️', title: "My gym's equipment", blurb: 'Hide exercises your gym can\'t do' },
+  { key: 'plates', icon: '🧮', title: 'Plate calculator', blurb: 'Which plates go on each side' },
+  { key: 'data', icon: '💾', title: 'Backup and data', blurb: 'Export, import and spreadsheet' },
+] as const;
+
 export function SettingsPage() {
   const s = useSettings();
+  const { section: sectionKey } = useParams();
+  const navigate = useNavigate();
   const { byId } = useExercises();
   const [msg, setMsg] = useState('');
 
@@ -129,146 +141,175 @@ export function SettingsPage() {
     }
   };
 
+  const section = SECTIONS.find((x) => x.key === sectionKey);
+  if (!section) {
+    return (
+      <>
+        <header className="page-head"><h1>Settings</h1></header>
+        <ul className="list settings-list">
+          {SECTIONS.map((x) => (
+            <li key={x.key}>
+              <Link className="list-item" to={`/settings/${x.key}`}>
+                <span className="ico" aria-hidden>{x.icon}</span>
+                <span><strong>{x.title}</strong><small className="muted">{x.blurb}</small></span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+        <p className="muted small credit">
+          Exercise images and instructions from free-exercise-db (public domain). This app is free and has no ads or accounts.
+        </p>
+      </>
+    );
+  }
+
   return (
     <>
-      <header className="page-head"><h1>Settings</h1></header>
-
-      <section className="card form">
-        <label>Your name<input value={s.name} onChange={(e) => updateSettings({ name: e.target.value })} placeholder="Shown on the Today screen" /></label>
-        <div>
-          <span className="label">Units</span>
-          <div className="segmented">
-            {(['kg', 'lb'] as Units[]).map((u) => (
-              <button key={u} className={s.units === u ? 'on' : ''} onClick={() => setUnits(u)}>{u}</button>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="card form">
-        <h2>About you</h2>
-        <p className="muted small">Used to suggest a starting weight the first time you do an exercise, and to estimate calories burned. You can always change it, and after one session the app goes by what you actually lifted.</p>
-        <div className="row">
-          <label className="mini-field"><span>Body weight ({s.units})</span>
-            <NumInput decimal ariaLabel="Your body weight" value={s.bodyWeight ? Math.round(toDisplay(s.bodyWeight, s.units) * 10) / 10 : null}
-              onChange={(v) => v != null && v > 0 && logBodyWeight(fromDisplay(v, s.units))} />
-          </label>
-          <label className="mini-field"><span>Height ({s.units === 'kg' ? 'cm' : 'in'})</span>
-            <NumInput decimal ariaLabel="Your height" value={s.height ? Math.round((s.units === 'kg' ? s.height : s.height / 2.54) * 10) / 10 : null}
-              onChange={(v) => updateSettings({ height: v ? (s.units === 'kg' ? v : v * 2.54) : undefined })} />
-          </label>
-          <label className="mini-field"><span>Age</span>
-            <NumInput ariaLabel="Your age" value={s.birthYear ? new Date().getFullYear() - s.birthYear : null}
-              onChange={(v) => updateSettings({ birthYear: v && v > 0 ? new Date().getFullYear() - v : undefined })} />
-          </label>
-        </div>
-        <div>
-          <span className="label">Sex (strength estimates differ a lot)</span>
-          <div className="segmented">
-            {([['male', 'Male'], ['female', 'Female'], [undefined, 'Skip']] as const).map(([v, t]) => (
-              <button key={t} className={s.sex === v ? 'on' : ''} onClick={() => updateSettings({ sex: v })}>{t}</button>
-            ))}
-          </div>
-        </div>
-        <div>
-          <span className="label">Lifting experience</span>
-          <div className="segmented">
-            {([['beginner', 'Under 1 year'], ['intermediate', '1–3 years'], ['advanced', '3+ years']] as const).map(([v, t]) => (
-              <button key={v} className={(s.experience ?? 'beginner') === v ? 'on' : ''} onClick={() => updateSettings({ experience: v })}>{t}</button>
-            ))}
-          </div>
-        </div>
-        <label>Weigh-in reminder
-          <select value={weighInDay(s)} onChange={(e) => updateSettings({ weighInDay: Number(e.target.value) })}>
-            <option value={EVERY_DAY}>Every day</option>
-            {DAYS.map((d, i) => <option key={d} value={i}>Once a week, {d}s</option>)}
-            <option value={-1}>Off</option>
-          </select>
-        </label>
-        <p className="muted small">Home asks for your weight until you've logged it. Tap Weight on Home to see your weekly averages.</p>
-      </section>
-
-      <section className="card form">
-        <h2>Progression</h2>
-        <p className="muted small">When you hit the top of your rep range on every set, the next workout suggests adding this much.</p>
-        <div className="row">
-          <label className="mini-field"><span>Upper body ({s.units})</span>
-            <NumInput decimal value={s.upperIncrement} onChange={(v) => v != null && updateSettings({ upperIncrement: v })} />
-          </label>
-          <label className="mini-field"><span>Lower body ({s.units})</span>
-            <NumInput decimal value={s.lowerIncrement} onChange={(v) => v != null && updateSettings({ lowerIncrement: v })} />
-          </label>
-          <label className="mini-field"><span>Default rest (s)</span>
-            <NumInput value={s.defaultRest} onChange={(v) => v != null && updateSettings({ defaultRest: v })} />
-          </label>
-        </div>
-      </section>
-
-      <RestAlertCard s={s} />
-
-      <section className="card form">
-        <label className="toggle big">
-          <input type="checkbox" checked={s.warmups !== false} onChange={(e) => updateSettings({ warmups: e.target.checked })} />
-          <span>
-            <strong>Warm-up sets</strong>
-            <small className="muted">Add lighter ramp-up sets before heavy barbell lifts and the first exercise of each workout.</small>
-          </span>
-        </label>
-        <label className="toggle big">
-          <input type="checkbox" checked={s.catchUp !== false} onChange={(e) => updateSettings({ catchUp: e.target.checked })} />
-          <span>
-            <strong>Catch up on missed areas</strong>
-            <small className="muted">If your last push day (or pull, legs…) skipped part of a muscle, like upper chest, the next one does it first or adds an exercise for it.</small>
-          </span>
-        </label>
-        <label className="toggle big">
-          <input type="checkbox" checked={s.rotate !== false} onChange={(e) => updateSettings({ rotate: e.target.checked })} />
-          <span>
-            <strong>Rotate accessories</strong>
-            <small className="muted">After about 5 weeks of the same isolation exercise on a day, swap it for one that hits the same area. Main lifts stay so you keep progressing.</small>
-          </span>
-        </label>
-      </section>
-
-      <section className="card form">
-        <h2>My gym's equipment</h2>
-        <p className="muted small">Untick anything your gym doesn't have. Exercise lists, swap suggestions and the routine builder will leave those exercises out.</p>
-        <div className="gear-list">
-          {GEAR.map(([key, label]) => {
-            const missing = s.missingEquipment ?? [];
-            const have = !missing.includes(key);
-            return (
-              <label key={key} className="toggle">
-                <input type="checkbox" checked={have} onChange={(e) => updateSettings({
-                  missingEquipment: e.target.checked ? missing.filter((m) => m !== key) : [...missing, key],
-                })} />
-                {label}
+      <header className="page-head">
+        <button className="ghost back" onClick={() => navigate('/settings')}>‹ Settings</button>
+        <h1>{section.title}</h1>
+      </header>
+      {section.key === 'profile' && (
+        <>
+          <section className="card form">
+            <label>Your name<input value={s.name} onChange={(e) => updateSettings({ name: e.target.value })} placeholder="Shown on the Today screen" /></label>
+            <div>
+              <span className="label">Units</span>
+              <div className="segmented">
+                {(['kg', 'lb'] as Units[]).map((u) => (
+                  <button key={u} className={s.units === u ? 'on' : ''} onClick={() => setUnits(u)}>{u}</button>
+                ))}
+              </div>
+            </div>
+          </section>
+          <section className="card form">
+            <h2>About you</h2>
+            <p className="muted small">Used to suggest a starting weight the first time you do an exercise, and to estimate calories burned. You can always change it, and after one session the app goes by what you actually lifted.</p>
+            <div className="row">
+              <label className="mini-field"><span>Body weight ({s.units})</span>
+                <NumInput decimal ariaLabel="Your body weight" value={s.bodyWeight ? Math.round(toDisplay(s.bodyWeight, s.units) * 10) / 10 : null}
+                  onChange={(v) => v != null && v > 0 && logBodyWeight(fromDisplay(v, s.units))} />
               </label>
-            );
-          })}
-        </div>
-      </section>
-
-      <PlateCalculator key={s.units} units={s.units} />
-
-      <section className="card form">
-        <h2>Your data</h2>
-        <p className="muted small">
-          Everything is stored on this phone only. Export a backup now and then so you never lose your history.
-          {s.lastBackupAt ? ` Last backup: ${fmtDate(s.lastBackupAt)}.` : ' No backup yet.'}
-        </p>
-        <button className="secondary wide" onClick={exportJson}>Export backup (JSON)</button>
-        <button className="secondary wide" onClick={exportCsv}>Export spreadsheet (CSV)</button>
-        <label className="button secondary wide file">
-          Import backup
-          <input type="file" accept="application/json,.json" onChange={(e) => e.target.files?.[0] && importJson(e.target.files[0])} />
-        </label>
-        {msg && <p>{msg}</p>}
-      </section>
-
-      <p className="muted small credit">
-        Exercise images and instructions from free-exercise-db (public domain). This app is free and has no ads or accounts.
-      </p>
+              <label className="mini-field"><span>Height ({s.units === 'kg' ? 'cm' : 'in'})</span>
+                <NumInput decimal ariaLabel="Your height" value={s.height ? Math.round((s.units === 'kg' ? s.height : s.height / 2.54) * 10) / 10 : null}
+                  onChange={(v) => updateSettings({ height: v ? (s.units === 'kg' ? v : v * 2.54) : undefined })} />
+              </label>
+              <label className="mini-field"><span>Age</span>
+                <NumInput ariaLabel="Your age" value={s.birthYear ? new Date().getFullYear() - s.birthYear : null}
+                  onChange={(v) => updateSettings({ birthYear: v && v > 0 ? new Date().getFullYear() - v : undefined })} />
+              </label>
+            </div>
+            <div>
+              <span className="label">Sex (strength estimates differ a lot)</span>
+              <div className="segmented">
+                {([['male', 'Male'], ['female', 'Female'], [undefined, 'Skip']] as const).map(([v, t]) => (
+                  <button key={t} className={s.sex === v ? 'on' : ''} onClick={() => updateSettings({ sex: v })}>{t}</button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <span className="label">Lifting experience</span>
+              <div className="segmented">
+                {([['beginner', 'Under 1 year'], ['intermediate', '1–3 years'], ['advanced', '3+ years']] as const).map(([v, t]) => (
+                  <button key={v} className={(s.experience ?? 'beginner') === v ? 'on' : ''} onClick={() => updateSettings({ experience: v })}>{t}</button>
+                ))}
+              </div>
+            </div>
+            <label>Weigh-in reminder
+              <select value={weighInDay(s)} onChange={(e) => updateSettings({ weighInDay: Number(e.target.value) })}>
+                <option value={EVERY_DAY}>Every day</option>
+                {DAYS.map((d, i) => <option key={d} value={i}>Once a week, {d}s</option>)}
+                <option value={-1}>Off</option>
+              </select>
+            </label>
+            <p className="muted small">Home asks for your weight until you've logged it. Your weekly averages are under History, Progress.</p>
+          </section>
+        </>
+      )}
+      {section.key === 'training' && (
+        <>
+          <section className="card form">
+            <h2>Progression</h2>
+            <p className="muted small">When you hit the top of your rep range on every set, the next workout suggests adding this much.</p>
+            <div className="row">
+              <label className="mini-field"><span>Upper body ({s.units})</span>
+                <NumInput decimal value={s.upperIncrement} onChange={(v) => v != null && updateSettings({ upperIncrement: v })} />
+              </label>
+              <label className="mini-field"><span>Lower body ({s.units})</span>
+                <NumInput decimal value={s.lowerIncrement} onChange={(v) => v != null && updateSettings({ lowerIncrement: v })} />
+              </label>
+              <label className="mini-field"><span>Default rest (s)</span>
+                <NumInput value={s.defaultRest} onChange={(v) => v != null && updateSettings({ defaultRest: v })} />
+              </label>
+            </div>
+          </section>
+          <section className="card form">
+            <label className="toggle big">
+              <input type="checkbox" checked={s.warmups !== false} onChange={(e) => updateSettings({ warmups: e.target.checked })} />
+              <span>
+                <strong>Warm-up sets</strong>
+                <small className="muted">Add lighter ramp-up sets before heavy barbell lifts and the first exercise of each workout.</small>
+              </span>
+            </label>
+            <label className="toggle big">
+              <input type="checkbox" checked={s.catchUp !== false} onChange={(e) => updateSettings({ catchUp: e.target.checked })} />
+              <span>
+                <strong>Catch up on missed areas</strong>
+                <small className="muted">If your last push day (or pull, legs…) skipped part of a muscle, like upper chest, the next one does it first or adds an exercise for it.</small>
+              </span>
+            </label>
+            <label className="toggle big">
+              <input type="checkbox" checked={s.rotate !== false} onChange={(e) => updateSettings({ rotate: e.target.checked })} />
+              <span>
+                <strong>Rotate accessories</strong>
+                <small className="muted">After about 5 weeks of the same isolation exercise on a day, swap it for one that hits the same area. Main lifts stay so you keep progressing.</small>
+              </span>
+            </label>
+          </section>
+        </>
+      )}
+      {section.key === 'rest' && <RestAlertCard s={s} />}
+      {section.key === 'gym' && (
+        <>
+          <section className="card form">
+            <h2>My gym's equipment</h2>
+            <p className="muted small">Untick anything your gym doesn't have. Exercise lists, swap suggestions and the routine builder will leave those exercises out.</p>
+            <div className="gear-list">
+              {GEAR.map(([key, label]) => {
+                const missing = s.missingEquipment ?? [];
+                const have = !missing.includes(key);
+                return (
+                  <label key={key} className="toggle">
+                    <input type="checkbox" checked={have} onChange={(e) => updateSettings({
+                      missingEquipment: e.target.checked ? missing.filter((m) => m !== key) : [...missing, key],
+                    })} />
+                    {label}
+                  </label>
+                );
+              })}
+            </div>
+          </section>
+        </>
+      )}
+      {section.key === 'plates' && <PlateCalculator key={s.units} units={s.units} />}
+      {section.key === 'data' && (
+        <>
+          <section className="card form">
+            <h2>Your data</h2>
+            <p className="muted small">
+              Everything is stored on this phone only. Export a backup now and then so you never lose your history.
+              {s.lastBackupAt ? ` Last backup: ${fmtDate(s.lastBackupAt)}.` : ' No backup yet.'}
+            </p>
+            <button className="secondary wide" onClick={exportJson}>Export backup (JSON)</button>
+            <button className="secondary wide" onClick={exportCsv}>Export spreadsheet (CSV)</button>
+            <label className="button secondary wide file">
+              Import backup
+              <input type="file" accept="application/json,.json" onChange={(e) => e.target.files?.[0] && importJson(e.target.files[0])} />
+            </label>
+            {msg && <p>{msg}</p>}
+          </section>
+        </>
+      )}
     </>
   );
 }

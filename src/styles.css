@@ -365,3 +365,33 @@ a.list-item::after, button.list-item::after { content: '›'; margin-left: auto;
 .range-chips { margin: 4px 0 2px; }
 .range-chips button { padding: 6px 14px; }
 .trend.labelled .pt-value.dim { fill: var(--muted); font-weight: 500; }
+
+/* Decluttered layout: one thing per screen, the rest one tap away. */
+.hero-title { font-size: 1.5rem; margin: 2px 0 4px; }
+.peek { margin: 4px 0 2px; }
+.peek summary { cursor: pointer; list-style: none; }
+.peek summary::-webkit-details-marker { display: none; }
+.peek summary::after { content: ' ▾'; }
+.peek[open] summary::after { content: ' ▴'; }
+.chips-label { align-self: center; }
+.plain-link { display: block; color: var(--text); text-decoration: none; }
+.row.tight-gap { flex-wrap: nowrap; align-items: flex-end; }
+.row.tight-gap .mini-field input { text-align: left; padding-left: 12px; }
+.backup-nudge { padding: 10px 12px; flex-wrap: nowrap; }
+.settings-list .list-item .ico { font-size: 1.3rem; width: 28px; text-align: center; flex-shrink: 0; }
+.ex-row { display: flex; align-items: center; gap: 12px; width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 8px 12px; color: var(--text); box-shadow: none; text-align: left; justify-content: flex-start; font-weight: 400; }
+.ex-row .thumb { width: 40px; height: 40px; border-radius: 10px; }
+.ex-row .grow { display: flex; flex-direction: column; min-width: 0; }
+.ex-row strong { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ex-row .ex-count { margin-left: auto; color: var(--muted); font-size: 0.85rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.ex-row.complete { opacity: 0.7; }
+.ex-row.complete .ex-count { color: var(--success); font-weight: 700; }
+.ex-row.superset-start, .ex-row.superset-cont { border-left: 3px solid var(--accent); }
+.ex-row.superset-cont { margin-top: -6px; }
+.collapse-btn { padding: 4px 8px; min-height: 0; font-size: 0.85rem; color: var(--muted); }
+.options-line { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.splits .card { cursor: pointer; }
+.ex-title { color: var(--text); font-size: 1rem; text-align: left; justify-content: flex-start; font-weight: 700; }
+.ex-title::after { content: ' ▴'; color: var(--muted); font-weight: 400; font-size: 0.8rem; }
+.menu > div .button { justify-content: flex-start; font-weight: 600; }
+.splits .section-head button { white-space: nowrap; flex-shrink: 0; }
