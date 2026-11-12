@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { db, uid, updateSettings } from '../db';
 import { ExercisePicker } from '../components/ExercisePicker';
 import { StartingWeights } from '../components/StartingWeights';
-import { SCHEME_LABEL } from '../logic/schemes';
+import { programUsesSchemes, SCHEME_LABEL } from '../logic/schemes';
 import { exerciseName, useExercises } from '../exercises';
 import { useSettings } from '../hooks';
 import { defaultMode } from '../logic/session';
@@ -156,8 +156,15 @@ export function ProgramEdit() {
           <button className="secondary wide" onClick={() => mutate((d) => { d.days.push({ id: uid(), name: `Day ${d.days.length + 1}`, exercises: [] }); })}>
             + Add day
           </button>
+          <button className="secondary wide" onClick={async () => navigate(`/programs/${await copyProgram(p)}`)}>Make a copy</button>
           <button className="ghost danger wide" onClick={remove}>Delete split</button>
         </>
+      )}
+      {settings.activeProgramId !== p.id && (
+        <button className="wide" onClick={async () => {
+          await updateSettings({ activeProgramId: p.id, nextDayIndex: 0 });
+          if (!programUsesSchemes(p.days)) navigate('/');
+        }}>Use this split</button>
       )}
 
       {pickerFor !== null && (

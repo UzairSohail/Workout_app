@@ -42,30 +42,28 @@ export function Programs() {
     <>
       <header className="page-head">
         <h1>Splits</h1>
-        <p className="muted">Pick the program you're running. Copy a built-in one to change it.</p>
+        <p className="muted small">Tap a split to see its days.</p>
       </header>
       <Link className="button wide" to="/programs/generate?mode=week">✨ Build a routine for me</Link>
-      <button className="secondary wide" onClick={create}>+ Build your own split</button>
-      <ul className="stack">
+      <ul className="stack splits">
         {programs?.map((p) => {
           const active = p.id === settings.activeProgramId;
           return (
-            <li key={p.id} className={`card ${active ? 'accent' : ''}`}>
+            <li key={p.id} className={`card ${active ? 'accent' : ''}`} onClick={() => navigate(`/programs/${p.id}`)}>
               <div className="section-head">
                 <h2>{p.name}</h2>
                 {active && <span className="badge">Active</span>}
               </div>
-              {p.description && <p className="muted">{p.description}</p>}
-              <p className="small">{p.days.map((d) => d.name).join(' · ') || 'No days yet'}</p>
-              <div className="row">
-                {!active && <button onClick={() => activate(p)}>Use this</button>}
-                <Link className="button secondary" to={`/programs/${p.id}`}>{p.builtIn ? 'View' : 'Edit'}</Link>
-                <button className="secondary" onClick={async () => navigate(`/programs/${await copyProgram(p)}`)}>Copy</button>
+              {p.description && <p className="muted small">{p.description}</p>}
+              <div className="section-head">
+                <span className="small">{p.days.map((d) => d.name).join(' · ') || 'No days yet'}</span>
+                {!active && <button className="secondary" onClick={(e) => { e.stopPropagation(); activate(p); }}>Use this</button>}
               </div>
             </li>
           );
         })}
       </ul>
+      <button className="secondary wide" onClick={create}>+ Build your own split</button>
     </>
   );
 }

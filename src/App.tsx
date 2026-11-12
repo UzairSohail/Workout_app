@@ -13,6 +13,7 @@ import { CustomExercise } from './pages/CustomExercise';
 import { SettingsPage } from './pages/Settings';
 import { RecordsPage } from './pages/Records';
 import { WeightPage } from './pages/Weight';
+import { StartPage } from './pages/Start';
 import { CalendarIcon, DumbbellIcon, GearIcon, HistoryIcon, HomeIcon } from './components/Icons';
 
 const tabs = [
@@ -33,6 +34,7 @@ export function App() {
           <Route path="/programs/generate" element={<Generate />} />
           <Route path="/programs/:id" element={<ProgramEdit />} />
           <Route path="/import" element={<ImportPlan />} />
+          <Route path="/start" element={<StartPage />} />
           <Route path="/workout" element={<WorkoutPage />} />
           <Route path="/history" element={<History />} />
           <Route path="/history/:id" element={<WorkoutDetail />} />
@@ -41,6 +43,7 @@ export function App() {
           <Route path="/exercises/new" element={<CustomExercise />} />
           <Route path="/exercises/:id" element={<ExerciseDetail />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/settings/:section" element={<SettingsPage />} />
           <Route path="/records" element={<RecordsPage />} />
           <Route path="/weight" element={<WeightPage />} />
         </Routes>
