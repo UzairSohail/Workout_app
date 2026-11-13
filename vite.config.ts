@@ -9,7 +9,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.png', 'apple-touch-icon.png'],
+      includeAssets: ['favicon-pink.png', 'apple-touch-icon-pink.png'],
       manifest: {
         name: 'Workout',
         short_name: 'Workout',
@@ -20,9 +20,9 @@ export default defineConfig({
         start_url: './',
         scope: './',
         icons: [
-          { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: 'icon-512.png', sizes: '512x512', type: 'image/png' },
-          { src: 'icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          { src: 'icon-192-pink.png', sizes: '192x192', type: 'image/png' },
+          { src: 'icon-512-pink.png', sizes: '512x512', type: 'image/png' },
+          { src: 'icon-maskable-512-pink.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
       workbox: {
