@@ -19,6 +19,7 @@ import { wantsWarmup } from '../logic/warmup';
 import { SCHEME_LABEL } from '../logic/schemes';
 import { countedSets, recordsFor, sessionPrs, type PrKind } from '../logic/stats';
 import { fmt, fromDisplay, toDisplay } from '../logic/units';
+import { ArrowDown, ArrowRight, ArrowUp, CheckIcon, ChevronDown, ClipboardIcon, MoreIcon, NoteIcon, PlusIcon, ShuffleIcon, SwapIcon, TargetIcon, TrophyIcon } from '../components/Icons';
 import type { Exercise, ExerciseNote, LoggedExercise, LogMode, SetType, Workout } from '../types';
 
 const TYPE_LABEL: Record<SetType, string> = { warmup: 'W', working: '', drop: 'D' };
@@ -216,18 +217,26 @@ export function WorkoutPage() {
     <>
       <header className="page-head sticky">
         <div className="section-head">
-          <input className="title-input" value={w.name} onChange={(e) => mutate((d) => { d.name = e.target.value; })} />
+          {editing ? (
+            <Link className="icon-btn button" to={`/history/${w.id}`} aria-label="Back without saving"><ChevronDown /></Link>
+          ) : (
+            <Link className="icon-btn button" to="/" aria-label="Minimise workout"><ChevronDown /></Link>
+          )}
+          <div className="grow" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <input className="title-input" aria-label="Workout name" value={w.name} onChange={(e) => mutate((d) => { d.name = e.target.value; })} />
+            {!editing && <span className="workout-meta"><Elapsed since={w.startedAt} /><span className="kcal" aria-label="Calories burned">{workoutCalories(w, byId, settings, finished)} kcal</span></span>}
+          </div>
           <div className="row tight">
             {!editing && (
               <details className="menu">
-                <summary aria-label="Workout options">⋯</summary>
+                <summary aria-label="Workout options"><MoreIcon /></summary>
                 <div>
-                  {w.exercises.length > 0 && <button className="ghost" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); saveLater(); }}>💾 Save for later</button>}
+                  {w.exercises.length > 0 && <button className="ghost" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); saveLater(); }}>Save for later</button>}
                   <button className="ghost danger" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); discard(); }}>Discard workout</button>
                 </div>
               </details>
             )}
-            <button onClick={editing ? saveEdit : finish}>{editing ? 'Save' : 'Finish'}</button>
+            <button className="pill-btn" style={{ background: 'var(--accent)', color: 'var(--accent-ink)', fontWeight: 600 }} onClick={editing ? saveEdit : finish}>{editing ? 'Save' : 'Finish'}</button>
           </div>
         </div>
         {editing ? (
@@ -248,11 +257,14 @@ export function WorkoutPage() {
                 onChange={(v) => v != null && mutate((d) => { d.finishedAt = d.startedAt + v * 60000; })} />
             </label>
           </div>
-        ) : (
-          <p className="muted small">
-            <Elapsed since={w.startedAt} /> · <span className="kcal" aria-label="Calories burned">🔥 {workoutCalories(w, byId, settings, finished)} kcal</span>
-            {' · '}{w.exercises.filter(complete).length}/{w.exercises.length} exercises done
-          </p>
+        ) : w.exercises.length > 0 && (
+          <div className="progress-segs" role="progressbar" aria-label="Exercises done"
+            aria-valuemin={0} aria-valuemax={w.exercises.length} aria-valuenow={w.exercises.filter(complete).length}>
+            {w.exercises.map((e, i) => {
+              const done = e.sets.filter((x) => x.done).length;
+              return <span key={i}><i style={{ width: `${e.sets.length ? (done / e.sets.length) * 100 : 0}%` }} /></span>;
+            })}
+          </div>
         )}
       </header>
 
@@ -273,7 +285,7 @@ export function WorkoutPage() {
                 <strong>{exerciseName(byId, le.exerciseId)}</strong>
                 <small className="muted">{le.scheme ? SCHEME_LABEL[le.scheme] : `${le.sets.filter((x) => x.type !== 'warmup').length} × ${le.repMin}–${le.repMax}${le.mode === 'time' ? ' sec' : ''}`}</small>
               </span>
-              <span className="ex-count">{all ? '✓ Done' : `${done}/${le.sets.length} sets`}</span>
+              <span className="ex-count">{all ? <><CheckIcon />Done</> : `${done}/${le.sets.length}`}</span>
             </button>
           );
         }
@@ -293,6 +305,7 @@ export function WorkoutPage() {
         const fmtLast = (x: { weight: number; reps: number }) =>
           timed ? (x.weight ? `${fmt(toDisplay(x.weight, units))}×${fmtSecs(x.reps)}` : fmtSecs(x.reps)) : `${fmt(toDisplay(x.weight, units))}×${x.reps}`;
         const hasHistory = (info?.history.length ?? 0) > 0;
+        const lastSets = last ? countedSets(last.sets) : [];
         const prsBySet = info ? sessionPrs(le.sets, info.records, hasHistory) : [];
         const markDone = (si: number, reps?: number) => {
           const x = { ...le.sets[si], done: true };
@@ -342,17 +355,17 @@ export function WorkoutPage() {
                 </small>
               </div>
               {!editing && !le.sets.some((x) => x.done) && (
-                <button className="ghost swap-btn" aria-label="Swap exercise" title="Swap exercise" onClick={() => setSwapIndex(ei)}>⇄</button>
+                <button className="ghost swap-btn" aria-label="Swap exercise" title="Swap exercise" onClick={() => setSwapIndex(ei)}><SwapIcon /></button>
               )}
               <details className="menu">
-                <summary aria-label="Exercise options">⋯</summary>
+                <summary aria-label="Exercise options"><MoreIcon /></summary>
                 <div>
                   <button className="ghost" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); setSwapIndex(ei); }}>Swap exercise</button>
                   <button className="ghost" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); setNoteFor(ei); }}>{note ? 'Edit note' : 'Add note'}</button>
                   <Link className="button ghost" to={`/exercises/${le.exerciseId}`}>Exercise info and muscles</Link>
                   {!le.scheme && (
                     <button className="ghost" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); switchMode(timed ? 'reps' : 'time'); }}>
-                      {timed ? 'Count reps instead of time' : '⏱ Count time instead of reps'}
+                      {timed ? 'Count reps instead of time' : 'Count time instead of reps'}
                     </button>
                   )}
                   {!le.supersetWithNext && (
@@ -376,29 +389,31 @@ export function WorkoutPage() {
               </details>
             </div>
 
-            {s && s.kind !== 'new' && <p className={`suggestion ${s.kind}`}>{s.kind === 'increase' ? '⬆️ ' : s.kind === 'deload' ? '⬇️ ' : '➡️ '}{s.message}</p>}
-            {s && s.kind === 'new' && <p className="suggestion">{s.message}</p>}
-            {le.scheme && le.note && <p className="suggestion program">📋 {le.note}</p>}
-            {le.focus && <p className="suggestion">🎯 {le.focus}</p>}
+            {s && (
+              <div className={`suggestion ${s.kind}`}>
+                <span className="sug-icon">{s.kind === 'increase' ? <ArrowUp /> : s.kind === 'deload' ? <ArrowDown /> : <ArrowRight />}</span>
+                <span className="sug-text">{s.message}</span>
+              </div>
+            )}
+            {le.scheme && le.note && <div className="suggestion program"><span className="sug-icon"><ClipboardIcon /></span><span className="sug-text">{le.note}</span></div>}
+            {le.focus && <div className="suggestion"><span className="sug-icon"><TargetIcon /></span><span className="sug-text">{le.focus}</span></div>}
             {ideas.length > 0 && (
               <div className="suggestion variety">
-                🔄 You've done this the last 4 times you trained {ex!.primaryMuscles[0]}. Mix it up with:
+                <span className="row" style={{ gap: 10, flexWrap: 'nowrap', alignItems: 'flex-start' }}><span className="sug-icon"><ShuffleIcon /></span><span className="sug-text">You've done this the last 4 times you trained {ex!.primaryMuscles[0]}. Mix it up with:</span></span>
                 <div className="chips">
                   {ideas.map((alt) => <button key={alt.id} className="chip" onClick={() => swapTo(ei, alt)}>{alt.name}</button>)}
                 </div>
               </div>
             )}
             <StickyNote exerciseId={le.exerciseId} note={note} editing={noteFor === ei} setEditing={(v) => setNoteFor(v ? ei : null)} />
-            {plateSet?.weight != null && plateSet.weight > 0 && (
-              <p className="plates muted small">🏋️ {fmt(toDisplay(plateSet.weight, units))} {units}: {plateText(toDisplay(plateSet.weight, units), units)}</p>
-            )}
 
             <div className="sets">
               <div className="set-row head">
-                <span>Set</span><span>{units}</span><span>{timed ? 'Sec' : 'Reps'}</span><span />
+                <span>Set</span><span>Previous</span><span>{units}</span><span>{timed ? 'Sec' : 'Reps'}</span><span />
               </div>
               {le.sets.map((set, si) => {
                 const label = TYPE_LABEL[set.type] || String(++workingIndex);
+                const before = set.type === 'warmup' ? undefined : lastSets[TYPE_LABEL[set.type] ? workingIndex : workingIndex - 1];
                 // A timed set's only meaningful record is the longest hold.
                 const prs = (prsBySet[si] ?? []).filter((p) => !timed || p === 'reps');
                 return (
@@ -407,6 +422,7 @@ export function WorkoutPage() {
                       onClick={() => mutate((d) => { d.exercises[ei].sets[si].type = NEXT_TYPE[set.type]; })}>
                       {label}
                     </button>
+                    <span className="set-prev">{before ? fmtLast(before) : '–'}</span>
                     <NumInput
                       decimal ariaLabel={`Set ${si + 1} weight`}
                       value={set.weight == null ? null : toDisplay(set.weight, units)}
@@ -432,8 +448,8 @@ export function WorkoutPage() {
                       className={`check ${set.done ? 'on' : ''}`}
                       aria-label={set.done ? 'Mark set not done' : 'Mark set done'}
                       onClick={() => (set.done ? mutate((d) => { d.exercises[ei].sets[si].done = false; }) : markDone(si))}
-                    >✓</button>
-                    {prs.length > 0 && <span className="pr-badge">🏆 {prs.map((p) => (timed ? 'Longest' : PR_LABEL[p])).join(' · ')}</span>}
+                    ><CheckIcon /></button>
+                    {prs.length > 0 && <span className="pr-badge"><TrophyIcon />{prs.map((p) => (timed ? 'Longest' : PR_LABEL[p])).join(' · ')}</span>}
                   </div>
                 );
               })}
@@ -441,21 +457,29 @@ export function WorkoutPage() {
             {timed && !editing && nextSet >= 0 && (
               <SetTimer key={nextSet} id={`${w.id}:${ei}:${nextSet}`} label={`set ${nextSet + 1}`} target={le.sets[nextSet].reps ?? le.repMax} onStop={(sec) => markDone(nextSet, sec)} />
             )}
-            <div className="row">
-              <button className="secondary grow" onClick={() => mutate((d) => {
-                const sets = d.exercises[ei].sets;
-                const lastSet = sets[sets.length - 1];
-                sets.push({ weight: lastSet?.weight ?? s?.weight ?? null, reps: null, type: 'working', done: false });
-              })}>+ Set</button>
-              {le.sets.length > 1 && (
-                <button className="ghost" onClick={() => mutate((d) => { d.exercises[ei].sets.pop(); })}>− Set</button>
-              )}
+            <div className="ex-tools">
+              <span className="plates">
+                {plateSet?.weight != null && plateSet.weight > 0 ? `${fmt(toDisplay(plateSet.weight, units))} ${units} · ${plateText(toDisplay(plateSet.weight, units), units)}` : ''}
+              </span>
+              <div className="row tight" style={{ gap: 6 }}>
+                {le.sets.length > 1 && (
+                  <button className="pill-btn ghost" aria-label="Remove last set" onClick={() => mutate((d) => { d.exercises[ei].sets.pop(); })}>− Set</button>
+                )}
+                <button className="pill-btn" onClick={() => mutate((d) => {
+                  const sets = d.exercises[ei].sets;
+                  const lastSet = sets[sets.length - 1];
+                  sets.push({ weight: lastSet?.weight ?? s?.weight ?? null, reps: null, type: 'working', done: false });
+                })}><PlusIcon />Set</button>
+                {!note && noteFor !== ei && (
+                  <button className="pill-btn icon-only" aria-label="Add a note" style={{ width: 38, padding: 0 }} onClick={() => setNoteFor(ei)}><NoteIcon /></button>
+                )}
+              </div>
             </div>
           </section>
         );
       })}
 
-      <button className="secondary wide" onClick={() => setPicker(true)}>+ Add exercise</button>
+      <button className="wide dashed" onClick={() => setPicker(true)}><PlusIcon />Add exercise</button>
       <details className="peek" open={!!w.notes}>
         <summary className="muted small">Workout notes</summary>
         <textarea placeholder="How did it go?" value={w.notes ?? ''} onChange={(e) => mutate((d) => { d.notes = e.target.value; })} />
@@ -467,7 +491,7 @@ export function WorkoutPage() {
       {!editing && <RestTimer />}
       {toast && (
         <div key={toast.id} className="pr-toast" role="status" onClick={() => setToast(null)}>
-          <span className="pr-toast-icon" aria-hidden>🏆</span>
+          <span className="pr-toast-icon" aria-hidden><TrophyIcon /></span>
           <span>
             <strong>New PR! {toast.detail}</strong>
             <small>{toast.title}</small>

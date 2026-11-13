@@ -9,6 +9,7 @@ import { exerciseName, useExercises } from '../exercises';
 import { useSettings } from '../hooks';
 import { defaultMode } from '../logic/session';
 import type { LogMode, PlannedExercise, Program, SchemeKind } from '../types';
+import { ArrowUp, ChevronLeft, XIcon } from '../components/Icons';
 import { copyProgram } from './Programs';
 
 function NumberField({ label, value, onChange, disabled }: {
@@ -69,7 +70,7 @@ export function ProgramEdit() {
   return (
     <>
       <header className="page-head">
-        <button className="ghost back" onClick={() => navigate('/programs')}>‹ Splits</button>
+        <button className="ghost back" onClick={() => navigate('/programs')}><ChevronLeft />Splits</button>
         {ro ? <h1>{p.name}</h1> : (
           <input className="title-input" value={p.name} onChange={(e) => mutate((d) => { d.name = e.target.value; })} />
         )}
@@ -91,8 +92,8 @@ export function ProgramEdit() {
             )}
             {!ro && (
               <span className="row tight">
-                <button className="ghost" disabled={di === 0} onClick={() => mutate((d) => { [d.days[di - 1], d.days[di]] = [d.days[di], d.days[di - 1]]; })}>↑</button>
-                <button className="ghost danger" onClick={() => confirm(`Remove ${day.name}?`) && mutate((d) => { d.days.splice(di, 1); })}>✕</button>
+                <button className="ghost" disabled={di === 0} onClick={() => mutate((d) => { [d.days[di - 1], d.days[di]] = [d.days[di], d.days[di - 1]]; })} aria-label="Move up"><ArrowUp /></button>
+                <button className="ghost danger" onClick={() => confirm(`Remove ${day.name}?`) && mutate((d) => { d.days.splice(di, 1); })} aria-label="Remove"><XIcon /></button>
               </span>
             )}
           </div>
@@ -110,8 +111,8 @@ export function ProgramEdit() {
                   </span>
                   {!ro && (
                     <span className="row tight">
-                      <button className="ghost" disabled={ei === 0} onClick={() => mutate((d) => { const xs = d.days[di].exercises; [xs[ei - 1], xs[ei]] = [xs[ei], xs[ei - 1]]; })}>↑</button>
-                      <button className="ghost danger" onClick={() => mutate((d) => { d.days[di].exercises.splice(ei, 1); })}>✕</button>
+                      <button className="ghost" disabled={ei === 0} onClick={() => mutate((d) => { const xs = d.days[di].exercises; [xs[ei - 1], xs[ei]] = [xs[ei], xs[ei - 1]]; })} aria-label="Move up"><ArrowUp /></button>
+                      <button className="ghost danger" onClick={() => mutate((d) => { d.days[di].exercises.splice(ei, 1); })} aria-label="Remove"><XIcon /></button>
                     </span>
                   )}
                 </div>

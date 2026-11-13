@@ -83,13 +83,17 @@ export function RestTimer() {
   const adjust = (d: number) => write({ endAt: state.endAt + d * 1000, total: Math.max(1, state.total + d) });
   const pct = Math.max(0, Math.min(100, (remaining / state.total) * 100));
 
+  const R = 22, C = 2 * Math.PI * R;
   return (
-    <div className={`rest-bar ${remaining <= 0 ? 'done' : ''}`}>
-      <div className="rest-progress" style={{ width: `${pct}%` }} />
-      <span className="rest-label">{remaining > 0 ? `Rest ${fmtClock(remaining)}` : 'Go!'}</span>
-      <button className="ghost" onClick={() => adjust(-15)}>−15</button>
-      <button className="ghost" onClick={() => adjust(15)}>+15</button>
-      <button className="ghost" onClick={stopRest}>Skip</button>
+    <div className={`rest-bar ${remaining <= 0 ? 'done' : ''}`} role="timer" aria-label="Rest timer">
+      <div className="rest-ring" aria-hidden>
+        <svg viewBox="0 0 54 54"><circle className="track" cx="27" cy="27" r={R} /><circle className="fill" cx="27" cy="27" r={R} strokeDasharray={C} strokeDashoffset={C * (1 - pct / 100)} /></svg>
+        <span>{remaining > 0 ? fmtClock(remaining) : '0:00'}</span>
+      </div>
+      <span className="rest-label">{remaining > 0 ? 'Resting' : 'Rest over'}<small>{remaining > 0 ? `${fmtClock(state.total)} total` : 'Next set, go!'}</small></span>
+      <button onClick={() => adjust(-15)} aria-label="15 seconds less">−15</button>
+      <button onClick={() => adjust(15)} aria-label="15 seconds more">+15</button>
+      <button className="skip" onClick={stopRest}>{remaining > 0 ? 'Skip' : 'Done'}</button>
     </div>
   );
 }

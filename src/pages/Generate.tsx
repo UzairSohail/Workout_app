@@ -9,6 +9,7 @@ import type { Day } from '../types';
 import { GEAR, generatorEquipment, hasGear } from '../logic/equipment';
 import { GROUP_LABEL, mainTargets, TARGETS } from '../logic/targets';
 import { estimateMinutes, generateProgram, generateToday, isFinisherMove, SESSION_MINUTES, weekCoverage, weeklySets, WEEKLY_SETS, type Equipment, type Experience, type GeneratorInput, type Goal } from '../logic/generator';
+import { ChevronLeft } from '../components/Icons';
 import { MOVE_BY_ID } from '../logic/targets';
 
 function Choice<T extends string | number>({ label, value, options, onChange }: {
@@ -70,7 +71,7 @@ function OptionsFold({ summary, children }: { summary: string; children: React.R
 
 function BackButton() {
   const navigate = useNavigate();
-  return <button className="ghost back" onClick={() => navigate(-1)}>‹ Back</button>;
+  return <button className="ghost back" onClick={() => navigate(-1)}><ChevronLeft />Back</button>;
 }
 
 function GearNote({ missingEquipment }: { missingEquipment?: string[] }) {
@@ -134,13 +135,13 @@ function TodayGenerator() {
           <p className="eyebrow">Today · about {estimateMinutes(plan.day)} min</p>
           <h2>{plan.kind}</h2>
           {finished!.length === 0 && <p className="small">No workouts logged yet, so this is a full-body start. It gets smarter with every workout you log.</p>}
-          {plan.resting.length > 0 && <p className="small">💤 Resting your {groupList(plan.resting)}: trained hard in the last 2 days.</p>}
-          {plan.behind.length > 0 && finished!.length > 0 && <p className="small">🎯 Catching up your {groupList(plan.behind)}, the furthest behind this week.</p>}
+          {plan.resting.length > 0 && <p className="small muted">Resting your {groupList(plan.resting)}: trained hard in the last 2 days.</p>}
+          {plan.behind.length > 0 && finished!.length > 0 && <p className="small muted">Catching up your {groupList(plan.behind)}, the furthest behind this week.</p>}
           {plan.restDay && <p className="notice">Almost everything was trained hard in the last 2 days. A rest day would probably do more for you than this session.</p>}
           <ul className="plain">
             {plan.day.exercises.map((e, i) => {
               const s = !finisher(e.exerciseId) && e.mode !== 'time' ? suggestionFor(e, finished!, byId, settings) : null;
-              const arrow = s?.kind === 'increase' ? '⬆️ ' : s?.kind === 'deload' ? '⬇️ ' : '';
+              const arrow = s?.kind === 'increase' ? '↑ ' : s?.kind === 'deload' ? '↓ ' : '';
               return (
                 <li key={e.exerciseId}>
                   {i > 0 && finisher(e.exerciseId) && !finisher(plan.day.exercises[i - 1].exerciseId) && <p className="small eyebrow">Core finisher</p>}

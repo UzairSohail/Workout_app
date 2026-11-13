@@ -5,7 +5,8 @@ import { ExerciseImage } from '../components/ExerciseImage';
 import { MuscleTags } from '../components/MuscleTags';
 import { ExerciseFilters, filterExercises, MyGearToggle } from '../components/ExercisePicker';
 import { useSettings } from '../hooks';
-import { useExercises } from '../exercises';
+import { PlusIcon } from '../components/Icons';
+import { cap, useExercises } from '../exercises';
 
 export function Exercises() {
   const { all, loading, error } = useExercises();
@@ -23,11 +24,9 @@ export function Exercises() {
 
   return (
     <>
-      <header className="page-head">
-        <div className="section-head">
-          <h1>Exercises</h1>
-          <Link className="button secondary" to="/exercises/new">+ Custom</Link>
-        </div>
+      <header className="page-head row-head">
+        <h1>Exercises</h1>
+        <Link className="button pill-btn" to="/exercises/new"><PlusIcon />Custom</Link>
       </header>
       <ExerciseFilters {...{ q, setQ, muscle, setMuscle, equipment, setEquipment }} />
       <label className="toggle">
@@ -37,15 +36,15 @@ export function Exercises() {
       <MyGearToggle missing={missingEquipment} on={mine} setOn={setMine} />
       {loading && <p className="muted">Loading exercises…</p>}
       {error && <p className="error">{error}</p>}
-      <p className="muted small">{results.length} exercises</p>
-      <ul className="list">
+      <h2 className="section-label" style={{ margin: '6px 2px 0' }}>{results.length.toLocaleString()} exercises</h2>
+      <ul className="list" style={{ gap: 0 }}>
         {results.slice(0, limit).map((e) => (
           <li key={e.id}>
-            <Link className="list-item" to={`/exercises/${e.id}`}>
+            <Link className="lib-row" to={`/exercises/${e.id}`}>
               <ExerciseImage exercise={e} />
-              <span>
+              <span className="grow">
                 <strong>{e.name}</strong>
-                <small className="muted"><MuscleTags exercise={e} compact /> {e.equipment}{e.custom ? ' · custom' : ''}</small>
+                <span className="meta"><MuscleTags exercise={e} compact /> {cap(e.equipment)}{e.custom ? ' · custom' : ''}</span>
               </span>
             </Link>
           </li>

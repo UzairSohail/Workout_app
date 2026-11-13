@@ -4,6 +4,7 @@ import { db } from '../db';
 import { exerciseName, useExercises } from '../exercises';
 import { useActiveWorkout } from '../hooks';
 import { startWorkout } from '../logic/session';
+import { CalendarIcon, CameraIcon, ChevronLeft, PlusIcon, SparkIcon, XIcon } from '../components/Icons';
 import type { Workout } from '../types';
 
 /** Every way to start a workout other than the split's next day, kept off Today so it stays simple. */
@@ -21,7 +22,7 @@ export function StartPage() {
   return (
     <>
       <header className="page-head">
-        <button className="ghost back" onClick={() => navigate(-1)}>‹ Back</button>
+        <button className="ghost back" onClick={() => navigate(-1)}><ChevronLeft />Back</button>
         <h1>Other ways to train</h1>
       </header>
 
@@ -35,22 +36,26 @@ export function StartPage() {
         <ul className="list">
           <li>
             <Link className="list-item" to="/programs/generate?mode=today">
-              <span><strong>✨ Make today's workout for me</strong><small className="muted">Built from your history, sized to the time you have</small></span>
+              <span className="lead-ico" aria-hidden><SparkIcon /></span>
+              <span><strong>Make today's workout for me</strong><small className="muted">Built from your history, sized to the time you have</small></span>
             </Link>
           </li>
           <li>
             <button className="list-item" onClick={() => start()}>
-              <span><strong>➕ Empty workout</strong><small className="muted">Add exercises as you go</small></span>
+              <span className="lead-ico" aria-hidden><PlusIcon /></span>
+              <span><strong>Empty workout</strong><small className="muted">Add exercises as you go</small></span>
             </button>
           </li>
           <li>
             <Link className="list-item" to="/import">
-              <span><strong>📷 Copy a plan from a screenshot</strong><small className="muted">Turn a photo of a workout into one you can log</small></span>
+              <span className="lead-ico" aria-hidden><CameraIcon /></span>
+              <span><strong>Copy a plan from a screenshot</strong><small className="muted">Turn a photo of a workout into one you can log</small></span>
             </Link>
           </li>
           <li>
             <Link className="list-item" to="/programs">
-              <span><strong>📅 Change my split</strong><small className="muted">Pick, build or edit a weekly routine</small></span>
+              <span className="lead-ico" aria-hidden><CalendarIcon /></span>
+              <span><strong>Change my split</strong><small className="muted">Pick, build or edit a weekly routine</small></span>
             </Link>
           </li>
         </ul>
@@ -69,7 +74,7 @@ export function StartPage() {
                   </span>
                 </button>
                 <button className="ghost danger" aria-label={`Delete ${t.name}`}
-                  onClick={() => confirm(`Delete the saved workout "${t.name}"?`) && db.savedWorkouts.delete(t.id)}>✕</button>
+                  onClick={() => confirm(`Delete the saved workout "${t.name}"?`) && db.savedWorkouts.delete(t.id)}><XIcon /></button>
               </li>
             ))}
           </ul>

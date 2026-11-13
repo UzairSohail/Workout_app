@@ -11,6 +11,7 @@ import { muscleBalance } from '../logic/balance';
 import { MuscleBalance } from '../components/MuscleBalance';
 import { daysAgo, weeklySummary, weekStreaks } from '../logic/progress';
 import { toDisplay } from '../logic/units';
+import { ScaleIcon, TrophyIcon } from '../components/Icons';
 
 const shortDate = (t: number) => new Date(t).toLocaleDateString(undefined, { day: 'numeric', month: 'numeric' });
 const compact = (n: number) => (n >= 10000 ? `${Math.round(n / 1000)}k` : n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(Math.round(n)));
@@ -41,7 +42,7 @@ export function ProgressView() {
       </div>
 
       <Link className="list-item" to="/records">
-        <span className="pr-link-icon" aria-hidden>🏆</span>
+        <span className="pr-link-icon" aria-hidden><TrophyIcon /></span>
         <span>
           <strong>Personal records</strong>
           <small className="muted">{bests.length ? `Bests on ${bests.length} exercise${bests.length === 1 ? '' : 's'} · ${recentPrs} with a new best in the last 30 days` : 'Your bests show up after your first workout'}</small>
@@ -49,7 +50,7 @@ export function ProgressView() {
       </Link>
 
       <Link className="list-item" to="/weight">
-        <span className="pr-link-icon" aria-hidden>⚖️</span>
+        <span className="pr-link-icon" aria-hidden><ScaleIcon /></span>
         <span>
           <strong>Body weight</strong>
           <small className="muted">{weightLine}</small>
@@ -63,14 +64,15 @@ export function ProgressView() {
       </section>
 
       <section className="card">
-        <h2>Weekly volume ({units})</h2>
-        <p className="muted small">Weight × reps across all working sets.</p>
+        <p className="muted small" style={{ margin: 0 }}>Weekly volume</p>
+        <p className="tile-value" style={{ margin: '4px 0 0', fontSize: '1.85rem' }}>{compact(toUnits(thisWeek?.volume ?? 0))}<small> {units}</small></p>
+        <p className="small" style={{ margin: '2px 0 0', color: 'var(--faint)' }}>Weight × reps across all working sets</p>
         <BarChart label="Weekly volume" format={(v) => compact(v)}
           bars={weeks.map((w) => ({ key: w.start, label: shortDate(w.start), value: Math.round(toUnits(w.volume)) }))} />
       </section>
 
       <section className="card">
-        <h2>Muscle balance, last 7 days</h2>
+        <div className="section-head"><h2 style={{ margin: 0 }}>Muscle balance</h2><span className="mono small" style={{ color: 'var(--faint)' }}>sets · last 7 days</span></div>
         {trainedThisWeek ? <MuscleBalance balance={balance} /> : <p className="muted">No workouts in the last 7 days.</p>}
       </section>
 

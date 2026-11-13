@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { db } from '../db';
 import type { ExerciseNote } from '../types';
+import { NoteIcon } from './Icons';
 
 /** Merges into the exercise's saved note/preferences; drops the row once it holds nothing. */
 export async function saveExerciseNote(exerciseId: string, patch: Partial<Omit<ExerciseNote, 'exerciseId'>>) {
@@ -35,6 +36,6 @@ export function StickyNote({ exerciseId, note, editing, setEditing, emptyLabel }
   emptyLabel?: string;
 }) {
   if (editing) return <NoteEditor exerciseId={exerciseId} note={note} onClose={() => setEditing(false)} />;
-  if (note) return <button className="sticky-note" onClick={() => setEditing(true)} aria-label="Edit note">📝 {note}</button>;
+  if (note) return <button className="sticky-note" onClick={() => setEditing(true)} aria-label="Edit note"><NoteIcon /><span>{note}</span></button>;
   return emptyLabel ? <button className="ghost" onClick={() => setEditing(true)}>{emptyLabel}</button> : null;
 }

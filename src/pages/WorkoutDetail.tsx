@@ -10,6 +10,7 @@ import { startWorkout } from '../logic/session';
 import { workoutPrs } from '../logic/records';
 import { recordsFor, sessionPrs, workoutVolume, type PrKind } from '../logic/stats';
 import { compareWorkouts, previousLike, workingSets, type Change } from '../logic/summary';
+import { ChevronLeft, TrophyIcon } from '../components/Icons';
 import { fmt, fmtWeight, toDisplay } from '../logic/units';
 
 export function WorkoutDetail() {
@@ -62,21 +63,24 @@ export function WorkoutDetail() {
 
   return (
     <>
-      <header className="page-head">
-        <button className="ghost back" onClick={() => navigate('/history')}>‹ History</button>
-        <h1>{w.name}</h1>
-        <p className="muted">{fmtDateLong(w.startedAt)}</p>
+      <button className="ghost back" onClick={() => navigate('/history')}><ChevronLeft />History</button>
+      <header className="done-head">
+        <p className="eyebrow">{fmtDateLong(w.startedAt)}</p>
+        <div className="row" style={{ gap: 12 }}>
+          <h1>{w.name}</h1>
+          {prCount > 0 && <span className="badge" style={{ background: 'var(--accent-soft)', color: 'var(--accent-2)' }}>{prCount} PR{prCount === 1 ? '' : 's'}</span>}
+        </div>
       </header>
 
       {justDone && (
         <section className="card accent">
-          <h2>{prCount > 0 ? `🎉 Workout done, with ${prCount} PR${prCount === 1 ? '' : 's'}!` : '💪 Workout done!'}</h2>
+          <h2>{prCount > 0 ? `Workout done, with ${prCount} PR${prCount === 1 ? '' : 's'}` : 'Workout done'}</h2>
           {summary?.cmp && <p>{verdict(summary.cmp.volume)}</p>}
           <p className="muted small">Your next session will suggest weights based on today.</p>
         </section>
       )}
 
-      <div className="stats">
+      <div className="stats two">
         <div><strong>{w.finishedAt ? fmtDuration(w.finishedAt - w.startedAt) : '–'}</strong><small>Duration</small></div>
         <div><strong>{fmtWeight(workoutVolume(w), units)}</strong><small>Volume</small></div>
         <div><strong>{workingSets(w)}</strong><small>Working sets</small></div>
@@ -84,16 +88,18 @@ export function WorkoutDetail() {
       </div>
 
       {summary && summary.prs.length > 0 && (
-        <section className="card">
-          <h2>🏆 Personal records</h2>
-          <ul className="plain">
-            {summary.prs.map((p) => (
-              <li key={p.exerciseId} className="section-head">
-                <span>{exerciseName(byId, p.exerciseId)}</span>
-                <strong>{p.timed ? fmtSecs(p.reps) : p.weight ? `${fmt(toDisplay(p.weight, units))} ${units} × ${p.reps}` : `${p.reps} reps`}</strong>
-              </li>
-            ))}
-          </ul>
+        <section className="pr-banner">
+          <span className="lead-ico"><TrophyIcon /></span>
+          <div className="grow">
+            <span className="small" style={{ color: 'var(--accent-2)', fontWeight: 600 }}>New personal record{summary.prs.length === 1 ? '' : 's'}</span>
+            <ul>
+              {summary.prs.map((p) => (
+                <li key={p.exerciseId}>
+                  <strong>{exerciseName(byId, p.exerciseId)}</strong> · <span className="mono">{p.timed ? fmtSecs(p.reps) : p.weight ? `${fmt(toDisplay(p.weight, units))} ${units} × ${p.reps}` : `${p.reps} reps`}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </section>
       )}
 
@@ -110,27 +116,32 @@ export function WorkoutDetail() {
         </section>
       )}
 
-      {w.exercises.map((e, i) => (
-        <section key={i} className="card">
-          <Link to={`/exercises/${e.exerciseId}`}><strong>{exerciseName(byId, e.exerciseId)}</strong></Link>
-          <ol className="plain">
-            {e.sets.map((s, si) => {
-              const prs = prsByExercise.get(i)?.[si] ?? [];
-              return (
-                <li key={si}>
-                  {s.type === 'warmup' ? 'Warm-up: ' : s.type === 'drop' ? 'Drop set: ' : ''}
-                  {s.weight ? `${fmt(toDisplay(s.weight, units))} ${units} × ` : ''}{e.mode === 'time' ? fmtSecs(s.reps ?? 0) : `${s.reps} reps`}
-                  {prs.length > 0 && <span className="pr-badge inline">🏆 PR</span>}
-                </li>
-              );
-            })}
-          </ol>
-        </section>
-      ))}
+      <section>
+        <h2 className="section-label" style={{ marginBottom: 4 }}>Exercises</h2>
+        {w.exercises.map((e, i) => (
+          <div key={i} style={{ padding: '12px 2px', borderTop: i ? '1px solid var(--line)' : undefined }}>
+            <Link to={`/exercises/${e.exerciseId}`} style={{ color: 'var(--text)', fontWeight: 500 }}>{exerciseName(byId, e.exerciseId)}</Link>
+            <div className="set-chips">
+              {e.sets.map((s, si) => {
+                const prs = prsByExercise.get(i)?.[si] ?? [];
+                const what = `${s.weight ? `${fmt(toDisplay(s.weight, units))}×` : ''}${e.mode === 'time' ? fmtSecs(s.reps ?? 0) : s.reps}`;
+                return (
+                  <span key={si} className={prs.length ? 'pr' : s.type === 'warmup' ? 'warm' : ''}
+                    title={s.type === 'warmup' ? 'Warm-up' : s.type === 'drop' ? 'Drop set' : prs.length ? 'Personal record' : undefined}>
+                    {s.type === 'warmup' ? 'W ' : s.type === 'drop' ? 'D ' : ''}{what}{!s.weight && e.mode !== 'time' ? ' reps' : ''}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </section>
       {w.notes && <section className="card"><p>{w.notes}</p></section>}
 
-      <button className="wide" onClick={repeat}>Repeat this workout</button>
-      <Link className="button secondary wide" to={`/history/${w.id}/edit`}>Edit workout</Link>
+      <div className="row" style={{ flexWrap: 'nowrap' }}>
+        <button className="wide grow" onClick={repeat}>Repeat workout</button>
+        <Link className="button secondary" style={{ minHeight: 54, borderRadius: 18, padding: '0 22px' }} to={`/history/${w.id}/edit`}>Edit</Link>
+      </div>
       <button className="ghost danger wide" onClick={remove}>Delete workout</button>
     </>
   );
@@ -146,7 +157,7 @@ function verdict(volume: Change): string {
 function CompareRow({ label, c, show, neutral = false }: { label: string; c: Change; show: (v: number) => string; neutral?: boolean }) {
   const up = c.diff > 0;
   const same = Math.abs(c.diff) < 1e-9 || (neutral && Math.abs(c.diff) < 60000);
-  const sign = same ? '' : up ? '▲ ' : '▼ ';
+  const sign = same ? '' : up ? '+' : '−';
   const tone = same || neutral ? '' : up ? 'up' : 'down';
   return (
     <li className="section-head">

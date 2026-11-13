@@ -8,6 +8,7 @@ import { db, logBodyWeight } from '../db';
 import { fmtDate } from '../format';
 import { useSettings } from '../hooks';
 import { fmt, fromDisplay, toDisplay } from '../logic/units';
+import { ChevronLeft, XIcon } from '../components/Icons';
 import { todaysEntry } from '../logic/weighIn';
 
 const dayMonth = (t: number) => new Date(t).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
@@ -61,7 +62,7 @@ export function WeightPage() {
   return (
     <>
       <header className="page-head">
-        <button className="ghost back" onClick={() => navigate(-1)}>‹ Back</button>
+        <button className="ghost back" onClick={() => navigate(-1)}><ChevronLeft />Back</button>
         <h1>Body weight</h1>
         <p className="muted small">Weigh yourself every day, ideally in the morning before eating. Daily numbers jump around, so the weekly average is the one to watch.</p>
       </header>
@@ -69,7 +70,7 @@ export function WeightPage() {
       <section className="card form">
         <div className="section-head">
           <h2>{pastDay ? `Weight on ${fmtDate(new Date(`${date}T12:00:00`).getTime())}` : 'Today'}</h2>
-          {today && !pastDay && <strong>✓ {kgText(today.weight, units)}</strong>}
+          {today && !pastDay && <strong>{kgText(today.weight, units)} logged</strong>}
         </div>
         <div className="row">
           <label className="mini-field"><span>Weight ({units})</span>
@@ -123,7 +124,7 @@ export function WeightPage() {
               <li key={e.id} className="section-head">
                 <span>{fmtDate(e.date)} · {kgText(e.weight, units)}</span>
                 <button className="ghost danger" aria-label={`Delete ${fmtDate(e.date)}`}
-                  onClick={() => confirm(`Delete the weigh-in from ${fmtDate(e.date)}?`) && db.bodyWeight.delete(e.id)}>✕</button>
+                  onClick={() => confirm(`Delete the weigh-in from ${fmtDate(e.date)}?`) && db.bodyWeight.delete(e.id)}><XIcon /></button>
               </li>
             ))}
           </ul>

@@ -1,6 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Link, useNavigate } from 'react-router-dom';
-import { db, uid, updateSettings } from '../db';
+import { db, getProgramState, uid, updateSettings } from '../db';
+import { CheckIcon, PlusIcon, SparkIcon } from '../components/Icons';
 import { useSettings } from '../hooks';
 import { programUsesSchemes } from '../logic/schemes';
 import type { Program } from '../types';
@@ -38,32 +39,63 @@ export function Programs() {
     if (programUsesSchemes(p.days)) navigate(`/programs/${p.id}`);
   };
 
+  const active = programs?.find((p) => p.id === settings.activeProgramId);
+  const others = programs?.filter((p) => p.id !== settings.activeProgramId) ?? [];
+  const state = useLiveQuery(() => (active ? getProgramState(active.id) : undefined), [active?.id]);
+  const nextIndex = active ? settings.nextDayIndex % Math.max(1, active.days.length) : -1;
+  const dayCount = (p: Program) => `${p.days.length} day${p.days.length === 1 ? '' : 's'}`;
+
   return (
     <>
-      <header className="page-head">
+      <header className="page-head row-head">
         <h1>Splits</h1>
-        <p className="muted small">Tap a split to see its days.</p>
+        <button className="icon-btn" onClick={create} aria-label="Build your own split"><PlusIcon /></button>
       </header>
-      <Link className="button wide" to="/programs/generate?mode=week">✨ Build a routine for me</Link>
-      <ul className="stack splits">
-        {programs?.map((p) => {
-          const active = p.id === settings.activeProgramId;
-          return (
-            <li key={p.id} className={`card ${active ? 'accent' : ''}`} onClick={() => navigate(`/programs/${p.id}`)}>
-              <div className="section-head">
-                <h2>{p.name}</h2>
-                {active && <span className="badge">Active</span>}
-              </div>
-              {p.description && <p className="muted small">{p.description}</p>}
-              <div className="section-head">
-                <span className="small">{p.days.map((d) => d.name).join(' · ') || 'No days yet'}</span>
-                {!active && <button className="secondary" onClick={(e) => { e.stopPropagation(); activate(p); }}>Use this</button>}
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-      <button className="secondary wide" onClick={create}>+ Build your own split</button>
+
+      {active && (
+        <section className="card accent splits" onClick={() => navigate(`/programs/${active.id}`)}>
+          <div className="section-head">
+            <p className="eyebrow" style={{ color: 'var(--accent-2)' }}>Active split</p>
+            <Link className="small" to={`/programs/${active.id}`} onClick={(e) => e.stopPropagation()}>Edit</Link>
+          </div>
+          <h2 style={{ fontSize: '1.5rem', letterSpacing: '-0.03em', margin: '6px 0 4px' }}>{active.name}</h2>
+          {active.description && <p className="muted small">{active.description}</p>}
+          <div className="day-tiles">
+            {active.days.map((d, i) => {
+              const done = state?.doneDays.includes(d.id);
+              const isNext = i === nextIndex && !done;
+              return (
+                <div key={d.id} className={`day-tile ${isNext ? 'next' : ''}`}>
+                  <span className="state">{done ? <span className="tick" aria-label="Done this week"><CheckIcon /></span> : isNext ? 'NEXT' : ''}</span>
+                  <strong>{d.name}</strong>
+                  <small>{d.exercises.length} ex</small>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      <Link className="list-item" to="/programs/generate?mode=week">
+        <span className="lead-ico" aria-hidden><SparkIcon /></span>
+        <span><strong>Build a routine for me</strong><small>Goal, time and equipment → a weekly plan</small></span>
+      </Link>
+
+      <section>
+        <h2 className="section-label" style={{ marginBottom: 2 }}>{active ? 'Other splits' : 'Pick a split'}</h2>
+        {others.map((p) => (
+          <div key={p.id} className="split-row">
+            <div className="grow" role="link" tabIndex={0} onClick={() => navigate(`/programs/${p.id}`)}
+              onKeyDown={(e) => e.key === 'Enter' && navigate(`/programs/${p.id}`)}>
+              <strong>{p.name}</strong>
+              <small>{p.description || p.days.map((d) => d.name).join(' · ') || 'No days yet'}</small>
+            </div>
+            <span className="days">{dayCount(p)}</span>
+            <button className="secondary" onClick={() => activate(p)} aria-label={`Use ${p.name}`}>Use</button>
+          </div>
+        ))}
+      </section>
+      <button className="wide dashed" onClick={create}><PlusIcon />Build your own split</button>
     </>
   );
 }
