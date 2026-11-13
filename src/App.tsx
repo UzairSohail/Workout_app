@@ -1,4 +1,4 @@
-import { HashRouter, NavLink, Route, Routes } from 'react-router-dom';
+import { HashRouter, NavLink, Route, Routes, useLocation } from 'react-router-dom';
 import { Home } from './pages/Home';
 import { Programs } from './pages/Programs';
 import { ProgramEdit } from './pages/ProgramEdit';
@@ -14,20 +14,25 @@ import { SettingsPage } from './pages/Settings';
 import { RecordsPage } from './pages/Records';
 import { WeightPage } from './pages/Weight';
 import { StartPage } from './pages/Start';
-import { CalendarIcon, DumbbellIcon, GearIcon, HistoryIcon, HomeIcon } from './components/Icons';
+import { CalendarIcon, DumbbellIcon, HistoryIcon, HomeIcon, SlidersIcon } from './components/Icons';
 
 const tabs = [
   { to: '/', label: 'Today', icon: <HomeIcon /> },
   { to: '/programs', label: 'Splits', icon: <CalendarIcon /> },
   { to: '/history', label: 'History', icon: <HistoryIcon /> },
   { to: '/exercises', label: 'Exercises', icon: <DumbbellIcon /> },
-  { to: '/settings', label: 'Settings', icon: <GearIcon /> },
+  { to: '/settings', label: 'Settings', icon: <SlidersIcon /> },
 ];
 
-export function App() {
+/** Logging a workout gets the whole screen; the tab bar comes back when you leave it. */
+const fullScreen = (path: string) => path === '/workout' || /^\/history\/[^/]+\/edit$/.test(path);
+
+function Shell() {
+  const { pathname } = useLocation();
+  const hideTabs = fullScreen(pathname);
   return (
-    <HashRouter>
-      <main className="page">
+    <>
+      <main className={`page ${hideTabs ? 'no-tabs' : ''}`}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/programs" element={<Programs />} />
@@ -48,14 +53,24 @@ export function App() {
           <Route path="/weight" element={<WeightPage />} />
         </Routes>
       </main>
-      <nav className="tabbar">
-        {tabs.map((t) => (
-          <NavLink key={t.to} to={t.to} end={t.to === '/'}>
-            {t.icon}
-            {t.label}
-          </NavLink>
-        ))}
-      </nav>
+      {!hideTabs && (
+        <nav className="tabbar" aria-label="Main">
+          {tabs.map((t) => (
+            <NavLink key={t.to} to={t.to} end={t.to === '/'}>
+              <span className="tab-ico">{t.icon}</span>
+              {t.label}
+            </NavLink>
+          ))}
+        </nav>
+      )}
+    </>
+  );
+}
+
+export function App() {
+  return (
+    <HashRouter>
+      <Shell />
     </HashRouter>
   );
 }

@@ -1,5 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useEffect, useMemo, useRef } from 'react';
+import { CameraIcon } from './Icons';
 import { db } from '../db';
 
 /** Object URL for the user's own photo of this exercise, if they added one. */
@@ -39,7 +40,7 @@ export function PhotoControls({ exerciseId, hasPhoto }: { exerciseId: string; ha
     <div className="row">
       <input ref={input} type="file" accept="image/*" hidden aria-label="Exercise photo"
         onChange={(e) => { pick(e.target.files?.[0]).catch(() => alert("Couldn't save that photo.")); e.target.value = ''; }} />
-      <button className="secondary grow" onClick={() => input.current?.click()}>📷 {hasPhoto ? 'Replace your photo' : 'Add your own photo'}</button>
+      <button className="secondary grow" onClick={() => input.current?.click()}><CameraIcon />{hasPhoto ? 'Replace photo' : 'Add photo'}</button>
       {hasPhoto && <button className="ghost danger" onClick={() => db.exercisePhotos.delete(exerciseId)}>Remove</button>}
     </div>
   );

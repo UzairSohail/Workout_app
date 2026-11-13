@@ -11,6 +11,7 @@ import { fmtDate, fmtSecs } from '../format';
 import { useFinished, useSettings } from '../hooks';
 import { countedSets, e1rm, recordsFor } from '../logic/stats';
 import { fmt, fmtWeight, toDisplay } from '../logic/units';
+import { ChevronLeft, VideoIcon } from '../components/Icons';
 import type { Units } from '../types';
 
 function Trend({ points, units }: { points: { t: number; v: number }[]; units: Units }) {
@@ -70,19 +71,23 @@ export function ExerciseDetail() {
 
   return (
     <>
+      <div className="detail-hero">
+        <ExerciseImage exercise={ex} animate className="hero" />
+        <button className="icon-btn float" onClick={() => navigate(-1)} aria-label="Back"><ChevronLeft /></button>
+      </div>
+      {ex.similarTo && !ownPhoto && <p className="muted small similar-note">Photos show a similar movement: {ex.similarTo}.</p>}
       <header className="page-head">
-        <button className="ghost back" onClick={() => navigate(-1)}>‹ Back</button>
-        <h1>{ex.name}</h1>
+        <h1 style={{ fontSize: '1.75rem', letterSpacing: '-0.035em' }}>{ex.name}</h1>
         <MuscleTags exercise={ex} />
-        <p className="muted small">Equipment: {cap(ex.equipment)}</p>
+        <p className="small" style={{ margin: 0, color: 'var(--faint)' }}>{cap(ex.equipment)}</p>
       </header>
 
-      <ExerciseImage exercise={ex} animate className="hero" />
-      {ex.similarTo && !ownPhoto && <p className="muted small similar-note">Photos show a similar movement: {ex.similarTo}.</p>}
-      <PhotoControls exerciseId={ex.id} hasPhoto={!!ownPhoto} />
-      <a className="button secondary wide" href={video} target="_blank" rel="noreferrer">
-        ▶ {ex.videoUrl ? 'Watch video' : 'Find a form video on YouTube'}
-      </a>
+      <div className="row" style={{ flexWrap: 'nowrap' }}>
+        <div className="grow"><PhotoControls exerciseId={ex.id} hasPhoto={!!ownPhoto} /></div>
+        <a className="button secondary" href={video} target="_blank" rel="noreferrer" style={{ flexShrink: 0 }}>
+          <VideoIcon />{ex.videoUrl ? 'Video' : 'Form video'}
+        </a>
+      </div>
 
       <section className="card">
         <h2>Your notes</h2>
@@ -117,16 +122,16 @@ export function ExerciseDetail() {
       )}
 
       {sessions.length > 0 && (
-        <section className="card">
-          <h2>History</h2>
-          <ul className="plain">
+        <section>
+          <h2 className="section-label" style={{ marginBottom: 4 }}>Recent sessions</h2>
+          <ul className="plain" style={{ gap: 0 }}>
             {sessions.slice(0, 20).map((s) => (
-              <li key={s.workoutId}>
-                <strong>{fmtDate(s.t)}</strong>{' '}
-                <span className="muted">{s.sets.map((x) => {
+              <li key={s.workoutId} className="section-head" style={{ padding: '10px 2px', borderBottom: '1px solid var(--line)', alignItems: 'baseline' }}>
+                <span className="small" style={{ whiteSpace: 'nowrap' }}>{fmtDate(s.t)}</span>
+                <span className="mono small" style={{ color: 'var(--muted)', textAlign: 'right' }}>{s.sets.map((x) => {
                   const r = s.timed ? fmtSecs(x.reps) : `${x.reps}`;
                   return x.weight ? `${fmt(toDisplay(x.weight, units))}×${r}` : s.timed ? r : `${r} reps`;
-                }).join(', ')}</span>
+                }).join(' · ')}</span>
               </li>
             ))}
           </ul>

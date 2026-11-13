@@ -11,7 +11,7 @@ export function MuscleBalance({ balance }: { balance: Balance }) {
       {balance.skipped.length > 0 && (
         <p className="notice small">Not trained yet: {balance.skipped.join(', ')}.</p>
       )}
-      {balance.tip && <p className="notice small">⚖️ {balance.tip}</p>}
+      {balance.tip && <p className="notice small">{balance.tip}</p>}
       <ul className="hbars balance">
         {balance.groups.map((g) => (
           <li key={g.name} className={g.status}>

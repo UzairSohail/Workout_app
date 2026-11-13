@@ -5,12 +5,14 @@ import { db, importBackup, logBodyWeight, updateSettings, type Backup } from '..
 import { DAYS, EVERY_DAY, weighInDay } from '../logic/weighIn';
 import { fmtDate } from '../format';
 import { NumInput } from '../components/NumInput';
-import { exerciseName, useExercises } from '../exercises';
+import { cap, exerciseName, useExercises } from '../exercises';
+import { kgText } from '../components/WeightSummary';
 import { useSettings } from '../hooks';
 import { BAR, platesPerSide } from '../logic/plates';
 import { fmt, fromDisplay, toDisplay } from '../logic/units';
 import type { Settings, Units } from '../types';
 import { GEAR } from '../logic/equipment';
+import { BoxIcon, ChevronLeft, DumbbellIcon, PlateIcon, TimerIcon, TrendIcon, UserIcon } from '../components/Icons';
 import { alertPrefs, askNotify, beepNow, canNotify, canVibrate, isIos, unlockAudio, vibrate } from '../logic/restAlert';
 
 function RestAlertCard({ s }: { s: Settings }) {
@@ -86,13 +88,13 @@ function PlateCalculator({ units }: { units: Units }) {
 }
 
 const SECTIONS = [
-  { key: 'profile', icon: '🙂', title: 'Profile', blurb: 'Name, units, body weight, height, age, weigh-in reminder' },
-  { key: 'training', icon: '📈', title: 'Training', blurb: 'Weight increases, default rest, warm-ups, catch-up, rotation' },
-  { key: 'rest', icon: '⏱', title: 'Rest timer alert', blurb: 'Beep, vibrate or notify when rest is over' },
-  { key: 'gym', icon: '🏋️', title: "My gym's equipment", blurb: 'Hide exercises your gym can\'t do' },
-  { key: 'plates', icon: '🧮', title: 'Plate calculator', blurb: 'Which plates go on each side' },
-  { key: 'data', icon: '💾', title: 'Backup and data', blurb: 'Export, import and spreadsheet' },
-] as const;
+  { key: 'profile', icon: <UserIcon />, group: 'me', title: 'Profile', blurb: 'Name, units, body weight, height, age, weigh-in reminder' },
+  { key: 'training', icon: <TrendIcon />, group: 'Training', title: 'Training', blurb: 'Weight increases, default rest, warm-ups, catch-up, rotation' },
+  { key: 'rest', icon: <TimerIcon />, group: 'Training', title: 'Rest timer alert', blurb: 'Beep, vibrate or notify when rest is over' },
+  { key: 'gym', icon: <DumbbellIcon />, group: 'Training', title: "My gym's equipment", blurb: 'Hide exercises your gym can\'t do' },
+  { key: 'plates', icon: <PlateIcon />, group: 'Training', title: 'Plate calculator', blurb: 'Which plates go on each side' },
+  { key: 'data', icon: <BoxIcon />, group: 'Data', title: 'Backup and data', blurb: 'Export, import and spreadsheet' },
+];
 
 export function SettingsPage() {
   const s = useSettings();
@@ -146,16 +148,28 @@ export function SettingsPage() {
     return (
       <>
         <header className="page-head"><h1>Settings</h1></header>
-        <ul className="list settings-list">
-          {SECTIONS.map((x) => (
-            <li key={x.key}>
-              <Link className="list-item" to={`/settings/${x.key}`}>
-                <span className="ico" aria-hidden>{x.icon}</span>
-                <span><strong>{x.title}</strong><small className="muted">{x.blurb}</small></span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <Link className="list-item profile-card" to="/settings/profile">
+          <span className="avatar big" aria-hidden>{s.name ? s.name.charAt(0).toUpperCase() : <UserIcon />}</span>
+          <span>
+            <strong>{s.name || 'Your profile'}</strong>
+            <small className="mono">{[s.bodyWeight ? kgText(s.bodyWeight, s.units) : null, s.height ? `${s.height} cm` : null, s.experience ? cap(s.experience) : null].filter(Boolean).join(' · ') || 'Name, units, body weight, height'}</small>
+          </span>
+        </Link>
+        {['Training', 'Data'].map((g) => (
+          <section key={g}>
+            <h2 className="section-label" style={{ marginBottom: 8 }}>{g}</h2>
+            <ul className="group-list settings-list">
+              {SECTIONS.filter((x) => x.group === g).map((x) => (
+                <li key={x.key}>
+                  <Link className="list-item" to={`/settings/${x.key}`}>
+                    <span className="ico" aria-hidden>{x.icon}</span>
+                    <span><strong>{x.title}</strong><small className="muted">{x.key === 'data' && s.lastBackupAt ? `Last backup ${fmtDate(s.lastBackupAt)}` : x.blurb}</small></span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
         <p className="muted small credit">
           Exercise images and instructions from free-exercise-db (public domain). This app is free and has no ads or accounts.
         </p>
@@ -166,7 +180,7 @@ export function SettingsPage() {
   return (
     <>
       <header className="page-head">
-        <button className="ghost back" onClick={() => navigate('/settings')}>‹ Settings</button>
+        <button className="ghost back" onClick={() => navigate('/settings')}><ChevronLeft />Settings</button>
         <h1>{section.title}</h1>
       </header>
       {section.key === 'profile' && (

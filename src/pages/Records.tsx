@@ -5,6 +5,7 @@ import { exerciseName, useExercises } from '../exercises';
 import { fmtDate, fmtSecs } from '../format';
 import { useFinished, useSettings } from '../hooks';
 import { allBests, exerciseSort, type ExerciseBests } from '../logic/records';
+import { ChevronLeft } from '../components/Icons';
 import { fmt, toDisplay } from '../logic/units';
 
 /** Every exercise's bests: heaviest set, estimated 1RM, most reps or longest hold, best session volume. */
@@ -45,7 +46,7 @@ export function RecordsPage() {
   return (
     <>
       <header className="page-head">
-        <button className="ghost back" onClick={() => navigate(-1)}>‹ Back</button>
+        <button className="ghost back" onClick={() => navigate(-1)}><ChevronLeft />Back</button>
         <h1>Personal records</h1>
         <p className="muted small">Your best on every exercise you've logged. Warm-up sets don't count.</p>
       </header>

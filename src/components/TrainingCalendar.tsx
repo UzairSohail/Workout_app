@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { fmtDate, fmtDuration } from '../format';
 import { dayKey, weekStreaks, workoutsByDay } from '../logic/progress';
 import type { Workout } from '../types';
+import { ChevronLeft, ChevronRight, FlameIcon } from './Icons';
 
 /** Month view of training days with week streaks. Tap a day to see what you did. */
 export function TrainingCalendar({ workouts }: { workouts: Workout[] }) {
@@ -25,16 +26,16 @@ export function TrainingCalendar({ workouts }: { workouts: Workout[] }) {
 
   return (
     <section className="card">
-      <div className="section-head">
-        <button className="ghost" onClick={() => go(-1)} aria-label="Previous month">‹</button>
-        <strong>{first.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</strong>
-        <button className="ghost" onClick={() => go(1)} disabled={offset >= 0} aria-label="Next month">›</button>
+      <div className="cal-head">
+        <button className="icon-btn plain" onClick={() => go(-1)} aria-label="Previous month"><ChevronLeft /></button>
+        <div>
+          <strong>{first.toLocaleDateString(undefined, { month: 'long', year: first.getFullYear() !== now.getFullYear() ? 'numeric' : undefined })}</strong>
+          <p className="cal-summary">{trainedDays} day{trainedDays === 1 ? '' : 's'} trained{time > 0 ? ` · ${fmtDuration(time)}` : ''}</p>
+        </div>
+        <button className="icon-btn plain" onClick={() => go(1)} disabled={offset >= 0} aria-label="Next month"><ChevronRight /></button>
       </div>
-      <p className="muted small cal-summary">
-        {trainedDays} day{trainedDays === 1 ? '' : 's'} trained{time > 0 ? ` · ${fmtDuration(time)}` : ''}
-      </p>
       <div className="calendar">
-        {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => <span key={i} className="muted">{d}</span>)}
+        {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => <span key={i} style={{ color: 'var(--faint)' }}>{d}</span>)}
         {cells.map((d, i) => {
           if (d == null) return <span key={i} />;
           const k = keyOf(d);
@@ -66,8 +67,8 @@ export function TrainingCalendar({ workouts }: { workouts: Workout[] }) {
         </ul>
       )}
       <div className="streaks">
-        <span>🔥 <strong>{streaks.current}</strong> week streak</span>
-        <span className="muted">Best: {streaks.best} week{streaks.best === 1 ? '' : 's'}</span>
+        <span><FlameIcon />{streaks.current}-week streak</span>
+        <span className="muted">Best {streaks.best} week{streaks.best === 1 ? '' : 's'}</span>
       </div>
     </section>
   );

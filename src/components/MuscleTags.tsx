@@ -1,5 +1,6 @@
 import { cap } from '../exercises';
 import type { Exercise } from '../types';
+import { TargetIcon } from './Icons';
 import { subAreaLabels } from '../logic/subAreas';
 
 /** Main muscles as solid tags, helpers as outlined ones, so it's clear at a glance what an exercise trains. */
@@ -20,7 +21,7 @@ export function MuscleTags({ exercise, compact = false }: { exercise: Exercise |
         </>
       )}
     </span>
-    {focus.length > 0 && <small className="muscle-focus">🎯 {focus.join(' · ')}</small>}
+    {focus.length > 0 && <small className="muscle-focus"><TargetIcon />{focus.join(' · ')}</small>}
     </>
   );
 }

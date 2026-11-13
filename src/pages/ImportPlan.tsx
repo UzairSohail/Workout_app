@@ -8,6 +8,7 @@ import { useActiveWorkout, useFinished, useSettings } from '../hooks';
 import { matchExercise, parsePlan, type PlanRow } from '../logic/planImport';
 import { historyFor, startWorkout, suggestionFor } from '../logic/session';
 import { fmtWeight } from '../logic/units';
+import { CameraIcon, ChevronLeft, XIcon } from '../components/Icons';
 import type { LoggedExercise, Workout } from '../types';
 
 interface Row extends PlanRow {
@@ -96,7 +97,7 @@ export function ImportPlan() {
   return (
     <>
       <header className="page-head">
-        <button className="ghost back" onClick={() => navigate(-1)}>‹ Back</button>
+        <button className="ghost back" onClick={() => navigate(-1)}><ChevronLeft />Back</button>
         <h1>Copy a plan</h1>
         <p className="muted">
           Take a screenshot of a workout in Fitbod (or a similar app) and the app copies its exercises, sets and reps.
@@ -107,7 +108,7 @@ export function ImportPlan() {
       {status !== 'done' && (
         <section className="card form">
           <label className="button wide file-button">
-            📷 Choose screenshot{status === 'reading' ? '…' : ''}
+            <CameraIcon />Choose screenshot{status === 'reading' ? '…' : ''}
             <input type="file" accept="image/*" multiple hidden disabled={status === 'reading' || loading}
               onChange={(e) => { read(e.target.files); e.target.value = ''; }} />
           </label>
@@ -136,7 +137,7 @@ export function ImportPlan() {
                     <button className="link import-name" onClick={() => setPickerFor(r.key)}>
                       {r.exerciseId ? <strong>{exerciseName(byId, r.exerciseId)}</strong> : <strong className="danger">Not found, tap to choose</strong>}
                     </button>
-                    <button className="ghost danger" aria-label={`Remove ${r.name}`} onClick={() => setRows((rs) => rs.filter((x) => x.key !== r.key))}>✕</button>
+                    <button className="ghost danger" aria-label={`Remove ${r.name}`} onClick={() => setRows((rs) => rs.filter((x) => x.key !== r.key))}><XIcon /></button>
                   </div>
                   <p className="muted small">
                     Plan says “{r.name}”{r.supersetWithNext ? ' · superset with the next one' : ''}

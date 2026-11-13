@@ -14,8 +14,8 @@ export default defineConfig({
         name: 'Workout',
         short_name: 'Workout',
         description: 'Free workout tracker: splits, history, PRs and progression.',
-        theme_color: '#0a0b18',
-        background_color: '#0a0b18',
+        theme_color: '#09090f',
+        background_color: '#09090f',
         display: 'standalone',
         start_url: './',
         scope: './',
@@ -38,6 +38,16 @@ export default defineConfig({
             options: {
               cacheName: 'exercise-images',
               expiration: { maxEntries: 2000, maxAgeSeconds: 60 * 60 * 24 * 365 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
+            // Geist font files and their stylesheet, so the look holds up offline.
+            urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'fonts',
+              expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 365 },
               cacheableResponse: { statuses: [0, 200] },
             },
           },

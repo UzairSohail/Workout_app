@@ -7,6 +7,7 @@ import { mainTargets } from '../logic/targets';
 import type { Exercise } from '../types';
 import { CustomExerciseForm, nameFromQuery } from './CustomExerciseForm';
 import { ExerciseImage } from './ExerciseImage';
+import { SearchIcon, ShuffleIcon, TargetIcon } from './Icons';
 import { MuscleTags } from './MuscleTags';
 
 const STRENGTH = new Set(['strength', 'powerlifting', 'olympic weightlifting', 'strongman', 'custom']);
@@ -82,7 +83,10 @@ export function ExerciseFilters({ q, setQ, muscle, setMuscle, equipment, setEqui
 }) {
   return (
     <div className="filters">
-      <input type="search" placeholder="Search exercises" value={q} onChange={(e) => setQ(e.target.value)} />
+      <label className="search-field">
+        <SearchIcon />
+        <input type="search" aria-label="Search exercises" placeholder="Search exercises" value={q} onChange={(e) => setQ(e.target.value)} />
+      </label>
       <div className="row">
         <select value={muscle} onChange={(e) => setMuscle(e.target.value)}>
           <option value="">All muscles</option>
@@ -186,13 +190,13 @@ export function ExercisePicker({ onPick, onClose, title = 'Add exercise', initia
         {loading && <p className="muted">Loading exercises…</p>}
         {sameArea.length > 0 && !q && (
           <>
-            <h3 className="list-head">🎯 Same area: {mainTargets(swapping!.id).join(' · ').toLowerCase()}</h3>
+            <h3 className="list-head"><TargetIcon />Same area: {mainTargets(swapping!.id).join(' · ').toLowerCase()}</h3>
             <ul className="list">{sameArea.map(pickRow)}</ul>
           </>
         )}
         {different.length > 0 && !q && (
           <>
-            <h3 className="list-head">🔄 Something different</h3>
+            <h3 className="list-head"><ShuffleIcon />Something different</h3>
             <ul className="list">{different.map(pickRow)}</ul>
             <h3 className="list-head">All matches</h3>
           </>
