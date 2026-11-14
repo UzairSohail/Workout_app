@@ -36,6 +36,21 @@ npm test         # unit tests (progression, PRs, plates, units)
 npm run build    # static site in dist/
 ```
 
+## Cloud sync (optional)
+
+Signed-in users get their workouts, settings, weight history, splits and notes on every phone
+(exercise photos stay on the phone). The app still reads and writes the phone's own database first,
+so it works offline; changes upload a few seconds later and other phones pick them up when opened.
+It uses Firebase's free Spark plan (email sign-in + Firestore).
+
+To switch it on: create a Firebase project, enable Email/Password sign-in, create a Firestore
+database, paste `firestore.rules` into its Rules tab, add your Pages domain under Authentication →
+Settings → Authorized domains, and put the web app config in `src/sync/config.ts`. With an empty
+config the app runs without accounts, as before.
+
+Local testing: `npx firebase-tools emulators:start --only auth,firestore --project demo-workout`, set
+demo values in `src/sync/config.ts` (`projectId: 'demo-workout'`), then `VITE_FIREBASE_EMULATOR=1 npm run dev`.
+
 ## Free hosting
 
 The build is a static folder (`dist/`) with relative paths, so any static host works.

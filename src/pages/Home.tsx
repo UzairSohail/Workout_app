@@ -2,6 +2,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { backupDue, backupNow } from '../backup';
+import { useAccount } from '../sync';
 import { db, getProgramState, logBodyWeight, updateSettings } from '../db';
 import { exerciseName, useExercises } from '../exercises';
 import { useActiveWorkout, useFinished, useSettings } from '../hooks';
@@ -74,6 +75,7 @@ export function Home() {
   const settings = useSettings();
   const finished = useFinished();
   const active = useActiveWorkout();
+  const account = useAccount();
   const { byId } = useExercises();
   const navigate = useNavigate();
   const program = useLiveQuery(
@@ -259,11 +261,20 @@ export function Home() {
         </nav>
       )}
 
-      {!active && finished && backupDue(settings.lastBackupAt, finished.length) && (
+      {!active && finished && !account.signedIn && backupDue(settings.lastBackupAt, finished.length) && (
         <section className="card backup-nudge">
           <span className="lead-ico neutral"><BoxIcon /></span>
-          <span className="grow small">Your history only lives on this phone. Save a backup now and then.</span>
-          <button className="secondary" onClick={() => backupNow().catch(() => {})}>Back up</button>
+          {account.available ? (
+            <>
+              <span className="grow small">Your history only lives on this phone. Sign in to keep it safe and on every phone.</span>
+              <Link className="button secondary" to="/settings/account">Sign in</Link>
+            </>
+          ) : (
+            <>
+              <span className="grow small">Your history only lives on this phone. Save a backup now and then.</span>
+              <button className="secondary" onClick={() => backupNow().catch(() => {})}>Back up</button>
+            </>
+          )}
         </section>
       )}
     </>

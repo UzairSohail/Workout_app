@@ -39,6 +39,7 @@ export const PlateIcon = () => <Svg><circle cx="12" cy="12" r="9" /><circle cx="
 export const TimerIcon = () => <Svg><circle cx="12" cy="13" r="8" /><path d="M12 9v4l2.5 2M9 2h6" /></Svg>;
 export const TrendIcon = () => <Svg><path d="M4 17l6-6 4 4 6-7M14 8h6v6" /></Svg>;
 export const UserIcon = () => <Svg><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></Svg>;
+export const CloudIcon = () => <Svg><path d="M7 18a4.5 4.5 0 0 1-.6-9A6 6 0 0 1 18 9.5a4.25 4.25 0 0 1-.5 8.5z" /></Svg>;
 export const SearchIcon = () => <Svg><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></Svg>;
 export const TargetIcon = () => <Svg><circle cx="12" cy="12" r="8" /><circle cx="12" cy="12" r="3.5" /></Svg>;
 export const MoonIcon = () => <Svg><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" /></Svg>;
