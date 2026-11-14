@@ -1,0 +1,16 @@
+{
+  "id": "./",
+  "name": "Workout",
+  "short_name": "Workout",
+  "description": "Free workout tracker: splits, history, PRs and progression.",
+  "theme_color": "#0f0a07",
+  "background_color": "#0f0a07",
+  "display": "standalone",
+  "start_url": "./",
+  "scope": "./",
+  "icons": [
+    { "src": "icons/icon-192-ember.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512-ember.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512-ember.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

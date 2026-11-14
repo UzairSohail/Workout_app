@@ -1,4 +1,5 @@
 import type { Settings } from '../types';
+import { themeIcon } from '../theme';
 
 /**
  * Sound, vibration and notification for the end of a rest.
@@ -114,7 +115,7 @@ export async function notify(title: string, body: string) {
   try {
     const reg = await navigator.serviceWorker.ready;
     await reg.showNotification(title, {
-      body, tag: 'rest-timer', icon: 'icon-192-pink.png', badge: 'icon-192-pink.png',
+      body, tag: 'rest-timer', icon: themeIcon('icon-192'), badge: themeIcon('icon-192'),
       // Not in every TypeScript DOM lib yet, but supported on Android.
       ...({ renotify: true, vibrate: VIBRATE_PATTERN, requireInteraction: false } as object),
     });
