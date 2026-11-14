@@ -18,7 +18,7 @@
       // Open in the last theme straight away; src/theme.ts keeps this in step with Settings.
       try {
         var t = localStorage.getItem('theme');
-        var bg = { ocean: '#060a13', forest: '#070c09', ember: '#0f0a07', daylight: '#f3f3f7', midnight: '#000000', crimson: '#0c0606' }[t];
+        var bg = { ocean: '#060a13', forest: '#070c09', ember: '#0f0a07', daylight: '#f3f3f7', midnight: '#000000', crimson: '#0d0406' }[t];
         if (bg) {
           document.documentElement.dataset.theme = t;
           document.querySelector('meta[name="theme-color"]').setAttribute('content', bg);
