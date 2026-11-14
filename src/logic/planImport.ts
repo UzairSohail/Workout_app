@@ -24,6 +24,10 @@ export interface ParsedPlan {
 const CHROME = /^(start|begin|resume|log|finish|edit|add|replace|swap|done|cancel|save|share|back|next|skip|today|workout|workouts|recovery|profile|explore|gym|settings|history|progress|exercises?|warm ?up|cool ?down|superset|circuit|options|more|sets?|reps?|weight|duration|muscle|target)\b/i;
 // Header lines such as "6 exercises · 55 min" or "Total volume".
 const SUMMARY = /\bexercises?\b|\bworkout\b|\btotal\b|\bvolume\b|\bcalories\b|\bkcal\b|\bmuscles?\b/i;
+// Labels anywhere on a line that mark it as app text, e.g. Fitbod's "Coach BETA" under its summary blurb.
+const LABEL = /\bcoach\b|\bbeta\b|\bfocus exercise\b|\brounds?\b/i;
+// A day type named in the plan's own words ("Your push day leans…"), used as the title when there's no header.
+const DAY_NAME = /\b(push|pull|legs?|upper(?: body)?|lower(?: body)?|full body|arms?|chest|back|shoulders?|glutes?|core|abs)(?: and \w+)? day\b/i;
 
 interface Detail {
   sets?: number;
@@ -85,6 +89,8 @@ export function cleanName(line: string): string | null {
     else close();
   }
   close();
+  // Menu dots read as capital letters ("Decline Oblique Crunch LL") trail the name; drop them.
+  while (best.length > 1 && /^[A-Z]{1,2}$/.test(best[best.length - 1]) && !/^(EZ|DB|BB|KB)$/.test(best[best.length - 1])) best = best.slice(0, -1);
   const s = best.join(' ');
   if (s.replace(/[^A-Za-z]/g, '').length < 3 || !/[aeiouy]/i.test(s)) return null;
   return s;
@@ -101,12 +107,14 @@ export function parsePlan(text: string): ParsedPlan {
   let title: string | undefined;
   let titleCandidate: string | undefined;
   let titleFromHeader = false;
+  let dayName: string | undefined;
   let lastWasDetail = false;
   // Row index where the latest "Superset · 3 Rounds" group starts.
   let supersetFrom: number | null = null;
   for (const raw of text.split(/\r?\n/)) {
     const line = raw.trim();
     if (!line) continue;
+    dayName ??= DAY_NAME.exec(line)?.[0];
     const detail = SUMMARY.test(line) ? null : parseDetail(line);
     if (detail) {
       const name = pending.length > 1 && pending[pending.length - 1].split(' ').length === 1
@@ -114,7 +122,7 @@ export function parsePlan(text: string): ParsedPlan {
         : pending[pending.length - 1];
       pending = [];
       if (name) {
-        if (!rows.length && !title) title = titleCandidate;
+        if (!rows.length && !title && titleFromHeader) title = titleCandidate;
         rows.push({
           name,
           sets: detail.sets ?? 1,
@@ -135,7 +143,8 @@ export function parsePlan(text: string): ParsedPlan {
     }
     lastWasDetail = false;
     if (/\bsuper ?set\b/i.test(line)) supersetFrom = rows.length;
-    const name = CHROME.test(line) || SUMMARY.test(line) ? null : cleanName(line);
+    const label = CHROME.test(line) || SUMMARY.test(line) || LABEL.test(line);
+    const name = label ? null : cleanName(line);
     if (!name) {
       // A header like "6 exercises · 55 min" follows the title, so remember the name above it.
       if (SUMMARY.test(line) && pending.length && !titleFromHeader) {
@@ -143,12 +152,14 @@ export function parsePlan(text: string): ParsedPlan {
         titleFromHeader = true;
       }
       // App labels end a name; stray thumbnail scraps ("| ele") between a name and its sets don't.
-      if (CHROME.test(line) || SUMMARY.test(line)) pending = [];
+      if (label) pending = [];
       continue;
     }
     if (!rows.length) titleCandidate ??= name;
     pending.push(name);
   }
+  // Without a header line, fall back to the day the plan names in its text, e.g. "Push Day".
+  title ??= dayName?.replace(/\b\w/g, (c) => c.toUpperCase());
   return { title, rows: dedupe(rows) };
 }
 

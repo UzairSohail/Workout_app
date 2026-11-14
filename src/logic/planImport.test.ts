@@ -10,6 +10,8 @@ const all = withExtras(library);
 const pullDay = readFileSync(new URL('./fixtures/fitbod-pull-day.txt', import.meta.url), 'utf8');
 // The same screenshot read in the browser after the app's greyscale/invert step.
 const pullDayBrowser = readFileSync(new URL('./fixtures/fitbod-pull-day-browser.txt', import.meta.url), 'utf8');
+// OCR of a real Fitbod "push day" screenshot that has no title header, only the Coach blurb.
+const pushDay = readFileSync(new URL('./fixtures/fitbod-push-day.txt', import.meta.url), 'utf8');
 
 describe('plan screenshot import', () => {
   it('reads sets and reps in the common formats and ignores weights', () => {
@@ -58,6 +60,32 @@ describe('plan screenshot import', () => {
     ]);
     expect(plan.rows.map((r) => [r.sets, r.repMin])).toEqual([[3, 8], [3, 10], [3, 10], [3, 16], [3, 8], [3, 10], [3, 12], [3, 10], [3, 15]]);
     expect(plan.rows.filter((r) => r.supersetWithNext).length).toBe(3);
+  });
+
+  it('copies a Fitbod push day exercise for exercise', () => {
+    const plan = parsePlan(pushDay);
+    expect(plan.title).toBe('Push Day');
+    expect(plan.rows.map((r) => [r.name, matchExercise(all, r.name)?.name, r.sets, r.repMin])).toEqual([
+      ['Barbell Bench Press', 'Barbell Bench Press - Medium Grip', 3, 10],
+      ['Dumbbell Tricep Extension', 'Standing Dumbbell Triceps Extension', 3, 12],
+      ['Low Cable Chest Fly', 'Low-to-High Cable Fly', 3, 10],
+      ['Cable Rope Tricep Extension', 'Triceps Pushdown - Rope Attachment', 3, 10],
+      ['Push Up', 'Pushups', 3, 13],
+      ['Dumbbell Skullcrusher', 'Dumbbell Skull Crusher', 3, 10],
+      ['Dumbbell Fly', 'Dumbbell Flyes', 3, 10],
+      ['Cable Crossover Fly', 'Cable Crossover', 3, 10],
+      ['Dip', 'Dips - Triceps Version', 3, 9],
+      ['Hanging Leg Raise', 'Hanging Leg Raise', 3, 10],
+      ['Decline Oblique Crunch', 'Decline Oblique Crunch', 4, 6],
+      ['Decline Russian Twists', 'Decline Russian Twist', 5, 7],
+    ]);
+    expect(plan.rows.filter((r) => r.supersetWithNext).map((r) => r.name))
+      .toEqual(['Dumbbell Tricep Extension', 'Cable Rope Tricep Extension', 'Dumbbell Skullcrusher', 'Dip']);
+  });
+
+  it('prefers plan aliases over exercises already in the history', () => {
+    const barbell = all.find((e) => e.name === 'Standing Overhead Barbell Triceps Extension')!;
+    expect(matchExercise(all, 'Dumbbell Tricep Extension', new Set([barbell.id]))?.name).toBe('Standing Dumbbell Triceps Extension');
   });
 
   it('matches every Fitbod name to a catalog exercise', () => {

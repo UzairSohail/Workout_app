@@ -10,7 +10,7 @@ import { saveExerciseNote, StickyNote } from '../components/ExerciseNote';
 import { SetTimer } from '../components/SetTimer';
 import { toast as showToast } from '../components/UndoBar';
 import { exerciseName, useExercises } from '../exercises';
-import { fmtDuration, fmtSecs } from '../format';
+import { fmtDuration, fmtReps, fmtSecs } from '../format';
 import { useActiveWorkout, useFinished, useSettings } from '../hooks';
 import { defaultMode, finishWorkout, historyFor, newLoggedExercise, suggestionFor, withWarmups } from '../logic/session';
 import { plateText } from '../logic/plates';
@@ -304,7 +304,7 @@ export function WorkoutPage() {
               <ExerciseImage exercise={ex} />
               <span className="grow">
                 <strong>{exerciseName(byId, le.exerciseId)}</strong>
-                <small className="muted">{le.scheme ? SCHEME_LABEL[le.scheme] : `${le.sets.filter((x) => x.type !== 'warmup').length} × ${le.repMin}–${le.repMax}${le.mode === 'time' ? ' sec' : ''}`}</small>
+                <small className="muted">{le.scheme ? SCHEME_LABEL[le.scheme] : `${le.sets.filter((x) => x.type !== 'warmup').length} × ${fmtReps(le.repMin, le.repMax)}${le.mode === 'time' ? ' sec' : ''}`}</small>
               </span>
               <span className="ex-count">{all ? <><CheckIcon />{le.feel ? FEEL_LABEL[le.feel] : 'Done'}</> : `${done}/${le.sets.length}`}</span>
             </button>
@@ -383,7 +383,7 @@ export function WorkoutPage() {
                   <button className="link ex-title" onClick={() => setOpen(false)} aria-label={`Collapse ${exerciseName(byId, le.exerciseId)}`}>{exerciseName(byId, le.exerciseId)}</button>
                 )}
                 <small className="muted">
-                  {le.scheme ? SCHEME_LABEL[le.scheme] : timed ? `Target ${le.repMin}–${le.repMax} sec` : `Target ${le.repMin}–${le.repMax} reps`}
+                  {le.scheme ? SCHEME_LABEL[le.scheme] : timed ? `Target ${fmtReps(le.repMin, le.repMax)} sec` : `Target ${fmtReps(le.repMin, le.repMax)} reps`}
                   {last && <> · Last: {countedSets(last.sets).map(fmtLast).join(', ')}</>}
                 </small>
               </div>

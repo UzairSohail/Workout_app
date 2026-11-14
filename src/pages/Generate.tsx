@@ -1,3 +1,4 @@
+import { fmtReps } from '../format';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { db, uid, updateSettings } from '../db';
@@ -145,7 +146,7 @@ function TodayGenerator() {
               return (
                 <li key={e.exerciseId}>
                   {i > 0 && finisher(e.exerciseId) && !finisher(plan.day.exercises[i - 1].exerciseId) && <p className="small eyebrow">Core finisher</p>}
-                  {exerciseName(byId, e.exerciseId)} <span className="muted">{e.sets} × {e.repMin}–{e.repMax}{e.mode === 'time' ? ' s' : ''}</span>
+                  {exerciseName(byId, e.exerciseId)} <span className="muted">{e.sets} × {fmtReps(e.repMin, e.repMax)}{e.mode === 'time' ? ' s' : ''}</span>
                   {s?.weight != null && <span> · {arrow}{fmtWeight(s.weight, settings.units)}</span>}
                   {mainTargets(e.exerciseId).length > 0 && <div className="muted small">{mainTargets(e.exerciseId).join(' · ')}</div>}
                 </li>
@@ -234,7 +235,7 @@ function WeekGenerator() {
         {program.days.map((d) => {
           const item = (e: (typeof d.exercises)[number], i: number) => (
             <li key={i}>
-              {exerciseName(byId, e.exerciseId)} <span className="muted">{e.sets} × {e.repMin}–{e.repMax}{e.mode === 'time' ? ' s' : ''}</span>
+              {exerciseName(byId, e.exerciseId)} <span className="muted">{e.sets} × {fmtReps(e.repMin, e.repMax)}{e.mode === 'time' ? ' s' : ''}</span>
               {mainTargets(e.exerciseId).length > 0 && <div className="muted small">{mainTargets(e.exerciseId).join(' · ')}</div>}
             </li>
           );
