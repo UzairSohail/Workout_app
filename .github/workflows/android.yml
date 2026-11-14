@@ -1,0 +1,49 @@
+name: Android APK
+# Builds the Android app (Capacitor) and puts the APK on the "Android app" release page.
+# The APK opens the live site, so it only needs rebuilding when the Android project or icon changes.
+on:
+  push:
+    branches: [master]
+    paths: ['android/**', 'assets/**', 'capacitor.config.ts', '.github/workflows/android.yml']
+  pull_request:
+    paths: ['android/**', 'assets/**', 'capacitor.config.ts', '.github/workflows/android.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - run: npm run build
+      - run: npx cap sync android
+      - name: Build APK
+        working-directory: android
+        env:
+          APK_VERSION_CODE: ${{ github.run_number }}
+        run: ./gradlew assembleRelease --no-daemon
+      - run: cp android/app/build/outputs/apk/release/app-release.apk Workout.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Workout-apk
+          path: Workout.apk
+      - name: Publish to the Android app release
+        if: github.event_name != 'pull_request'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: android-latest
+          name: Android app
+          body: Download Workout.apk on your Android phone and open it to install. New builds install over the old one and keep your data.
+          files: Workout.apk
+          make_latest: true

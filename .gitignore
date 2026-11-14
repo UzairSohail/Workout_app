@@ -121,3 +121,7 @@ app.*.symbols
 node_modules/
 dist/
 *.tsbuildinfo
+# Capacitor Android project: keep the Gradle wrapper so CI can build the APK.
+!android/gradlew
+!android/gradlew.bat
+!android/gradle/wrapper/gradle-wrapper.jar
