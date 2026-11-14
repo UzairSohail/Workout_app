@@ -12,6 +12,7 @@ import { BAR, platesPerSide } from '../logic/plates';
 import { fmt, fromDisplay, toDisplay } from '../logic/units';
 import type { Settings, Units } from '../types';
 import { GEAR } from '../logic/equipment';
+import { SESSION_MINUTES } from '../logic/generator';
 import { AccountCard } from '../components/AccountCard';
 import { useAccount } from '../sync';
 import { cloudAvailable } from '../sync/config';
@@ -93,7 +94,7 @@ function PlateCalculator({ units }: { units: Units }) {
 const SECTIONS = [
   { key: 'account', icon: <CloudIcon />, group: 'Data', title: 'Account and sync', blurb: 'Sign in to keep your data on every phone' },
   { key: 'profile', icon: <UserIcon />, group: 'me', title: 'Profile', blurb: 'Name, units, body weight, height, age, weigh-in reminder' },
-  { key: 'training', icon: <TrendIcon />, group: 'Training', title: 'Training', blurb: 'Weight increases, default rest, warm-ups, catch-up, rotation' },
+  { key: 'training', icon: <TrendIcon />, group: 'Training', title: 'Training', blurb: 'Workout size, abs finisher, weight increases, warm-ups' },
   { key: 'rest', icon: <TimerIcon />, group: 'Training', title: 'Rest timer alert', blurb: 'Beep, vibrate or notify when rest is over' },
   { key: 'gym', icon: <DumbbellIcon />, group: 'Training', title: "My gym's equipment", blurb: 'Hide exercises your gym can\'t do' },
   { key: 'plates', icon: <PlateIcon />, group: 'Training', title: 'Plate calculator', blurb: 'Which plates go on each side' },
@@ -247,6 +248,38 @@ export function SettingsPage() {
       )}
       {section.key === 'training' && (
         <>
+          <section className="card form" id="size">
+            <h2>Workout size</h2>
+            <p className="muted small">Fits every day of your split to this. Shorter drops exercises from the end, longer adds ones for the parts of the day's muscles it misses.</p>
+            <label className="mini-field"><span>Size</span>
+              <select value={s.sessionSize ?? 'plan'} onChange={(e) => updateSettings({ sessionSize: e.target.value as Settings['sessionSize'] })}>
+                <option value="plan">As the split plans it</option>
+                <option value="exercises">Number of exercises</option>
+                <option value="minutes">Time</option>
+              </select>
+            </label>
+            {s.sessionSize === 'exercises' && (
+              <label className="mini-field"><span>Exercises per workout</span>
+                <select value={s.sessionExercises ?? 6} onChange={(e) => updateSettings({ sessionExercises: Number(e.target.value) })}>
+                  {[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((n) => <option key={n} value={n}>{n} exercises</option>)}
+                </select>
+              </label>
+            )}
+            {s.sessionSize === 'minutes' && (
+              <label className="mini-field"><span>About how long</span>
+                <select value={s.sessionMinutes ?? 60} onChange={(e) => updateSettings({ sessionMinutes: Number(e.target.value) })}>
+                  {SESSION_MINUTES.map((n) => <option key={n} value={n}>{n} min</option>)}
+                </select>
+              </label>
+            )}
+            <label className="toggle big">
+              <input type="checkbox" checked={!!s.coreFinisher} onChange={(e) => updateSettings({ coreFinisher: e.target.checked })} />
+              <span>
+                <strong>Abs + lower back finisher</strong>
+                <small className="muted">End every workout with 2 ab exercises and 1 lower back exercise. They change from session to session{s.sessionSize === 'exercises' ? ' and come on top of the exercise count' : ''}.</small>
+              </span>
+            </label>
+          </section>
           <section className="card form">
             <h2>Progression</h2>
             <p className="muted small">When you hit the top of your rep range on every set, the next workout suggests adding this much.</p>
