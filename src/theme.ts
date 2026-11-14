@@ -23,11 +23,30 @@ export function applyTheme(id?: string) {
   if (t.id === DEFAULT_THEME) delete root.dataset.theme;
   else root.dataset.theme = t.id;
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', t.bg);
+  setIcons(t.id);
   try {
     localStorage.setItem(KEY, t.id);
   } catch {
     /* private mode */
   }
+}
+
+/** The app icon in a theme's colour: the ring around the chick matches the accent. */
+export function themeIcon(name: 'icon-192' | 'favicon' | 'apple-touch-icon', id = document.documentElement.dataset.theme) {
+  const t = themeOf(id);
+  return t.id === DEFAULT_THEME ? `${name}-pink.png` : `icons/${name}-${t.id}.png`;
+}
+
+/**
+ * Points the tab icon, the iPhone home-screen icon and the install manifest at the theme's icon.
+ * iPhone copies the icon when the app is added to the home screen, and Android updates an
+ * installed app's icon from the manifest on its own schedule.
+ */
+function setIcons(id: ThemeId) {
+  const set = (sel: string, href: string) => document.querySelector(sel)?.setAttribute('href', href);
+  set('link[rel="icon"]', themeIcon('favicon', id));
+  set('link[rel="apple-touch-icon"]', themeIcon('apple-touch-icon', id));
+  set('link[rel="manifest"]', id === DEFAULT_THEME ? 'manifest.webmanifest' : `manifest-${id}.webmanifest`);
 }
 
 /** Follows the theme in Settings, including a change that arrives from another phone through sync. */

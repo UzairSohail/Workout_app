@@ -11,6 +11,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon-pink.png', 'apple-touch-icon-pink.png'],
       manifest: {
+        // Same id in public/manifest-<theme>.webmanifest, so a themed manifest is the same app.
+        id: './',
         name: 'Workout',
         short_name: 'Workout',
         description: 'Free workout tracker: splits, history, PRs and progression.',
@@ -29,6 +31,8 @@ export default defineConfig({
         // Rest-timer notification taps (public/sw-rest.js).
         importScripts: ['sw-rest.js'],
         globPatterns: ['**/*.{js,css,html,svg,png,json}'],
+        // Other themes' icons load only when that theme is picked, so they don't bloat the offline cache.
+        globIgnores: ['icons/**'],
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         runtimeCaching: [
           {
