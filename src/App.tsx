@@ -14,6 +14,7 @@ import { SettingsPage } from './pages/Settings';
 import { RecordsPage } from './pages/Records';
 import { WeightPage } from './pages/Weight';
 import { StartPage } from './pages/Start';
+import { UndoBar } from './components/UndoBar';
 import { CalendarIcon, DumbbellIcon, HistoryIcon, HomeIcon, SlidersIcon } from './components/Icons';
 
 const tabs = [
@@ -53,6 +54,7 @@ function Shell() {
           <Route path="/weight" element={<WeightPage />} />
         </Routes>
       </main>
+      <UndoBar />
       {!hideTabs && (
         <nav className="tabbar" aria-label="Main">
           {tabs.map((t) => (

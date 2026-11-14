@@ -664,3 +664,22 @@ a.list-item::after, button.list-item::after {
 .theme-swatch b { position: absolute; left: 13px; top: 13px; width: 14px; height: 14px; border-radius: 999px; }
 .theme-tick { margin-left: auto; width: 26px; height: 26px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); display: grid !important; place-items: center; flex-shrink: 0; }
 .theme-tick .icon { width: 15px; height: 15px; stroke-width: 2.6; }
+.avatar .icon { width: 22px; height: 22px; }
+
+/* Undo bar: sits above the tab bar or the rest timer. */
+.undo-bar {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom) + 100px); z-index: 20;
+  width: min(560px, calc(100% - 24px)); display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  min-height: 52px; padding: 8px 8px 8px 18px; border-radius: 18px; background: var(--surface-3); color: var(--text);
+  border: 1px solid var(--field-border); box-shadow: 0 24px 48px -16px var(--shadow); font-size: 0.92rem;
+  animation: undo-in 0.18s ease-out;
+}
+.undo-bar button.link { min-height: 40px; padding: 0 14px; font-weight: 600; color: var(--accent-2); }
+@keyframes undo-in { from { opacity: 0; transform: translate(-50%, 8px); } }
+.install-tip .inline-ico { display: inline-grid; vertical-align: -3px; color: var(--accent-2); }
+.install-tip .inline-ico .icon { width: 16px; height: 16px; }
+.install-tip .icon-btn { flex-shrink: 0; width: 36px; height: 36px; min-height: 36px; padding: 0; }
+.ex-row-wrap { display: flex; flex-direction: column; }
+.feel-ask { display: flex; align-items: center; gap: 6px; padding: 0 6px 10px; flex-wrap: wrap; }
+.feel-ask .muted { margin-right: 4px; }
+.feel-ask .pill-btn { min-height: 34px; padding: 0 14px; }

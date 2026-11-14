@@ -12,8 +12,10 @@ import { fmt, fromDisplay, toDisplay } from '../logic/units';
 import { EVERY_DAY, todaysEntry, weighInDay, weighInDue } from '../logic/weighIn';
 import { dayKey, weekStart, weeklySummary, weekStreaks } from '../logic/progress';
 import { changeText, weekStats } from '../components/WeightSummary';
+import { initials } from '../format';
+import { InstallTip } from '../components/InstallTip';
 import { ExerciseImage } from '../components/ExerciseImage';
-import { BoxIcon, FlameIcon, MoonIcon, MoreIcon, PlayIcon, PlusIcon, ScaleIcon, SparkIcon } from '../components/Icons';
+import { BoxIcon, FlameIcon, MoonIcon, MoreIcon, PlayIcon, PlusIcon, ScaleIcon, SparkIcon, UserIcon } from '../components/Icons';
 import { muscleBalance } from '../logic/balance';
 import { deloadActive, deloadDue, DELOAD_AFTER_WEEKS } from '../logic/deload';
 import { fresherDay, recentLoad, recoveryNote, tiredGroups } from '../logic/recovery';
@@ -142,7 +144,7 @@ export function Home() {
           <p className="greeting">{new Date().toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short' })}</p>
           <h1>{greeting()}{settings.name ? `, ${settings.name}` : ''}</h1>
         </div>
-        <Link className="avatar" to="/settings/profile" aria-label="Profile">{settings.name ? settings.name.charAt(0).toUpperCase() : '·'}</Link>
+        <Link className="avatar" to="/settings/profile" aria-label={settings.name ? 'Profile' : 'Add your name'}>{settings.name ? initials(settings.name) : <UserIcon />}</Link>
       </header>
 
       {finished && (
@@ -274,6 +276,8 @@ export function Home() {
           <Link to="/start"><span className="ico"><MoreIcon /></span>More ways</Link>
         </nav>
       )}
+
+      {!active && <InstallTip />}
 
       {!active && finished && !account.signedIn && backupDue(settings.lastBackupAt, finished.length) && (
         <section className="card backup-nudge">

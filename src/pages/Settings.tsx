@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { backupNow, saveFile } from '../backup';
 import { db, importBackup, logBodyWeight, updateSettings, type Backup } from '../db';
 import { DAYS, EVERY_DAY, weighInDay } from '../logic/weighIn';
-import { fmtDate } from '../format';
+import { fmtDate, initials } from '../format';
 import { NumInput } from '../components/NumInput';
 import { cap, exerciseName, useExercises } from '../exercises';
 import { kgText } from '../components/WeightSummary';
@@ -178,7 +178,7 @@ export function SettingsPage() {
       <>
         <header className="page-head"><h1>Settings</h1></header>
         <Link className="list-item profile-card" to="/settings/profile">
-          <span className="avatar big" aria-hidden>{s.name ? s.name.charAt(0).toUpperCase() : <UserIcon />}</span>
+          <span className="avatar big" aria-hidden>{s.name ? initials(s.name) : <UserIcon />}</span>
           <span>
             <strong>{s.name || 'Your profile'}</strong>
             <small className="mono">{[s.bodyWeight ? kgText(s.bodyWeight, s.units) : null, s.height ? `${s.height} cm` : null, s.experience ? cap(s.experience) : null].filter(Boolean).join(' · ') || 'Name, units, body weight, height'}</small>

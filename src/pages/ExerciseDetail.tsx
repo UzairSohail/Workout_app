@@ -13,6 +13,7 @@ import { countedSets, e1rm, recordsFor } from '../logic/stats';
 import { fmt, fmtWeight, toDisplay } from '../logic/units';
 import { ChevronLeft, VideoIcon } from '../components/Icons';
 import type { Units } from '../types';
+import { toast } from '../components/UndoBar';
 
 function Trend({ points, units }: { points: { t: number; v: number }[]; units: Units }) {
   if (points.length < 2) return <p className="muted small">Log this exercise twice to see your trend.</p>;
@@ -140,9 +141,10 @@ export function ExerciseDetail() {
 
       {ex.custom && (
         <button className="ghost danger wide" onClick={async () => {
-          if (!confirm('Delete this custom exercise? Logged sets stay in your history.')) return;
+          const row = await db.customExercises.get(ex.id);
           await db.customExercises.delete(ex.id);
           navigate('/exercises', { replace: true });
+          if (row) toast(`Deleted ${ex.name}. Logged sets stay in your history.`, () => db.customExercises.put(row));
         }}>Delete custom exercise</button>
       )}
       {!ex.custom && ex.images.length > 0 && <p className="muted small credit">Library photos{ex.similarTo ? '' : ' and instructions'}: free-exercise-db (public domain).</p>}

@@ -46,3 +46,6 @@ export const PaletteIcon = () => <Svg><path d="M12 3a9 9 0 0 0 0 18c1.2 0 1.8-.9
 export const MoonIcon = () => <Svg><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" /></Svg>;
 export const ShuffleIcon = () => <Svg><path d="M3 7h3.5a5 5 0 0 1 4 2l3 4a5 5 0 0 0 4 2H21M3 17h3.5a5 5 0 0 0 4-2M17.5 7H21M18 4l3 3-3 3M18 12l3 3-3 3" /></Svg>;
 export const ClipboardIcon = () => <Svg><rect x="5" y="4" width="14" height="17" rx="2" /><path d="M9 4h6v3H9zM9 12h6M9 16h4" /></Svg>;
+/** The iPhone "Share" glyph: a box with an arrow out of the top. */
+export const ShareIcon = () => <Svg><path d="M12 15V3M8 7l4-4 4 4" /><path d="M7 10H5v11h14V10h-2" /></Svg>;
+export const PhoneIcon = () => <Svg><rect x="6" y="2.5" width="12" height="19" rx="2.5" /><path d="M11 18.5h2" /></Svg>;
