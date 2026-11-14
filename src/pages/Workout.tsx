@@ -8,6 +8,7 @@ import { NumInput } from '../components/NumInput';
 import { RestTimer, startRest, stopRest } from '../components/RestTimer';
 import { saveExerciseNote, StickyNote } from '../components/ExerciseNote';
 import { SetTimer } from '../components/SetTimer';
+import { toast as showToast } from '../components/UndoBar';
 import { exerciseName, useExercises } from '../exercises';
 import { fmtDuration, fmtSecs } from '../format';
 import { useActiveWorkout, useFinished, useSettings } from '../hooks';
@@ -20,11 +21,12 @@ import { SCHEME_LABEL } from '../logic/schemes';
 import { countedSets, recordsFor, sessionPrs, type PrKind } from '../logic/stats';
 import { fmt, fromDisplay, toDisplay } from '../logic/units';
 import { ArrowDown, ArrowRight, ArrowUp, CheckIcon, ChevronDown, ClipboardIcon, MoreIcon, NoteIcon, PlusIcon, ShuffleIcon, SwapIcon, TargetIcon, TrophyIcon } from '../components/Icons';
-import type { Exercise, ExerciseNote, LoggedExercise, LogMode, SetType, Workout } from '../types';
+import type { Exercise, ExerciseNote, Feel, LoggedExercise, LogMode, SetType, Workout } from '../types';
 
 const TYPE_LABEL: Record<SetType, string> = { warmup: 'W', working: '', drop: 'D' };
 const NEXT_TYPE: Record<SetType, SetType> = { working: 'warmup', warmup: 'drop', drop: 'working' };
 const complete = (e: LoggedExercise) => e.sets.length > 0 && e.sets.every((x) => x.done);
+const FEEL_LABEL: Record<Feel, string> = { easy: 'Easy', ok: 'OK', hard: 'Hard' };
 const PR_LABEL: Record<PrKind, string> = { weight: 'Heaviest', e1rm: 'Best 1RM', reps: 'Most reps' };
 
 function useWakeLock(enabled: boolean) {
@@ -148,10 +150,23 @@ export function WorkoutPage() {
     save(next);
   };
 
+  /** Removes an exercise straight away; Undo puts it back where it was. */
+  const removeExercise = (i: number) => {
+    const removed = w.exercises[i];
+    mutate((d) => { d.exercises.splice(i, 1); });
+    showToast(`Removed ${exerciseName(byId, removed.exerciseId)}`, async () => {
+      const cur = await db.workouts.get(w.id);
+      if (!cur) return;
+      const next = structuredClone(cur);
+      next.exercises.splice(Math.min(i, next.exercises.length), 0, removed);
+      save(next);
+    });
+  };
+
   const finish = async () => {
     if (!w.exercises.some((e) => e.sets.some((s) => s.done))) {
       if (w.exercises.length && confirm('Nothing was logged yet. Save this workout to do later?')) await saveLater();
-      else if (confirm('Discard this workout?')) await discard(true);
+      else await discard();
       return;
     }
     const pending = w.exercises.some((e) => e.sets.some((s) => !s.done));
@@ -192,7 +207,7 @@ export function WorkoutPage() {
     const replaced = await saveForLater(w);
     const started = w.exercises.some((e) => e.sets.some((s) => s.done));
     if (started) {
-      alert(`${replaced ? 'Updated' : 'Saved'} "${w.name.trim() || 'My workout'}" in your saved workouts. Keep going!`);
+      showToast(`${replaced ? 'Updated' : 'Saved'} "${w.name.trim() || 'My workout'}" for later. Keep going!`);
       return;
     }
     stopRest();
@@ -200,11 +215,16 @@ export function WorkoutPage() {
     navigate('/', { replace: true });
   };
 
-  const discard = async (skipConfirm = false) => {
-    if (!skipConfirm && !confirm('Discard this workout? Nothing will be saved.')) return;
+  /** Throws the workout away at once; Undo brings it back and reopens it. */
+  const discard = async () => {
     stopRest();
+    const copy = structuredClone(w);
     await db.workouts.delete(w.id);
     navigate('/', { replace: true });
+    showToast('Workout discarded', async () => {
+      await db.workouts.put(copy);
+      navigate('/workout');
+    });
   };
 
   // Supersets open and close together; the first unfinished one is the one you're on.
@@ -277,7 +297,8 @@ export function WorkoutPage() {
           const done = le.sets.filter((x) => x.done).length;
           const all = complete(le);
           const rowSuperset = (le.supersetWithNext && ei < w.exercises.length - 1) || w.exercises[ei - 1]?.supersetWithNext;
-          return (
+          const askFeel = all && !editing && le.mode !== 'time' && !le.scheme;
+          const row = (
             <button key={ei} className={`ex-row ${all ? 'complete' : ''} ${rowSuperset ? (w.exercises[ei - 1]?.supersetWithNext ? 'superset-cont' : 'superset-start') : ''}`}
               onClick={() => setOpen(true)} aria-label={`Open ${exerciseName(byId, le.exerciseId)}`}>
               <ExerciseImage exercise={ex} />
@@ -285,8 +306,20 @@ export function WorkoutPage() {
                 <strong>{exerciseName(byId, le.exerciseId)}</strong>
                 <small className="muted">{le.scheme ? SCHEME_LABEL[le.scheme] : `${le.sets.filter((x) => x.type !== 'warmup').length} × ${le.repMin}–${le.repMax}${le.mode === 'time' ? ' sec' : ''}`}</small>
               </span>
-              <span className="ex-count">{all ? <><CheckIcon />Done</> : `${done}/${le.sets.length}`}</span>
+              <span className="ex-count">{all ? <><CheckIcon />{le.feel ? FEEL_LABEL[le.feel] : 'Done'}</> : `${done}/${le.sets.length}`}</span>
             </button>
+          );
+          if (!askFeel || le.feel) return row;
+          return (
+            <div key={ei} className="ex-row-wrap">
+              {row}
+              <div className="feel-ask" role="group" aria-label={`How did ${exerciseName(byId, le.exerciseId)} feel?`}>
+                <span className="muted small">How did it feel?</span>
+                {(['easy', 'ok', 'hard'] as Feel[]).map((f) => (
+                  <button key={f} className="pill-btn" onClick={() => mutate((d) => { d.exercises[ei].feel = f; })}>{FEEL_LABEL[f]}</button>
+                ))}
+              </div>
+            </div>
           );
         }
         const info = prev.get(le.exerciseId);
@@ -384,7 +417,7 @@ export function WorkoutPage() {
                   )}
                   <button className="ghost" disabled={ei === 0} onClick={() => mutate((d) => { [d.exercises[ei - 1], d.exercises[ei]] = [d.exercises[ei], d.exercises[ei - 1]]; })}>Move up</button>
                   <button className="ghost" disabled={ei === w.exercises.length - 1} onClick={() => mutate((d) => { [d.exercises[ei + 1], d.exercises[ei]] = [d.exercises[ei], d.exercises[ei + 1]]; })}>Move down</button>
-                  <button className="ghost danger" onClick={() => confirm('Remove this exercise?') && mutate((d) => { d.exercises.splice(ei, 1); })}>Remove</button>
+                  <button className="ghost danger" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); removeExercise(ei); }}>Remove</button>
                 </div>
               </details>
             </div>

@@ -43,6 +43,7 @@ export function suggest(
     return { kind: 'new', weight: null, reps: repMin, message: `First time: pick a weight you can do for ${repMin}–${repMax} reps.` };
   }
   const last = sessions[0];
+  const feel = history.find((h) => countedSets(h.sets).length > 0)?.feel;
   const top = Math.max(...last.map((s) => s.weight));
   const topSets = last.filter((s) => s.weight === top);
   const minReps = Math.min(...topSets.map((s) => s.reps));
@@ -52,12 +53,36 @@ export function suggest(
     if (minReps >= repMax) {
       return { kind: 'increase', weight: null, reps: repMax, message: `You hit ${repMax}+ on every set. Add weight or move to a harder variation.` };
     }
+    if (feel === 'easy') {
+      const t = Math.min(repMax, minReps + 2);
+      return { kind: 'hold', weight: null, reps: t, message: `Last time felt easy. Aim for ${t} reps on each set.` };
+    }
+    if (feel === 'hard') {
+      return { kind: 'hold', weight: null, reps: Math.max(repMin, minReps), message: `Last time felt hard. Match ${Math.max(repMin, minReps)} reps on each set again.` };
+    }
     return { kind: 'hold', weight: null, reps: Math.min(repMax, minReps + 1), message: `Aim for ${Math.min(repMax, minReps + 1)} reps on each set.` };
   }
 
   const topDisplay = toDisplay(top, units);
-  if (minReps >= repMax) {
+  if (minReps >= repMax && feel === 'hard') {
+    return {
+      kind: 'hold',
+      weight: top,
+      reps: repMax,
+      message: `You hit ${repMax} reps, but it felt hard. Stay at ${fmt(topDisplay)} ${units} until it feels solid, then go up.`,
+    };
+  }
+
+  if (minReps >= repMax || (feel === 'easy' && minReps >= repMin)) {
     const next = roundTo(topDisplay + increment, increment);
+    if (minReps < repMax) {
+      return {
+        kind: 'increase',
+        weight: fromDisplay(next, units),
+        reps: repMin,
+        message: `Last time felt easy at ${fmt(topDisplay)} ${units}. Go up to ${fmt(next)} ${units}.`,
+      };
+    }
     return {
       kind: 'increase',
       weight: fromDisplay(next, units),
@@ -76,12 +101,15 @@ export function suggest(
     };
   }
 
-  const target = Math.min(repMax, Math.max(repMin, minReps + 1));
+  // A hard session: match those reps again before adding one.
+  const target = Math.min(repMax, Math.max(repMin, feel === 'hard' ? minReps : minReps + 1));
   return {
     kind: 'hold',
     weight: top,
     reps: target,
-    message: `Stay at ${fmt(topDisplay)} ${units} and aim for ${target} reps per set.`,
+    message: feel === 'hard'
+      ? `Last time felt hard. Stay at ${fmt(topDisplay)} ${units} and match ${target} reps per set.`
+      : `Stay at ${fmt(topDisplay)} ${units} and aim for ${target} reps per set.`,
   };
 }
 

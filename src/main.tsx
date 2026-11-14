@@ -4,6 +4,7 @@ import { App } from './App';
 import { initDb } from './db';
 import { startSync } from './sync';
 import { watchTheme } from './theme';
+import { listenForInstall } from './install';
 import { registerSW } from 'virtual:pwa-register';
 import './styles.css';
 
@@ -18,6 +19,8 @@ registerSW({
     });
   },
 });
+
+listenForInstall();
 
 initDb().finally(() => {
   startSync();

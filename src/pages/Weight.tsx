@@ -10,6 +10,7 @@ import { useSettings } from '../hooks';
 import { fmt, fromDisplay, toDisplay } from '../logic/units';
 import { ChevronLeft, XIcon } from '../components/Icons';
 import { todaysEntry } from '../logic/weighIn';
+import { toast } from '../components/UndoBar';
 
 const dayMonth = (t: number) => new Date(t).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
 const weekdayDate = (t: number) => new Date(t).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
@@ -124,7 +125,7 @@ export function WeightPage() {
               <li key={e.id} className="section-head">
                 <span>{fmtDate(e.date)} · {kgText(e.weight, units)}</span>
                 <button className="ghost danger" aria-label={`Delete ${fmtDate(e.date)}`}
-                  onClick={() => confirm(`Delete the weigh-in from ${fmtDate(e.date)}?`) && db.bodyWeight.delete(e.id)}><XIcon /></button>
+                  onClick={async () => { await db.bodyWeight.delete(e.id); toast(`Deleted the weigh-in from ${fmtDate(e.date)}`, () => db.bodyWeight.put(e)); }}><XIcon /></button>
               </li>
             ))}
           </ul>

@@ -154,9 +154,12 @@ export interface LoggedExercise {
   mode?: LogMode;
   /** Done back to back with the next exercise; rest only after the last one. */
   supersetWithNext?: boolean;
+  /** One tap after the last set: tunes the next weight suggestion. */
+  feel?: Feel;
 }
 
 export type LogMode = 'reps' | 'time';
+export type Feel = 'easy' | 'ok' | 'hard';
 
 export interface BodyWeight {
   id: string;

@@ -11,6 +11,7 @@ import { defaultMode } from '../logic/session';
 import type { LogMode, PlannedExercise, Program, SchemeKind } from '../types';
 import { ArrowUp, ChevronLeft, XIcon } from '../components/Icons';
 import { copyProgram } from './Programs';
+import { toast } from '../components/UndoBar';
 
 function NumberField({ label, value, onChange, disabled }: {
   label: string; value: number; onChange: (n: number) => void; disabled?: boolean;
@@ -60,11 +61,30 @@ export function ProgramEdit() {
     save(next);
   };
 
+  /** Removes a day at once; Undo puts it back in the same place. */
+  const removeDay = (i: number) => {
+    const day = p.days[i];
+    mutate((d) => { d.days.splice(i, 1); });
+    toast(`Removed ${day.name}`, async () => {
+      const cur = await db.programs.get(p.id);
+      if (!cur) return;
+      cur.days.splice(Math.min(i, cur.days.length), 0, day);
+      await db.programs.put(cur);
+    });
+  };
+
+  /** Deletes the split at once (past workouts are kept); Undo restores it and makes it active again if it was. */
   const remove = async () => {
-    if (!confirm(`Delete "${p.name}"? Past workouts are kept.`)) return;
+    const copy = structuredClone(p);
+    const wasActive = settings.activeProgramId === p.id;
+    const dayIndex = settings.nextDayIndex;
     await db.programs.delete(p.id);
-    if (settings.activeProgramId === p.id) await updateSettings({ activeProgramId: undefined, nextDayIndex: 0 });
+    if (wasActive) await updateSettings({ activeProgramId: undefined, nextDayIndex: 0 });
     navigate('/programs');
+    toast(`Deleted "${p.name}". Past workouts are kept.`, async () => {
+      await db.programs.put(copy);
+      if (wasActive) await updateSettings({ activeProgramId: copy.id, nextDayIndex: dayIndex });
+    });
   };
 
   return (
@@ -93,7 +113,7 @@ export function ProgramEdit() {
             {!ro && (
               <span className="row tight">
                 <button className="ghost" disabled={di === 0} onClick={() => mutate((d) => { [d.days[di - 1], d.days[di]] = [d.days[di], d.days[di - 1]]; })} aria-label="Move up"><ArrowUp /></button>
-                <button className="ghost danger" onClick={() => confirm(`Remove ${day.name}?`) && mutate((d) => { d.days.splice(di, 1); })} aria-label="Remove"><XIcon /></button>
+                <button className="ghost danger" onClick={() => removeDay(di)} aria-label="Remove"><XIcon /></button>
               </span>
             )}
           </div>

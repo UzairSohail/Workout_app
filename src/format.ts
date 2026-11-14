@@ -19,3 +19,7 @@ export function fmtClock(sec: number) {
 export function fmtSecs(sec: number) {
   return sec < 60 ? `${sec}s` : fmtClock(sec);
 }
+
+/** "Ana Maria" → "AM", "nacho" → "N". */
+export const initials = (name: string) =>
+  name.trim().split(/\s+/).slice(0, 2).map((w) => w.charAt(0).toUpperCase()).join('');

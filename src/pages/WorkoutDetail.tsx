@@ -12,6 +12,7 @@ import { recordsFor, sessionPrs, workoutVolume, type PrKind } from '../logic/sta
 import { compareWorkouts, previousLike, workingSets, type Change } from '../logic/summary';
 import { ChevronLeft, TrophyIcon } from '../components/Icons';
 import { fmt, fmtWeight, toDisplay } from '../logic/units';
+import { toast } from '../components/UndoBar';
 
 export function WorkoutDetail() {
   const { id } = useParams();
@@ -56,9 +57,10 @@ export function WorkoutDetail() {
     navigate('/workout');
   };
   const remove = async () => {
-    if (!confirm('Delete this workout from your history?')) return;
+    const copy = structuredClone(w);
     await db.workouts.delete(w.id);
     navigate('/history', { replace: true });
+    toast('Workout deleted from your history', () => db.workouts.put(copy));
   };
 
   return (

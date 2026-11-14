@@ -6,6 +6,7 @@ import { useActiveWorkout } from '../hooks';
 import { startWorkout } from '../logic/session';
 import { CalendarIcon, CameraIcon, ChevronLeft, PlusIcon, SparkIcon, XIcon } from '../components/Icons';
 import type { Workout } from '../types';
+import { toast } from '../components/UndoBar';
 
 /** Every way to start a workout other than the split's next day, kept off Today so it stays simple. */
 export function StartPage() {
@@ -74,7 +75,7 @@ export function StartPage() {
                   </span>
                 </button>
                 <button className="ghost danger" aria-label={`Delete ${t.name}`}
-                  onClick={() => confirm(`Delete the saved workout "${t.name}"?`) && db.savedWorkouts.delete(t.id)}><XIcon /></button>
+                  onClick={async () => { await db.savedWorkouts.delete(t.id); toast(`Deleted "${t.name}"`, () => db.savedWorkouts.put(t)); }}><XIcon /></button>
               </li>
             ))}
           </ul>
