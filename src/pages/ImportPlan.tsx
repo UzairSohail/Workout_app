@@ -1,12 +1,12 @@
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { saveForLater, uid } from '../db';
 import { ExercisePicker } from '../components/ExercisePicker';
 import { NumInput } from '../components/NumInput';
 import { exerciseName, useExercises } from '../exercises';
 import { useActiveWorkout, useFinished, useSettings } from '../hooks';
 import { candidatesFor, matchExercise, parsePlan, type PlanRow } from '../logic/planImport';
-import { geminiKey, pickWithGemini, setGeminiKey } from '../logic/gemini';
+import { geminiKey, pickWithGemini } from '../logic/gemini';
 import { historyFor, startWorkout, suggestionFor } from '../logic/session';
 import { fmtWeight } from '../logic/units';
 import { CameraIcon, ChevronLeft, XIcon } from '../components/Icons';
@@ -26,7 +26,7 @@ export function ImportPlan() {
   const active = useActiveWorkout();
   const { all, byId, loading } = useExercises();
   const [status, setStatus] = useState<'idle' | 'reading' | 'checking' | 'done' | 'error'>('idle');
-  const [key, setKey] = useState(geminiKey);
+  const [key] = useState(geminiKey);
   const [aiNote, setAiNote] = useState('');
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState('');
@@ -143,7 +143,9 @@ export function ImportPlan() {
         </section>
       )}
 
-      {status !== 'done' && <GeminiKeyCard value={key} onChange={(k) => { setGeminiKey(k); setKey(k.trim()); }} />}
+      {status !== 'done' && !key && (
+        <p className="muted small">Want better matching? <Link to="/settings/ai">Add a free Gemini key in Settings</Link> and every import is checked by AI.</p>
+      )}
 
       {status === 'done' && (
         <>
@@ -215,29 +217,3 @@ export function ImportPlan() {
   );
 }
 
-/** Optional free Gemini key for better matching, one tap deep so the screenshot button stays the main action. */
-function GeminiKeyCard({ value, onChange }: { value: string; onChange: (key: string) => void }) {
-  const [draft, setDraft] = useState(value);
-  return (
-    <details className="card form peek">
-      <summary>{value ? 'Gemini double-check is on' : 'Better matching with Gemini (free)'}</summary>
-      <p className="muted small">
-        With a free Gemini key, the app also shows Google's Gemini the screenshot so it can check each exercise against
-        its photo (for example a rope pushdown versus an overhead extension). The screenshot is sent to Google when you
-        import; on the free plan Google may use it to improve its products. The key stays on this phone.
-      </p>
-      <ol className="muted small">
-        <li>Open <a href="https://aistudio.google.com/apikey" target="_blank" rel="noreferrer">Google AI Studio</a> and sign in with a Google account.</li>
-        <li>Tap “Create API key”, then copy it.</li>
-        <li>Paste it here and tap Save.</li>
-      </ol>
-      <label>Gemini API key
-        <input type="password" autoComplete="off" value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Paste your key" />
-      </label>
-      <div className="row">
-        <button className="secondary" disabled={draft.trim() === value} onClick={() => onChange(draft)}>Save</button>
-        {value && <button className="ghost danger" onClick={() => { setDraft(''); onChange(''); }}>Remove key</button>}
-      </div>
-    </details>
-  );
-}
