@@ -16,8 +16,10 @@ import { SESSION_MINUTES } from '../logic/generator';
 import { AccountCard } from '../components/AccountCard';
 import { useAccount } from '../sync';
 import { cloudAvailable } from '../sync/config';
-import { BoxIcon, CameraIcon, CheckIcon, ChevronLeft, CloudIcon, PaletteIcon, DumbbellIcon, PlateIcon, TimerIcon, TrendIcon, UserIcon } from '../components/Icons';
+import { BoxIcon, CameraIcon, SparkIcon, CheckIcon, ChevronLeft, CloudIcon, PaletteIcon, DumbbellIcon, PlateIcon, TimerIcon, TrendIcon, UserIcon } from '../components/Icons';
 import { THEMES, themeOf } from '../theme';
+import { GeminiKeyCard } from '../components/GeminiKeyCard';
+import { geminiKey } from '../logic/gemini';
 import { AVATARS, AvatarFace, hasArt } from '../components/Avatar';
 import { PhotoCrop } from '../components/PhotoCrop';
 import { alertPrefs, askNotify, beepNow, canNotify, canVibrate, isIos, unlockAudio, vibrate } from '../logic/restAlert';
@@ -157,6 +159,7 @@ const SECTIONS = [
   { key: 'rest', icon: <TimerIcon />, group: 'Training', title: 'Rest timer alert', blurb: 'Beep, vibrate or notify when rest is over' },
   { key: 'gym', icon: <DumbbellIcon />, group: 'Training', title: "My gym's equipment", blurb: 'Hide exercises your gym can\'t do' },
   { key: 'plates', icon: <PlateIcon />, group: 'Training', title: 'Plate calculator', blurb: 'Which plates go on each side' },
+  { key: 'ai', icon: <SparkIcon />, group: 'Training', title: 'AI matching', blurb: 'Free Gemini key so plan imports match exactly' },
   { key: 'theme', icon: <PaletteIcon />, group: 'Appearance', title: 'Theme', blurb: 'Colours for the whole app' },
   { key: 'data', icon: <BoxIcon />, group: 'Data', title: 'Backup and data', blurb: 'Export, import and spreadsheet' },
 ];
@@ -229,7 +232,7 @@ export function SettingsPage() {
                 <li key={x.key}>
                   <Link className="list-item" to={`/settings/${x.key}`}>
                     <span className="ico" aria-hidden>{x.icon}</span>
-                    <span><strong>{x.title}</strong><small className="muted">{x.key === 'account' && account.signedIn ? `Syncing as ${account.email}` : x.key === 'theme' ? themeOf(s.theme).name : x.key === 'data' && s.lastBackupAt ? `Last backup ${fmtDate(s.lastBackupAt)}` : x.blurb}</small></span>
+                    <span><strong>{x.title}</strong><small className="muted">{x.key === 'account' && account.signedIn ? `Syncing as ${account.email}` : x.key === 'theme' ? themeOf(s.theme).name : x.key === 'ai' && geminiKey() ? 'On: Gemini checks plan imports' : x.key === 'data' && s.lastBackupAt ? `Last backup ${fmtDate(s.lastBackupAt)}` : x.blurb}</small></span>
                   </Link>
                 </li>
               ))}
@@ -406,6 +409,7 @@ export function SettingsPage() {
       )}
       {section.key === 'plates' && <PlateCalculator key={s.units} units={s.units} />}
       {section.key === 'account' && <AccountCard />}
+      {section.key === 'ai' && <GeminiKeyCard />}
       {section.key === 'theme' && <ThemePicker current={themeOf(s.theme).id} />}
       {section.key === 'data' && (
         <>
