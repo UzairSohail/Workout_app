@@ -8,6 +8,7 @@ export const THEMES = [
   { id: 'forest', name: 'Forest', blurb: 'Dark green with a lime accent', bg: '#070c09', card: '#0f1712', accent: '#a3e635' },
   { id: 'ember', name: 'Ember', blurb: 'Warm charcoal with an orange accent', bg: '#0f0a07', card: '#19120e', accent: '#fb923c' },
   { id: 'daylight', name: 'Daylight', blurb: 'Light and bright with a violet accent', bg: '#f3f3f7', card: '#ffffff', accent: '#7c3aed' },
+  { id: 'midnight', name: 'Midnight', blurb: 'Pure black with a violet accent', bg: '#000000', card: '#0d0d10', accent: '#a78bfa' },
 ] as const;
 
 export type ThemeId = (typeof THEMES)[number]['id'];
