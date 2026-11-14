@@ -1,3 +1,4 @@
+import { fmtReps } from '../format';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -207,7 +208,7 @@ export function Home() {
           )}
           <ul className="hero-list">
             {next.exercises.slice(0, 3).map((e, i) => (
-              <li key={i}><span>{exerciseName(byId, e.exerciseId)}</span><span className="mono">{e.scheme ? SCHEME_LABEL[e.scheme] : `${e.sets} × ${e.repMin}–${e.repMax}`}</span></li>
+              <li key={i}><span>{exerciseName(byId, e.exerciseId)}</span><span className="mono">{e.scheme ? SCHEME_LABEL[e.scheme] : `${e.sets} × ${fmtReps(e.repMin, e.repMax)}`}</span></li>
             ))}
           </ul>
           {next.exercises.length > 3 && (
@@ -215,7 +216,7 @@ export function Home() {
               <summary className="muted small">{next.exercises.length - 3} more</summary>
               <ul className="hero-list" style={{ marginTop: 10 }}>
                 {next.exercises.slice(3).map((e, i) => (
-                  <li key={i}><span>{exerciseName(byId, e.exerciseId)}</span><span className="mono">{e.scheme ? SCHEME_LABEL[e.scheme] : `${e.sets} × ${e.repMin}–${e.repMax}`}</span></li>
+                  <li key={i}><span>{exerciseName(byId, e.exerciseId)}</span><span className="mono">{e.scheme ? SCHEME_LABEL[e.scheme] : `${e.sets} × ${fmtReps(e.repMin, e.repMax)}`}</span></li>
                 ))}
               </ul>
             </details>

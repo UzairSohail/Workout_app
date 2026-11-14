@@ -23,3 +23,6 @@ export function fmtSecs(sec: number) {
 /** "Ana Maria" → "AM", "nacho" → "N". */
 export const initials = (name: string) =>
   name.trim().split(/\s+/).slice(0, 2).map((w) => w.charAt(0).toUpperCase()).join('');
+
+/** A rep target as "8–12", or just "12" when both ends are the same (plans copied from other apps). */
+export const fmtReps = (min: number, max: number) => (min === max ? `${min}` : `${min}–${max}`);
