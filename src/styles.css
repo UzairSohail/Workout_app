@@ -175,7 +175,7 @@ textarea { min-height: 80px; resize: vertical; }
 .day-input { font-weight: 600; background: transparent; border-color: transparent; padding-left: 0; }
 .form { display: flex; flex-direction: column; gap: 14px; }
 .form label, .label { display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem; color: var(--muted); }
-.mini-field { display: flex; flex-direction: column; gap: 4px; font-size: 0.75rem; color: var(--faint); flex: 1; min-width: 70px; }
+.mini-field { display: flex; flex-direction: column; justify-content: flex-end; gap: 4px; font-size: 0.75rem; color: var(--faint); flex: 1; min-width: 70px; }
 .mini-field input { text-align: center; padding: 8px 4px; font-family: var(--mono); }
 .toggle { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: var(--muted); }
 .toggle input { width: auto; min-height: 0; }

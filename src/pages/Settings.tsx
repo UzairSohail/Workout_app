@@ -229,7 +229,7 @@ export function SettingsPage() {
             <h2>About you</h2>
             <p className="muted small">Used to suggest a starting weight the first time you do an exercise, and to estimate calories burned. You can always change it, and after one session the app goes by what you actually lifted.</p>
             <div className="row">
-              <label className="mini-field"><span>Body weight ({s.units})</span>
+              <label className="mini-field"><span>Weight ({s.units})</span>
                 <NumInput decimal ariaLabel="Your body weight" value={s.bodyWeight ? Math.round(toDisplay(s.bodyWeight, s.units) * 10) / 10 : null}
                   onChange={(v) => v != null && v > 0 && logBodyWeight(fromDisplay(v, s.units))} />
               </label>
