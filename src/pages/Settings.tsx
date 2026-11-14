@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { backupNow, saveFile } from '../backup';
 import { db, importBackup, logBodyWeight, updateSettings, type Backup } from '../db';
 import { DAYS, EVERY_DAY, weighInDay } from '../logic/weighIn';
-import { fmtDate, initials } from '../format';
+import { fmtDate } from '../format';
 import { NumInput } from '../components/NumInput';
 import { cap, exerciseName, useExercises } from '../exercises';
 import { kgText } from '../components/WeightSummary';
@@ -16,8 +16,10 @@ import { SESSION_MINUTES } from '../logic/generator';
 import { AccountCard } from '../components/AccountCard';
 import { useAccount } from '../sync';
 import { cloudAvailable } from '../sync/config';
-import { BoxIcon, CheckIcon, ChevronLeft, CloudIcon, PaletteIcon, DumbbellIcon, PlateIcon, TimerIcon, TrendIcon, UserIcon } from '../components/Icons';
+import { BoxIcon, CameraIcon, CheckIcon, ChevronLeft, CloudIcon, PaletteIcon, DumbbellIcon, PlateIcon, TimerIcon, TrendIcon, UserIcon } from '../components/Icons';
 import { THEMES, themeOf } from '../theme';
+import { AVATARS, AvatarFace, hasArt } from '../components/Avatar';
+import { PhotoCrop } from '../components/PhotoCrop';
 import { alertPrefs, askNotify, beepNow, canNotify, canVibrate, isIos, unlockAudio, vibrate } from '../logic/restAlert';
 
 function RestAlertCard({ s }: { s: Settings }) {
@@ -89,6 +91,41 @@ function ThemePicker({ current }: { current: string }) {
       </ul>
       <p className="muted small">If you're signed in, your theme follows you to your other phones.</p>
     </>
+  );
+}
+
+/** Profile picture: initials, your own photo (cropped to a circle here), or one of the drawn avatars. */
+function AvatarPicker({ s }: { s: Settings }) {
+  const [file, setFile] = useState<File | null>(null);
+  const input = useRef<HTMLInputElement>(null);
+  const current = s.avatar === 'photo' && !s.avatarPhoto ? undefined : s.avatar;
+  const pick = (id?: string) => updateSettings({ avatar: id });
+  return (
+    <section className="card form">
+      <h2>Profile picture</h2>
+      <div className="avatar-grid" role="radiogroup" aria-label="Profile picture">
+        <button role="radio" aria-checked={!current} className={!current ? 'on' : ''} onClick={() => pick(undefined)}>
+          <span className="avatar"><AvatarFace s={{ name: s.name }} /></span><small>Initials</small>
+        </button>
+        <button role="radio" aria-checked={current === 'photo'} className={current === 'photo' ? 'on' : ''}
+          onClick={() => (s.avatarPhoto && current !== 'photo' ? pick('photo') : input.current?.click())}>
+          <span className={`avatar${s.avatarPhoto ? ' art' : ''}`}>{s.avatarPhoto ? <AvatarFace s={{ name: s.name, avatar: 'photo', avatarPhoto: s.avatarPhoto }} /> : <CameraIcon />}</span>
+          <small>{s.avatarPhoto ? 'My photo' : 'Upload'}</small>
+        </button>
+        {AVATARS.map((a) => (
+          <button key={a.id} role="radio" aria-checked={current === a.id} className={current === a.id ? 'on' : ''} onClick={() => pick(a.id)}>
+            <span className="avatar art">{a.art}</span><small>{a.name}</small>
+          </button>
+        ))}
+      </div>
+      {s.avatarPhoto && <button className="secondary" onClick={() => input.current?.click()}>Choose a different photo</button>}
+      <input ref={input} type="file" accept="image/*" hidden aria-label="Profile photo"
+        onChange={(e) => { if (e.target.files?.[0]) setFile(e.target.files[0]); e.target.value = ''; }} />
+      {file && (
+        <PhotoCrop file={file} onCancel={() => setFile(null)}
+          onSave={(avatarPhoto) => { setFile(null); updateSettings({ avatar: 'photo', avatarPhoto }); }} />
+      )}
+    </section>
   );
 }
 
@@ -178,7 +215,7 @@ export function SettingsPage() {
       <>
         <header className="page-head"><h1>Settings</h1></header>
         <Link className="list-item profile-card" to="/settings/profile">
-          <span className="avatar big" aria-hidden>{s.name ? initials(s.name) : <UserIcon />}</span>
+          <span className={`avatar big${hasArt(s) ? ' art' : ''}`} aria-hidden><AvatarFace s={s} /></span>
           <span>
             <strong>{s.name || 'Your profile'}</strong>
             <small className="mono">{[s.bodyWeight ? kgText(s.bodyWeight, s.units) : null, s.height ? `${s.height} cm` : null, s.experience ? cap(s.experience) : null].filter(Boolean).join(' · ') || 'Name, units, body weight, height'}</small>
@@ -214,6 +251,7 @@ export function SettingsPage() {
       </header>
       {section.key === 'profile' && (
         <>
+          <AvatarPicker s={s} />
           <section className="card form">
             <label>Your name<input value={s.name} onChange={(e) => updateSettings({ name: e.target.value })} placeholder="Shown on the Today screen" /></label>
             <div>

@@ -12,10 +12,10 @@ import { fmt, fromDisplay, toDisplay } from '../logic/units';
 import { EVERY_DAY, todaysEntry, weighInDay, weighInDue } from '../logic/weighIn';
 import { dayKey, weekStart, weeklySummary, weekStreaks } from '../logic/progress';
 import { changeText, weekStats } from '../components/WeightSummary';
-import { initials } from '../format';
+import { AvatarFace, hasArt } from '../components/Avatar';
 import { InstallTip } from '../components/InstallTip';
 import { ExerciseImage } from '../components/ExerciseImage';
-import { BoxIcon, FlameIcon, MoonIcon, MoreIcon, PlayIcon, PlusIcon, ScaleIcon, SparkIcon, UserIcon } from '../components/Icons';
+import { BoxIcon, FlameIcon, MoonIcon, MoreIcon, PlayIcon, PlusIcon, ScaleIcon, SparkIcon } from '../components/Icons';
 import { muscleBalance } from '../logic/balance';
 import { deloadActive, deloadDue, DELOAD_AFTER_WEEKS } from '../logic/deload';
 import { fresherDay, recentLoad, recoveryNote, tiredGroups } from '../logic/recovery';
@@ -144,7 +144,7 @@ export function Home() {
           <p className="greeting">{new Date().toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short' })}</p>
           <h1>{greeting()}{settings.name ? `, ${settings.name}` : ''}</h1>
         </div>
-        <Link className="avatar" to="/settings/profile" aria-label={settings.name ? 'Profile' : 'Add your name'}>{settings.name ? initials(settings.name) : <UserIcon />}</Link>
+        <Link className={`avatar${hasArt(settings) ? ' art' : ''}`} to="/settings/profile" aria-label={settings.name ? 'Profile' : 'Add your name'}><AvatarFace s={settings} /></Link>
       </header>
 
       {finished && (

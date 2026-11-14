@@ -69,6 +69,10 @@ export interface Settings {
   restNotify?: boolean;
   /** Colour theme id from src/theme.ts. Missing means the default, Ink & Pink. */
   theme?: string;
+  /** Profile picture id from components/Avatar.tsx. Missing means initials. */
+  avatar?: string;
+  /** Your own cropped photo (256px JPEG data URL), used when avatar is 'photo'. Small enough to sync. */
+  avatarPhoto?: string;
 }
 
 /**
