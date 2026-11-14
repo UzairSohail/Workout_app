@@ -12,7 +12,10 @@ import { BAR, platesPerSide } from '../logic/plates';
 import { fmt, fromDisplay, toDisplay } from '../logic/units';
 import type { Settings, Units } from '../types';
 import { GEAR } from '../logic/equipment';
-import { BoxIcon, ChevronLeft, DumbbellIcon, PlateIcon, TimerIcon, TrendIcon, UserIcon } from '../components/Icons';
+import { AccountCard } from '../components/AccountCard';
+import { useAccount } from '../sync';
+import { cloudAvailable } from '../sync/config';
+import { BoxIcon, ChevronLeft, CloudIcon, DumbbellIcon, PlateIcon, TimerIcon, TrendIcon, UserIcon } from '../components/Icons';
 import { alertPrefs, askNotify, beepNow, canNotify, canVibrate, isIos, unlockAudio, vibrate } from '../logic/restAlert';
 
 function RestAlertCard({ s }: { s: Settings }) {
@@ -88,6 +91,7 @@ function PlateCalculator({ units }: { units: Units }) {
 }
 
 const SECTIONS = [
+  { key: 'account', icon: <CloudIcon />, group: 'Data', title: 'Account and sync', blurb: 'Sign in to keep your data on every phone' },
   { key: 'profile', icon: <UserIcon />, group: 'me', title: 'Profile', blurb: 'Name, units, body weight, height, age, weigh-in reminder' },
   { key: 'training', icon: <TrendIcon />, group: 'Training', title: 'Training', blurb: 'Weight increases, default rest, warm-ups, catch-up, rotation' },
   { key: 'rest', icon: <TimerIcon />, group: 'Training', title: 'Rest timer alert', blurb: 'Beep, vibrate or notify when rest is over' },
@@ -102,6 +106,7 @@ export function SettingsPage() {
   const navigate = useNavigate();
   const { byId } = useExercises();
   const [msg, setMsg] = useState('');
+  const account = useAccount();
 
   const setUnits = (units: Units) => {
     if (units === s.units) return;
@@ -159,11 +164,11 @@ export function SettingsPage() {
           <section key={g}>
             <h2 className="section-label" style={{ marginBottom: 8 }}>{g}</h2>
             <ul className="group-list settings-list">
-              {SECTIONS.filter((x) => x.group === g).map((x) => (
+              {SECTIONS.filter((x) => x.group === g && (x.key !== 'account' || cloudAvailable)).map((x) => (
                 <li key={x.key}>
                   <Link className="list-item" to={`/settings/${x.key}`}>
                     <span className="ico" aria-hidden>{x.icon}</span>
-                    <span><strong>{x.title}</strong><small className="muted">{x.key === 'data' && s.lastBackupAt ? `Last backup ${fmtDate(s.lastBackupAt)}` : x.blurb}</small></span>
+                    <span><strong>{x.title}</strong><small className="muted">{x.key === 'account' && account.signedIn ? `Syncing as ${account.email}` : x.key === 'data' && s.lastBackupAt ? `Last backup ${fmtDate(s.lastBackupAt)}` : x.blurb}</small></span>
                   </Link>
                 </li>
               ))}
@@ -171,7 +176,7 @@ export function SettingsPage() {
           </section>
         ))}
         <p className="muted small credit">
-          Exercise images and instructions from free-exercise-db (public domain). This app is free and has no ads or accounts.
+          Exercise images and instructions from free-exercise-db (public domain). This app is free and has no ads.
         </p>
       </>
     );
@@ -306,12 +311,13 @@ export function SettingsPage() {
         </>
       )}
       {section.key === 'plates' && <PlateCalculator key={s.units} units={s.units} />}
+      {section.key === 'account' && <AccountCard />}
       {section.key === 'data' && (
         <>
           <section className="card form">
             <h2>Your data</h2>
             <p className="muted small">
-              Everything is stored on this phone only. Export a backup now and then so you never lose your history.
+              {account.signedIn ? 'Your data is saved to your account and synced to your other phones. You can still export a copy.' : 'Everything is stored on this phone only. Export a backup now and then so you never lose your history.'}
               {s.lastBackupAt ? ` Last backup: ${fmtDate(s.lastBackupAt)}.` : ' No backup yet.'}
             </p>
             <button className="secondary wide" onClick={exportJson}>Export backup (JSON)</button>
