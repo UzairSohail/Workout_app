@@ -9,6 +9,7 @@ import { applyRotations, rotationsFor } from './rotation';
 import { deloadActive, deloadExercise } from './deload';
 import { startingWeight } from './startWeight';
 import { wantsWarmup, warmupSets } from './warmup';
+import { fitDay, sessionSize } from './generator';
 
 /** Previous sessions of one exercise, most recent first. */
 export function historyFor(exerciseId: string, finished: Workout[], excludeId?: string): LoggedExercise[] {
@@ -140,6 +141,7 @@ export async function startWorkout(
     const available = (id: string) => byId.has(id) && hasGear(byId.get(id), settings.missingEquipment);
     // Accessories done for about 5 weeks straight get swapped for one hitting the same area, in the program too.
     let day = opts.day;
+    let addedNote = new Set<string>();
     const rotations = settings.rotate === false || opts.generated ? [] : rotationsFor(day, finished, Date.now(), available);
     if (rotations.length) {
       day = applyRotations(day, rotations);
@@ -147,6 +149,12 @@ export async function startWorkout(
         const program = { ...opts.program, days: opts.program.days.map((d) => (d.id === day.id ? day : d)) };
         await db.programs.put(program);
       }
+    }
+    // Fit the day to the session size the user picked, and add the core finisher if they want it.
+    if (!opts.generated) {
+      const fitted = fitDay(day, { size: sessionSize(settings), finisher: !!settings.coreFinisher, available, finished });
+      addedNote = new Set(fitted.exercises.filter((e) => e.added).map((e) => e.exerciseId));
+      day = fitted;
     }
     const rotatedNote = new Map(rotations.map((r) => [r.to.id,
       `New for the next few weeks: replaces ${byId.get(r.from)?.name ?? r.from} after 5 weeks, same muscle area`]));
@@ -159,7 +167,7 @@ export async function startWorkout(
       const le = p.scheme && state
         ? schemeExercise(p as PlannedExercise & { scheme: SchemeKind }, state, finished, byId, settings)
         : newLoggedExercise(p.exerciseId, p.sets, p.repMin, p.repMax, p.rest, finished, byId, settings, p.mode ?? modeFor(p.exerciseId));
-      const focus = [rotatedNote.get(p.exerciseId), p.catchUpNote].filter(Boolean).join(' · ');
+      const focus = [rotatedNote.get(p.exerciseId), p.catchUpNote, addedNote.has(p.exerciseId) ? 'Added to fill your session' : undefined].filter(Boolean).join(' · ');
       return focus ? { ...le, focus } : le;
     });
   } else if (opts.copyOf) {

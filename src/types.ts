@@ -38,6 +38,12 @@ export interface Settings {
   catchUp?: boolean;
   /** Swap accessories done for about 5 weeks straight for one that trains the same area. Defaults to on. */
   rotate?: boolean;
+  /** How big a split's workouts are: as planned (default), a set number of exercises, or a length in minutes. */
+  sessionSize?: 'plan' | 'exercises' | 'minutes';
+  sessionExercises?: number;
+  sessionMinutes?: number;
+  /** End every workout with 2 ab exercises and 1 lower back exercise. */
+  coreFinisher?: boolean;
   /** Deload week runs until this time. */
   deloadUntil?: number;
   /** When the last deload week started; training weeks are counted from here. */

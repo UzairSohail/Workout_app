@@ -1,5 +1,5 @@
 import { useLiveQuery } from 'dexie-react-hooks';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { backupDue, backupNow } from '../backup';
 import { useAccount } from '../sync';
@@ -18,6 +18,8 @@ import { muscleBalance } from '../logic/balance';
 import { deloadActive, deloadDue, DELOAD_AFTER_WEEKS } from '../logic/deload';
 import { fresherDay, recentLoad, recoveryNote, tiredGroups } from '../logic/recovery';
 import { NumInput } from '../components/NumInput';
+import { hasGear } from '../logic/equipment';
+import { fitDay, lastSplitDay, nextDayIndex, sessionSize } from '../logic/generator';
 import type { Day, Program, Settings, Workout } from '../types';
 
 const greeting = (h = new Date().getHours()) => (h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening');
@@ -100,12 +102,22 @@ export function Home() {
 
   const weekAgo = Date.now() - 7 * 864e5;
   const thisWeek = finished?.filter((w) => w.startedAt >= weekStart(Date.now())).length ?? 0;
-  const weekTarget = Math.max(1, program?.days.length ?? 3);
   const streak = finished ? weekStreaks(finished).current : 0;
   // Only nag about skipped muscles once there's a few workouts' worth of data this week.
   const recent = finished?.filter((w) => w.startedAt > weekAgo).length ?? 0;
   const skipped = finished && byId.size > 0 && recent >= 2 ? muscleBalance(finished, byId, weekAgo).skipped : [];
-  const next = program?.days[settings.nextDayIndex % Math.max(1, program.days.length)];
+  // Rotate from the last split day finished, however many times a week you train.
+  const planned = program ? program.days[nextDayIndex(program, finished, settings.nextDayIndex)] : undefined;
+  const lastDay = program ? lastSplitDay(program, finished) : undefined;
+  // Show the day the way it will start: trimmed or filled to the session size, plus the core finisher.
+  const next = useMemo(() => planned && byId.size
+    ? fitDay(planned, {
+      size: sessionSize(settings), finisher: !!settings.coreFinisher, finished,
+      available: (id) => byId.has(id) && hasGear(byId.get(id), settings.missingEquipment),
+    })
+    : planned,
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  [planned, byId, finished, settings.sessionSize, settings.sessionExercises, settings.sessionMinutes, settings.coreFinisher, settings.missingEquipment]);
   // 5/3/1 has its own deload week built in.
   const deloadNow = deloadActive(settings);
   const suggestDeload = !is531 && !!finished && deloadDue(finished, settings);
@@ -137,7 +149,7 @@ export function Home() {
         <Link className="plain-link" to="/history" aria-label="History">
           <WeekStrip workouts={finished} />
           <p className="week-line">
-            <span><strong>{thisWeek} of {weekTarget}</strong> sessions this week</span>
+            <span><strong>{thisWeek}</strong> session{thisWeek === 1 ? '' : 's'} this week</span>
             {streak > 1 && <span className="streak"><FlameIcon />{streak}-week streak</span>}
           </p>
         </Link>
@@ -169,6 +181,7 @@ export function Home() {
             <div>
               <p className="eyebrow">Next up · {program.name}{is531 && state ? ` · wk ${state.week + 1} (${WEEKS_531[state.week].name})` : ''}</p>
               <h2 className="hero-title">{next.name}</h2>
+              {lastDay && <p className="muted small" style={{ margin: 0 }}>Last time: {program.days[lastDay.index].name}, {new Date(lastDay.at).toLocaleDateString([], { weekday: 'long' })}</p>}
             </div>
             <div className="thumb-stack" aria-hidden>
               {next.exercises.slice(0, 3).map((e, i) => <ExerciseImage key={i} exercise={byId.get(e.exerciseId)} />)}
@@ -178,6 +191,7 @@ export function Home() {
           <div className="hero-meta">
             <span><strong>{next.exercises.length}</strong> exercise{next.exercises.length === 1 ? '' : 's'}</span>
             <span><strong>{nextSets}</strong> sets</span>
+            <Link className="small" to="/settings/training#size" aria-label="Change workout size">Change size</Link>
           </div>
           {missingTm && (
             <p className="notice">Set your training maxes first so the app can work out your weights. <Link to={`/programs/${program.id}`}>Set them</Link></p>
@@ -204,7 +218,7 @@ export function Home() {
               </ul>
             </details>
           )}
-          <button className="wide" onClick={() => start({ program, day: next })}><PlayIcon />Start {next.name}</button>
+          <button className="wide" onClick={() => start({ program, day: planned ?? next })}><PlayIcon />Start {next.name}</button>
           {program.days.length > 1 && (
             <div className="chips" style={{ marginTop: 0 }}>
               <span className="chips-label">Or swap to</span>

@@ -2,7 +2,8 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { Link, useNavigate } from 'react-router-dom';
 import { db, getProgramState, uid, updateSettings } from '../db';
 import { CheckIcon, PlusIcon, SparkIcon } from '../components/Icons';
-import { useSettings } from '../hooks';
+import { useFinished, useSettings } from '../hooks';
+import { nextDayIndex } from '../logic/generator';
 import { programUsesSchemes } from '../logic/schemes';
 import type { Program } from '../types';
 
@@ -21,6 +22,7 @@ export async function copyProgram(p: Program): Promise<string> {
 
 export function Programs() {
   const settings = useSettings();
+  const finished = useFinished();
   const programs = useLiveQuery(() => db.programs.orderBy('createdAt').toArray(), []);
   const navigate = useNavigate();
 
@@ -42,7 +44,7 @@ export function Programs() {
   const active = programs?.find((p) => p.id === settings.activeProgramId);
   const others = programs?.filter((p) => p.id !== settings.activeProgramId) ?? [];
   const state = useLiveQuery(() => (active ? getProgramState(active.id) : undefined), [active?.id]);
-  const nextIndex = active ? settings.nextDayIndex % Math.max(1, active.days.length) : -1;
+  const nextIndex = active ? nextDayIndex(active, finished, settings.nextDayIndex) : -1;
   const dayCount = (p: Program) => `${p.days.length} day${p.days.length === 1 ? '' : 's'}`;
 
   return (
@@ -63,7 +65,7 @@ export function Programs() {
           <div className="day-tiles">
             {active.days.map((d, i) => {
               const done = state?.doneDays.includes(d.id);
-              const isNext = i === nextIndex && !done;
+              const isNext = i === nextIndex;
               return (
                 <div key={d.id} className={`day-tile ${isNext ? 'next' : ''}`}>
                   <span className="state">{done ? <span className="tick" aria-label="Done this week"><CheckIcon /></span> : isNext ? 'NEXT' : ''}</span>

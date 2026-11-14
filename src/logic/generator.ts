@@ -459,3 +459,161 @@ export function generateToday(
     restDay: best.value < 0.2,
   };
 }
+
+/* ---------- Fitting any planned day to the user's session size ---------- */
+
+/** How big a workout should be: as the split plans it, a number of exercises, or a length in minutes. */
+export type SessionSize = { kind: 'plan' } | { kind: 'exercises'; n: number } | { kind: 'minutes'; n: number };
+
+export interface FitOptions {
+  size: SessionSize;
+  /** End with two ab exercises and one lower back exercise, adding them if the day doesn't have them. */
+  finisher: boolean;
+  available?: (exerciseId: string) => boolean;
+  /** Finished workouts, so the finisher rotates its exercises from one session to the next. */
+  finished?: Workout[];
+}
+
+/** Planned exercises added to fill a session, so the workout can say why they're there. */
+export type FittedExercise = PlannedExercise & { added?: boolean };
+
+const words = (id: string) => new Set(id.toLowerCase().split(/[^a-z]+/).filter((w) => w.length > 2 && w !== 'with'));
+/**
+ * The generator's entry for an exercise, or for a near-identical one when the split uses a library
+ * exercise it doesn't know (Cable Rope Overhead Triceps Extension ~ Triceps Overhead Extension with Rope),
+ * so a filled-up day doesn't add the same movement twice.
+ */
+function moveLike(id: string): Move | undefined {
+  const known = MOVE_BY_ID.get(id);
+  if (known) return known;
+  const a = words(id);
+  let best: Move | undefined;
+  let bestSim = 0.6;
+  for (const mv of MOVES) {
+    const b = words(mv.id);
+    const shared = [...a].filter((w) => b.has(w)).length;
+    const sim = shared / (a.size + b.size - shared);
+    if (sim >= bestSim) { best = mv; bestSim = sim; }
+  }
+  return best;
+}
+
+/** The trailing ab / lower back exercises of a day, which count as its core finisher. */
+function finisherStart(exercises: PlannedExercise[]): number {
+  let i = exercises.length;
+  while (i > 0) {
+    const mv = MOVE_BY_ID.get(exercises[i - 1].exerciseId);
+    if (!mv || !isFinisherMove(mv)) break;
+    i--;
+  }
+  return i;
+}
+
+/**
+ * Trims or fills a day of any split to the session size the user picked, and adds the core finisher
+ * when asked. Extra exercises go after the parts of the day's muscles its exercises leave out (a push
+ * day with flat bench gets incline, not more flat). Trimming drops from the end, where accessories sit.
+ * Deterministic, so Home's preview matches what starts.
+ */
+export function fitDay(day: Day, o: FitOptions): Omit<Day, 'exercises'> & { exercises: FittedExercise[] } {
+  const available = o.available ?? (() => true);
+  const cut = finisherStart(day.exercises);
+  // A day that is nothing but core work keeps it as its main work.
+  const split = cut === 0 ? day.exercises.length : cut;
+  let main: FittedExercise[] = day.exercises.slice(0, split);
+  let finisher: PlannedExercise[] = day.exercises.slice(split);
+  const minutes = o.size.kind === 'minutes' ? o.size.n : 60;
+  if (o.finisher && finisher.length === 0) {
+    const uses = new Map<string, number>();
+    const patterns = new Map<string, number>();
+    // Count what the last few finishers used so today's picks something different.
+    const recent = [...(o.finished ?? [])].sort((a, b) => b.startedAt - a.startedAt).slice(0, 6);
+    for (const w of recent) for (const e of w.exercises) {
+      const mv = MOVE_BY_ID.get(e.exerciseId);
+      if (!mv || !isFinisherMove(mv)) continue;
+      uses.set(mv.id, (uses.get(mv.id) ?? 0) + 1);
+      patterns.set(mv.pattern, (patterns.get(mv.pattern) ?? 0) + 1);
+    }
+    const inMain = new Set(main.map((e) => e.exerciseId));
+    const pool = MOVES.filter((mv) => isFinisherMove(mv) && available(mv.id) && !inMain.has(mv.id));
+    finisher = pickFinisher(pool, uses, patterns).map((mv) => finisherPrescription(mv, minutes));
+  }
+  if (o.size.kind === 'plan') return { ...day, exercises: [...main, ...finisher] };
+
+  const budget = o.size.n * 60 - finisher.reduce((n, e) => n + exerciseSeconds(e), 0);
+  const seconds = (list: PlannedExercise[]) => list.reduce((n, e) => n + exerciseSeconds(e), 0);
+  const wantMore = (next: PlannedExercise) => o.size.kind === 'exercises'
+    ? main.length < o.size.n
+    : seconds(main) + exerciseSeconds(next) <= budget;
+  const tooMany = () => o.size.kind === 'exercises' ? main.length > o.size.n : seconds(main) > budget;
+
+  while (main.length > 1 && tooMany()) main = main.slice(0, -1);
+
+  const used = new Set(main.map((e) => e.exerciseId));
+  // What the day is for: the muscle groups its own exercises mainly train.
+  const groups: Partial<Record<Group, number>> = {};
+  const today: Tally = {};
+  const patterns = new Set<string>();
+  for (const e of main) {
+    const mv = moveLike(e.exerciseId);
+    if (!mv) continue;
+    used.add(mv.id);
+    add(today, mv);
+    patterns.add(mv.pattern);
+    for (const [g, c] of groupCredit(mv)) groups[g] = (groups[g] ?? 0) + c;
+  }
+  // Groups only one lift touches on the side (hamstrings from a deadlift on pull day) aren't the day's job.
+  const top = Math.max(0, ...Object.values(groups));
+  for (const g of Object.keys(groups) as Group[]) {
+    const share = groups[g]! / top;
+    if (share < 0.5) delete groups[g];
+    else groups[g] = Math.min(1, share * 1.5);
+  }
+  if (Object.keys(groups).length === 0) return { ...day, exercises: [...main, ...finisher] };
+  const focus: Focus = { spread: 0.4, groups };
+  const pool = MOVES.filter((mv) => !isFinisherMove(mv) && available(mv.id) && !used.has(mv.id));
+  const plan = (mv: Move): FittedExercise => ({ exerciseId: mv.id, ...prescription('muscle', 'intermediate', mv.compound), added: true });
+  while (main.length < MAX_MAIN + 4) {
+    let best: Move | undefined;
+    let bestScore = 0;
+    for (const mv of pool) {
+      if (used.has(mv.id)) continue;
+      // A movement the day already has is a last resort when filling it up.
+      const s = score(mv, focus, today, {}, patterns, new Set(), 'muscle') * (patterns.has(mv.pattern) ? 0.3 : 1);
+      if (s > bestScore) { best = mv; bestScore = s; }
+    }
+    if (!best || !wantMore(plan(best))) break;
+    main.push(plan(best));
+    used.add(best.id);
+    add(today, best);
+    patterns.add(best.pattern);
+  }
+  return { ...day, exercises: [...main, ...finisher] };
+}
+
+/** The session size saved in settings. */
+export function sessionSize(s: { sessionSize?: 'plan' | 'exercises' | 'minutes'; sessionExercises?: number; sessionMinutes?: number }): SessionSize {
+  if (s.sessionSize === 'exercises') return { kind: 'exercises', n: s.sessionExercises ?? 6 };
+  if (s.sessionSize === 'minutes') return { kind: 'minutes', n: s.sessionMinutes ?? 60 };
+  return { kind: 'plan' };
+}
+
+/**
+ * Which day of a split comes next: the one after the last day of it you finished, whatever day you
+ * picked, so training 4, 5 or 6 times a week just keeps rotating. Falls back to the saved index.
+ */
+export function nextDayIndex(program: Pick<Program, 'id' | 'days'>, finished: Workout[] | undefined, saved: number): number {
+  const n = Math.max(1, program.days.length);
+  const last = lastSplitDay(program, finished);
+  return last ? (last.index + 1) % n : saved % n;
+}
+
+export function lastSplitDay(program: Pick<Program, 'id' | 'days'>, finished: Workout[] | undefined): { index: number; at: number } | undefined {
+  let best: { index: number; at: number } | undefined;
+  for (const w of finished ?? []) {
+    if (!w.finishedAt || w.programId !== program.id || !w.dayId) continue;
+    const index = program.days.findIndex((d) => d.id === w.dayId);
+    if (index >= 0 && (!best || w.startedAt > best.at)) best = { index, at: w.startedAt };
+  }
+  return best;
+}
