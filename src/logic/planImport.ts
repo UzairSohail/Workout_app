@@ -265,3 +265,35 @@ function fuzzyMatch(all: Exercise[], name: string): Exercise | undefined {
   }
   return bestScore >= 0.5 ? best : undefined;
 }
+
+/**
+ * A short list of library exercises that could be the one a plan names, best guess first, for a
+ * second opinion (Gemini) to choose from. Mixes the app's own match, its search results, the search
+ * without equipment words, and the closest names by shared words.
+ */
+export function candidatesFor(all: Exercise[], name: string, used?: ReadonlySet<string>, n = 15): Exercise[] {
+  const out: Exercise[] = [];
+  const add = (list: (Exercise | undefined)[], max: number) => {
+    let added = 0;
+    for (const e of list) {
+      if (!e || out.includes(e)) continue;
+      out.push(e);
+      if (++added >= max) break;
+    }
+  };
+  add([matchExercise(all, name, used)], 1);
+  add(filterExercises(all, name, '', '', false), 6);
+  const core = words(name).filter((w) => !EQUIPMENT_WORDS.has(w)).join(' ');
+  if (core && core !== words(name).join(' ')) add(filterExercises(all, core, '', '', false), 5);
+  const q = words(name).map(stemWord);
+  const scored = all
+    .map((e) => {
+      const w = words(e.name).map(stemWord);
+      const hits = q.filter((x) => w.some((y) => y === x || (x.length >= 4 && (y.startsWith(x) || x.startsWith(y))))).length;
+      return { e, score: hits / Math.max(q.length, w.length, 1) };
+    })
+    .filter((s) => s.score > 0)
+    .sort((a, b) => b.score - a.score);
+  add(scored.map((s) => s.e), n);
+  return out.slice(0, n);
+}

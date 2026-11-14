@@ -5,7 +5,8 @@ import { ExercisePicker } from '../components/ExercisePicker';
 import { NumInput } from '../components/NumInput';
 import { exerciseName, useExercises } from '../exercises';
 import { useActiveWorkout, useFinished, useSettings } from '../hooks';
-import { matchExercise, parsePlan, type PlanRow } from '../logic/planImport';
+import { candidatesFor, matchExercise, parsePlan, type PlanRow } from '../logic/planImport';
+import { geminiKey, pickWithGemini, setGeminiKey } from '../logic/gemini';
 import { historyFor, startWorkout, suggestionFor } from '../logic/session';
 import { fmtWeight } from '../logic/units';
 import { CameraIcon, ChevronLeft, XIcon } from '../components/Icons';
@@ -14,6 +15,8 @@ import type { LoggedExercise, Workout } from '../types';
 interface Row extends PlanRow {
   key: string;
   exerciseId?: string;
+  /** Gemini changed the app's own pick after looking at the screenshot. */
+  byGemini?: boolean;
 }
 
 export function ImportPlan() {
@@ -22,7 +25,9 @@ export function ImportPlan() {
   const finished = useFinished();
   const active = useActiveWorkout();
   const { all, byId, loading } = useExercises();
-  const [status, setStatus] = useState<'idle' | 'reading' | 'done' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'reading' | 'checking' | 'done' | 'error'>('idle');
+  const [key, setKey] = useState(geminiKey);
+  const [aiNote, setAiNote] = useState('');
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState('');
   const [name, setName] = useState('');
@@ -42,7 +47,21 @@ export function ImportPlan() {
       const plan = parsePlan(text);
       // Exercises already in the history win when several catalog entries fit.
       const used = new Set((finished ?? []).flatMap((w) => w.exercises.map((e) => e.exerciseId)));
-      setRows(plan.rows.map((r) => ({ ...r, key: uid(), exerciseId: matchExercise(all, r.name, used)?.id })));
+      let next: Row[] = plan.rows.map((r) => ({ ...r, key: uid(), exerciseId: matchExercise(all, r.name, used)?.id }));
+      setAiNote('');
+      if (key && next.length) {
+        // Gemini looks at the photos too and picks from a short list; the app's own match stays if it fails.
+        setStatus('checking');
+        try {
+          const picks = await pickWithGemini(key, files, next.map((r) => ({ name: r.name, candidates: candidatesFor(all, r.name, used) })));
+          next = next.map((r, i) => (picks[i] && picks[i] !== r.exerciseId ? { ...r, exerciseId: picks[i], byGemini: true } : r));
+          const changed = next.filter((r) => r.byGemini).length;
+          setAiNote(changed ? `Gemini changed ${changed} of ${next.length} after looking at the photos.` : 'Gemini agreed with every match.');
+        } catch (e) {
+          setAiNote(`Gemini couldn't check this one (${e instanceof Error ? e.message : String(e)}), so these are the app's own matches.`);
+        }
+      }
+      setRows(next);
       setName(plan.title ?? 'Imported workout');
       setStatus('done');
     } catch (e) {
@@ -109,19 +128,22 @@ export function ImportPlan() {
         <section className="card form">
           <label className="button wide file-button">
             <CameraIcon />Choose screenshot{status === 'reading' ? '…' : ''}
-            <input type="file" accept="image/*" multiple hidden disabled={status === 'reading' || loading}
+            <input type="file" accept="image/*" multiple hidden disabled={status === 'reading' || status === 'checking' || loading}
               onChange={(e) => { read(e.target.files); e.target.value = ''; }} />
           </label>
-          <p className="muted small">Long plan? Pick two or more screenshots at once, in order. Reading happens on this phone; nothing is uploaded.</p>
+          <p className="muted small">Long plan? Pick two or more screenshots at once, in order. Reading happens on this phone{key ? '; with Gemini on, the screenshot is also sent to Google to check the matches.' : '; nothing is uploaded.'}</p>
           {status === 'reading' && (
             <>
               <p className="muted small">Reading the screenshot… {Math.round(progress * 100)}%{progress === 0 ? ' (the first time takes a little longer)' : ''}</p>
               <div className="meter"><span style={{ width: `${Math.round(progress * 100)}%` }} /></div>
             </>
           )}
+          {status === 'checking' && <p className="muted small">Double-checking the matches with Gemini…</p>}
           {status === 'error' && <p className="notice">Couldn't read that screenshot ({error}). Check you're online for the first import and try again.</p>}
         </section>
       )}
+
+      {status !== 'done' && <GeminiKeyCard value={key} onChange={(k) => { setGeminiKey(k); setKey(k.trim()); }} />}
 
       {status === 'done' && (
         <>
@@ -130,6 +152,7 @@ export function ImportPlan() {
             {rows.length === 0
               ? <p className="notice">No exercises found in that screenshot. Try one that shows the exercise names with their sets and reps.</p>
               : <p className="muted small">Check each exercise below. Tap a name to change it.</p>}
+            {aiNote && <p className="muted small">{aiNote}</p>}
             <ol className="plan">
               {rows.map((r, i) => (
                 <li key={r.key} className={r.supersetWithNext || rows[i - 1]?.supersetWithNext ? 'in-superset' : undefined}>
@@ -140,7 +163,7 @@ export function ImportPlan() {
                     <button className="ghost danger" aria-label={`Remove ${r.name}`} onClick={() => setRows((rs) => rs.filter((x) => x.key !== r.key))}><XIcon /></button>
                   </div>
                   <p className="muted small">
-                    Plan says “{r.name}”{r.supersetWithNext ? ' · superset with the next one' : ''}
+                    Plan says “{r.name}”{r.byGemini ? ' · picked by Gemini' : ''}{r.supersetWithNext ? ' · superset with the next one' : ''}
                     {weightNote.get(r.key) ? ` · ${weightNote.get(r.key)}` : ''}
                   </p>
                   <div className="row">
@@ -189,5 +212,32 @@ export function ImportPlan() {
         />
       )}
     </>
+  );
+}
+
+/** Optional free Gemini key for better matching, one tap deep so the screenshot button stays the main action. */
+function GeminiKeyCard({ value, onChange }: { value: string; onChange: (key: string) => void }) {
+  const [draft, setDraft] = useState(value);
+  return (
+    <details className="card form peek">
+      <summary>{value ? 'Gemini double-check is on' : 'Better matching with Gemini (free)'}</summary>
+      <p className="muted small">
+        With a free Gemini key, the app also shows Google's Gemini the screenshot so it can check each exercise against
+        its photo (for example a rope pushdown versus an overhead extension). The screenshot is sent to Google when you
+        import; on the free plan Google may use it to improve its products. The key stays on this phone.
+      </p>
+      <ol className="muted small">
+        <li>Open <a href="https://aistudio.google.com/apikey" target="_blank" rel="noreferrer">Google AI Studio</a> and sign in with a Google account.</li>
+        <li>Tap “Create API key”, then copy it.</li>
+        <li>Paste it here and tap Save.</li>
+      </ol>
+      <label>Gemini API key
+        <input type="password" autoComplete="off" value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Paste your key" />
+      </label>
+      <div className="row">
+        <button className="secondary" disabled={draft.trim() === value} onClick={() => onChange(draft)}>Save</button>
+        {value && <button className="ghost danger" onClick={() => { setDraft(''); onChange(''); }}>Remove key</button>}
+      </div>
+    </details>
   );
 }
