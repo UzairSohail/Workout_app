@@ -15,7 +15,8 @@ import { GEAR } from '../logic/equipment';
 import { AccountCard } from '../components/AccountCard';
 import { useAccount } from '../sync';
 import { cloudAvailable } from '../sync/config';
-import { BoxIcon, ChevronLeft, CloudIcon, DumbbellIcon, PlateIcon, TimerIcon, TrendIcon, UserIcon } from '../components/Icons';
+import { BoxIcon, CheckIcon, ChevronLeft, CloudIcon, PaletteIcon, DumbbellIcon, PlateIcon, TimerIcon, TrendIcon, UserIcon } from '../components/Icons';
+import { THEMES, themeOf } from '../theme';
 import { alertPrefs, askNotify, beepNow, canNotify, canVibrate, isIos, unlockAudio, vibrate } from '../logic/restAlert';
 
 function RestAlertCard({ s }: { s: Settings }) {
@@ -69,6 +70,27 @@ function RestAlertCard({ s }: { s: Settings }) {
 }
 
 
+function ThemePicker({ current }: { current: string }) {
+  return (
+    <>
+      <ul className="group-list theme-list">
+        {THEMES.map((t) => (
+          <li key={t.id}>
+            <button className={`list-item theme-option${t.id === current ? ' on' : ''}`} aria-pressed={t.id === current} onClick={() => updateSettings({ theme: t.id })}>
+              <span className="theme-swatch" aria-hidden style={{ background: t.bg }}>
+                <i style={{ background: t.card }} /><b style={{ background: t.accent }} />
+              </span>
+              <span><strong>{t.name}</strong><small className="muted">{t.blurb}</small></span>
+              {t.id === current && <span className="theme-tick" aria-hidden><CheckIcon /></span>}
+            </button>
+          </li>
+        ))}
+      </ul>
+      <p className="muted small">If you're signed in, your theme follows you to your other phones.</p>
+    </>
+  );
+}
+
 const csvCell = (v: string | number) => (typeof v === 'string' && /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : String(v));
 
 function PlateCalculator({ units }: { units: Units }) {
@@ -97,6 +119,7 @@ const SECTIONS = [
   { key: 'rest', icon: <TimerIcon />, group: 'Training', title: 'Rest timer alert', blurb: 'Beep, vibrate or notify when rest is over' },
   { key: 'gym', icon: <DumbbellIcon />, group: 'Training', title: "My gym's equipment", blurb: 'Hide exercises your gym can\'t do' },
   { key: 'plates', icon: <PlateIcon />, group: 'Training', title: 'Plate calculator', blurb: 'Which plates go on each side' },
+  { key: 'theme', icon: <PaletteIcon />, group: 'Appearance', title: 'Theme', blurb: 'Colours for the whole app' },
   { key: 'data', icon: <BoxIcon />, group: 'Data', title: 'Backup and data', blurb: 'Export, import and spreadsheet' },
 ];
 
@@ -160,7 +183,7 @@ export function SettingsPage() {
             <small className="mono">{[s.bodyWeight ? kgText(s.bodyWeight, s.units) : null, s.height ? `${s.height} cm` : null, s.experience ? cap(s.experience) : null].filter(Boolean).join(' · ') || 'Name, units, body weight, height'}</small>
           </span>
         </Link>
-        {['Training', 'Data'].map((g) => (
+        {['Training', 'Appearance', 'Data'].map((g) => (
           <section key={g}>
             <h2 className="section-label" style={{ marginBottom: 8 }}>{g}</h2>
             <ul className="group-list settings-list">
@@ -168,7 +191,7 @@ export function SettingsPage() {
                 <li key={x.key}>
                   <Link className="list-item" to={`/settings/${x.key}`}>
                     <span className="ico" aria-hidden>{x.icon}</span>
-                    <span><strong>{x.title}</strong><small className="muted">{x.key === 'account' && account.signedIn ? `Syncing as ${account.email}` : x.key === 'data' && s.lastBackupAt ? `Last backup ${fmtDate(s.lastBackupAt)}` : x.blurb}</small></span>
+                    <span><strong>{x.title}</strong><small className="muted">{x.key === 'account' && account.signedIn ? `Syncing as ${account.email}` : x.key === 'theme' ? themeOf(s.theme).name : x.key === 'data' && s.lastBackupAt ? `Last backup ${fmtDate(s.lastBackupAt)}` : x.blurb}</small></span>
                   </Link>
                 </li>
               ))}
@@ -312,6 +335,7 @@ export function SettingsPage() {
       )}
       {section.key === 'plates' && <PlateCalculator key={s.units} units={s.units} />}
       {section.key === 'account' && <AccountCard />}
+      {section.key === 'theme' && <ThemePicker current={themeOf(s.theme).id} />}
       {section.key === 'data' && (
         <>
           <section className="card form">

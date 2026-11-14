@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { App } from './App';
 import { initDb } from './db';
 import { startSync } from './sync';
+import { watchTheme } from './theme';
 import { registerSW } from 'virtual:pwa-register';
 import './styles.css';
 
@@ -20,6 +21,7 @@ registerSW({
 
 initDb().finally(() => {
   startSync();
+  watchTheme();
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
       <App />

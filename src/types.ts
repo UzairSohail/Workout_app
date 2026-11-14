@@ -61,6 +61,8 @@ export interface Settings {
   restSound?: boolean;
   restVibrate?: boolean;
   restNotify?: boolean;
+  /** Colour theme id from src/theme.ts. Missing means the default, Ink & Pink. */
+  theme?: string;
 }
 
 /**
