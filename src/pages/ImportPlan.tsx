@@ -11,6 +11,7 @@ import { historyFor, startWorkout, suggestionFor } from '../logic/session';
 import { fmtWeight } from '../logic/units';
 import { CameraIcon, ChevronLeft, XIcon } from '../components/Icons';
 import type { LoggedExercise, Workout } from '../types';
+import type { OcrProgress } from '../logic/ocr';
 
 interface Row extends PlanRow {
   key: string;
@@ -28,7 +29,7 @@ export function ImportPlan() {
   const [status, setStatus] = useState<'idle' | 'reading' | 'checking' | 'done' | 'error'>('idle');
   const [key] = useState(geminiKey);
   const [aiNote, setAiNote] = useState('');
-  const [progress, setProgress] = useState(0);
+  const [progress, setProgress] = useState<OcrProgress>({ value: 0, stage: '' });
   const [error, setError] = useState('');
   const [name, setName] = useState('');
   const [rows, setRows] = useState<Row[]>([]);
@@ -38,8 +39,9 @@ export function ImportPlan() {
     // Copy now: the input is cleared right after this starts, which empties the live FileList.
     const files = [...(list ?? [])];
     if (!files.length) return;
+    if (busy) return;
     setStatus('reading');
-    setProgress(0);
+    setProgress({ value: 0, stage: 'Getting the reader ready' });
     setError('');
     try {
       const { readText } = await import('../logic/ocr');
@@ -69,6 +71,9 @@ export function ImportPlan() {
       setStatus('error');
     }
   };
+
+  const busy = status === 'reading' || status === 'checking';
+  const pct = Math.round(progress.value * 100);
 
   const update = (key: string, patch: Partial<Row>) => setRows((rs) => rs.map((r) => (r.key === key ? { ...r, ...patch } : r)));
   const ready = rows.filter((r) => r.exerciseId);
@@ -126,24 +131,34 @@ export function ImportPlan() {
 
       {status !== 'done' && (
         <section className="card form">
-          <label className="button wide file-button">
-            <CameraIcon />Choose screenshot{status === 'reading' ? '…' : ''}
-            <input type="file" accept="image/*" multiple hidden disabled={status === 'reading' || status === 'checking' || loading}
-              onChange={(e) => { read(e.target.files); e.target.value = ''; }} />
-          </label>
-          <p className="muted small">Long plan? Pick two or more screenshots at once, in order. Reading happens on this phone{key ? '; with Gemini on, the screenshot is also sent to Google to check the matches.' : '; nothing is uploaded.'}</p>
-          {status === 'reading' && (
+          {busy ? (
+            <div className="import-progress" role="status" aria-live="polite">
+              <div className="import-progress-head">
+                <strong>{status === 'checking' ? 'Double-checking with Gemini' : progress.stage}…</strong>
+                {status === 'reading' && <span className="import-pct">{pct}%</span>}
+              </div>
+              <div className={`progress-bar${status === 'checking' ? ' indeterminate' : ''}`}
+                role="progressbar" aria-label="Import progress" aria-valuemin={0} aria-valuemax={100}
+                aria-valuenow={status === 'reading' ? pct : undefined}>
+                <span style={status === 'reading' ? { width: `${pct}%` } : undefined} />
+              </div>
+              <p className="muted small">Keep this screen open, it only takes a moment.</p>
+            </div>
+          ) : (
             <>
-              <p className="muted small">Reading the screenshot… {Math.round(progress * 100)}%{progress === 0 ? ' (the first time takes a little longer)' : ''}</p>
-              <div className="meter"><span style={{ width: `${Math.round(progress * 100)}%` }} /></div>
+              <label className={`button wide file-button${loading ? ' disabled' : ''}`}>
+                <CameraIcon />Choose screenshot
+                <input type="file" accept="image/*" multiple hidden disabled={loading}
+                  onChange={(e) => { read(e.target.files); e.target.value = ''; }} />
+              </label>
+              <p className="muted small">Long plan? Pick two or more screenshots at once, in order. Reading happens on this phone{key ? '; with Gemini on, the screenshot is also sent to Google to check the matches.' : '; nothing is uploaded.'}</p>
             </>
           )}
-          {status === 'checking' && <p className="muted small">Double-checking the matches with Gemini…</p>}
           {status === 'error' && <p className="notice">Couldn't read that screenshot ({error}). Check you're online for the first import and try again.</p>}
         </section>
       )}
 
-      {status !== 'done' && !key && (
+      {status !== 'done' && !busy && !key && (
         <p className="muted small">Want better matching? <Link to="/settings/ai">Add a free Gemini key in Settings</Link> and every import is checked by AI.</p>
       )}
 
