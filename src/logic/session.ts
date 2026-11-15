@@ -124,7 +124,7 @@ async function allFinished() {
 
 export async function startWorkout(
   /** generated: a one-off day built from history, which already handles rotation and missed areas. */
-  opts: { program?: Program; day?: Day; copyOf?: Workout; generated?: boolean },
+  opts: { program?: Program; day?: Day; copyOf?: Workout; generated?: boolean; notes?: Map<string, string> },
   byId: Map<string, Exercise>,
 ): Promise<string> {
   const existing = (await db.workouts.toArray()).find((w) => !w.finishedAt);
@@ -167,7 +167,7 @@ export async function startWorkout(
       const le = p.scheme && state
         ? schemeExercise(p as PlannedExercise & { scheme: SchemeKind }, state, finished, byId, settings)
         : newLoggedExercise(p.exerciseId, p.sets, p.repMin, p.repMax, p.rest, finished, byId, settings, p.mode ?? modeFor(p.exerciseId));
-      const focus = [rotatedNote.get(p.exerciseId), p.catchUpNote, addedNote.has(p.exerciseId) ? 'Added to fill your session' : undefined].filter(Boolean).join(' · ');
+      const focus = [opts.notes?.get(p.exerciseId), rotatedNote.get(p.exerciseId), p.catchUpNote, addedNote.has(p.exerciseId) ? 'Added to fill your session' : undefined].filter(Boolean).join(' · ');
       return focus ? { ...le, focus } : le;
     });
   } else if (opts.copyOf) {

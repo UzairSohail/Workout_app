@@ -20,7 +20,9 @@ import { wantsWarmup } from '../logic/warmup';
 import { SCHEME_LABEL } from '../logic/schemes';
 import { countedSets, recordsFor, sessionPrs, type PrKind } from '../logic/stats';
 import { fmt, fromDisplay, toDisplay } from '../logic/units';
-import { ArrowDown, ArrowRight, ArrowUp, CheckIcon, ChevronDown, ClipboardIcon, MoreIcon, NoteIcon, PlusIcon, ShuffleIcon, SwapIcon, TargetIcon, TrophyIcon } from '../components/Icons';
+import { ArrowDown, ArrowRight, ArrowUp, CheckIcon, ChevronDown, ClipboardIcon, MoreIcon, NoteIcon, PlusIcon, ShuffleIcon, SparkIcon, SwapIcon, TargetIcon, TrophyIcon } from '../components/Icons';
+import { coachOn, withAi } from '../logic/coach';
+import { tuneWorkout } from '../logic/coachTune';
 import type { Exercise, ExerciseNote, Feel, LoggedExercise, LogMode, SetType, Workout } from '../types';
 
 const TYPE_LABEL: Record<SetType, string> = { warmup: 'W', working: '', drop: 'D' };
@@ -112,6 +114,18 @@ export function WorkoutPage() {
   useEffect(() => {
     if (stored && (!w || w.id !== stored.id)) setW(structuredClone(stored));
   }, [stored, w]);
+
+  // With a Gemini key, fine-tune today's weights once when the workout opens (the rules stay as the fallback).
+  const workoutId = !editing && w ? w.id : undefined;
+  useEffect(() => {
+    if (!workoutId || !byId.size || !coachOn()) return;
+    tuneWorkout(workoutId, byId).then(async (n) => {
+      if (!n) return;
+      const fresh = await db.workouts.get(workoutId);
+      if (fresh) setW(structuredClone(fresh));
+      showToast(`Coach tuned ${n} weight${n === 1 ? '' : 's'} for today from how your last sessions went`);
+    }).catch(() => { /* keep the usual suggestions */ });
+  }, [workoutId, byId.size > 0]);
 
   const units = settings.units;
 
@@ -325,7 +339,15 @@ export function WorkoutPage() {
         const info = prev.get(le.exerciseId);
         const last = info?.history[0];
         const timed = le.mode === 'time';
-        const s = finished && !le.scheme && !timed && !le.deload ? suggestionFor(le, finished, byId, settings, w.id) : null;
+        const lastTop = last ? Math.max(0, ...countedSets(last.sets).map((x) => x.weight)) : null;
+        const rule = finished && !le.scheme && !timed && !le.deload ? suggestionFor(le, finished, byId, settings, w.id) : null;
+        const s = rule ? withAi(rule, le, lastTop) : null;
+        /** Drops Gemini's target and goes back to the rule's weight for sets not done yet. */
+        const useRule = () => rule && mutate((d) => {
+          const e = d.exercises[ei];
+          for (const x of e.sets) if (!x.done && x.type !== 'warmup' && x.weight === e.ai?.weight) x.weight = rule.weight;
+          delete e.ai;
+        });
         const note = notes.get(le.exerciseId)?.note ?? '';
         const inSuperset = !!le.supersetWithNext && ei < w.exercises.length - 1;
         const afterSuperset = !!w.exercises[ei - 1]?.supersetWithNext;
@@ -424,8 +446,11 @@ export function WorkoutPage() {
 
             {s && (
               <div className={`suggestion ${s.kind}`}>
-                <span className="sug-icon">{s.kind === 'increase' ? <ArrowUp /> : s.kind === 'deload' ? <ArrowDown /> : <ArrowRight />}</span>
-                <span className="sug-text">{s.message}</span>
+                <span className="sug-icon">{s.ai ? <SparkIcon /> : s.kind === 'increase' ? <ArrowUp /> : s.kind === 'deload' ? <ArrowDown /> : <ArrowRight />}</span>
+                <span className="sug-text">
+                  {s.ai ? <>Coach: {s.weight != null ? `${fmt(toDisplay(s.weight, units))} ${units} × ${s.reps}. ` : ''}{s.message}{' '}
+                    {!le.sets.some((x) => x.done) && <button className="link small" onClick={useRule}>Use the usual rule</button>}</> : s.message}
+                </span>
               </div>
             )}
             {le.scheme && le.note && <div className="suggestion program"><span className="sug-icon"><ClipboardIcon /></span><span className="sug-text">{le.note}</span></div>}
@@ -537,6 +562,11 @@ export function WorkoutPage() {
           title="Swap for…"
           initialMuscle={byId.get(w.exercises[swapIndex].exerciseId)?.primaryMuscles[0] ?? ''}
           excludeId={w.exercises[swapIndex].exerciseId}
+          today={w.exercises.filter((_, i) => i !== swapIndex).map((e) => exerciseName(byId, e.exerciseId))}
+          lastTime={(() => {
+            const h = prev.get(w.exercises[swapIndex].exerciseId)?.history[0];
+            return h ? countedSets(h.sets).map((x) => (x.weight ? `${fmt(toDisplay(x.weight, units))}×${x.reps}` : `${x.reps} reps`)).join(', ') + ` (${units})` : '';
+          })()}
           onClose={() => setSwapIndex(null)}
           onPick={(ex) => {
             swapTo(swapIndex, ex);

@@ -69,6 +69,8 @@ export interface Settings {
   restNotify?: boolean;
   /** Colour theme id from src/theme.ts. Missing means the default, Ink & Pink. */
   theme?: string;
+  /** Let Gemini fine-tune the suggested weights when a workout starts (needs a Gemini key). Defaults to on. */
+  aiTune?: boolean;
   /** Profile picture id from components/Avatar.tsx. Missing means initials. */
   avatar?: string;
   /** Your own cropped photo (256px JPEG data URL), used when avatar is 'photo'. Small enough to sync. */
@@ -160,6 +162,8 @@ export interface LoggedExercise {
   supersetWithNext?: boolean;
   /** One tap after the last set: tunes the next weight suggestion. */
   feel?: Feel;
+  /** Gemini's tuned target for today, when it had one; replaces the rule-based suggestion. Weight in kg. */
+  ai?: { weight: number; reps: number; message: string };
 }
 
 export type LogMode = 'reps' | 'time';
@@ -195,4 +199,6 @@ export interface Workout {
   finishedAt?: number;
   exercises: LoggedExercise[];
   notes?: string;
+  /** Short coach summary written by Gemini after the workout. */
+  coachNote?: string;
 }

@@ -1,13 +1,14 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { EQUIPMENT, MUSCLES, cap, useExercises } from '../exercises';
 import { useFinished, useSettings } from '../hooks';
 import { hasGear } from '../logic/equipment';
 import { freshAlternatives, sameAreaAlternatives } from '../logic/variety';
-import { mainTargets } from '../logic/targets';
+import { MOVES, mainTargets } from '../logic/targets';
+import { ask, coachOn, parseSwap, SWAP_SCHEMA, swapPrompt, type SwapPick } from '../logic/coach';
 import type { Exercise } from '../types';
 import { CustomExerciseForm, nameFromQuery } from './CustomExerciseForm';
 import { ExerciseImage } from './ExerciseImage';
-import { SearchIcon, ShuffleIcon, TargetIcon } from './Icons';
+import { SearchIcon, ShuffleIcon, SparkIcon, TargetIcon } from './Icons';
 import { MuscleTags } from './MuscleTags';
 
 const STRENGTH = new Set(['strength', 'powerlifting', 'olympic weightlifting', 'strongman', 'custom']);
@@ -112,12 +113,18 @@ export function MyGearToggle({ missing, on, setOn }: { missing?: string[]; on: b
   );
 }
 
-export function ExercisePicker({ onPick, onClose, title = 'Add exercise', initialMuscle = '', excludeId }: {
+/** Gemini's swap picks, remembered for this visit so reopening the list doesn't ask again. */
+const swapCache = new Map<string, SwapPick[]>();
+
+export function ExercisePicker({ onPick, onClose, title = 'Add exercise', initialMuscle = '', excludeId, today = [], lastTime = '' }: {
   onPick: (e: Exercise) => void;
   onClose: () => void;
   title?: string;
   initialMuscle?: string;
   excludeId?: string;
+  /** When swapping: names of the other exercises in today's workout, and the last sets of the one being swapped. */
+  today?: string[];
+  lastTime?: string;
 }) {
   const { all, byId, loading } = useExercises();
   const finished = useFinished();
@@ -146,6 +153,7 @@ export function ExercisePicker({ onPick, onClose, title = 'Add exercise', initia
     [swapping, byId, missingEquipment],
   );
   const different = fresh.filter((e) => !sameArea.includes(e));
+  const ai = useCoachSwap(swapping, sameArea, fresh, all, byId, missingEquipment, today, lastTime);
   const pickRow = (e: Exercise) => (
     <li key={e.id}>
       <button className="list-item" onClick={() => onPick(e)}>
@@ -188,6 +196,31 @@ export function ExercisePicker({ onPick, onClose, title = 'Add exercise', initia
       <MyGearToggle missing={missingEquipment} on={mine} setOn={setMine} />
       <div className="modal-body">
         {loading && <p className="muted">Loading exercises…</p>}
+        {swapping && ai.state !== 'off' && !q && (
+          <>
+            <h3 className="list-head"><SparkIcon />Coach's pick</h3>
+            {ai.state === 'busy' && <p className="muted small">Asking the coach which swap fits best…</p>}
+            {ai.state === 'error' && <p className="muted small">No coach pick right now: {ai.error}.</p>}
+            {ai.picks.length > 0 && (
+              <ul className="list">
+                {ai.picks.map((p) => {
+                  const e = byId.get(p.id)!;
+                  return (
+                    <li key={e.id}>
+                      <button className="list-item" onClick={() => onPick(e)}>
+                        <ExerciseImage exercise={e} />
+                        <span>
+                          <strong>{e.name}</strong>
+                          <small className="muted">{p.why || e.equipment}</small>
+                        </span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </>
+        )}
         {sameArea.length > 0 && !q && (
           <>
             <h3 className="list-head"><TargetIcon />Same area: {mainTargets(swapping!.id).join(' · ').toLowerCase()}</h3>
@@ -216,4 +249,39 @@ export function ExercisePicker({ onPick, onClose, title = 'Add exercise', initia
       </div>
     </div>
   );
+}
+
+/** With a Gemini key, asks for the best 3 swaps from the app's own shortlist, each with a one-line reason. */
+function useCoachSwap(
+  swapping: Exercise | undefined, sameArea: Exercise[], fresh: Exercise[], all: Exercise[], byId: Map<string, Exercise>,
+  missing: string[] | undefined, today: string[], lastTime: string,
+) {
+  const on = !!swapping && coachOn();
+  const key = swapping ? `${swapping.id}|${today.join(',')}` : '';
+  const [state, setState] = useState<{ state: 'off' | 'busy' | 'done' | 'error'; picks: SwapPick[]; error?: string }>(
+    () => (on ? { state: swapCache.has(key) ? 'done' : 'busy', picks: swapCache.get(key) ?? [] } : { state: 'off', picks: [] }),
+  );
+  useEffect(() => {
+    if (!on || !swapping || swapCache.has(key) || !all.length) return;
+    let live = true;
+    const muscle = swapping.primaryMuscles[0];
+    const pool = new Map<string, Exercise>();
+    for (const e of [...sameArea, ...fresh]) pool.set(e.id, e);
+    for (const m of MOVES) {
+      const e = byId.get(m.id);
+      if (pool.size >= 16) break;
+      if (e && e.id !== swapping.id && e.primaryMuscles[0] === muscle && hasGear(e, missing)) pool.set(e.id, e);
+    }
+    const candidates = [...pool.values()];
+    if (!candidates.length) { setState({ state: 'off', picks: [] }); return; }
+    setState({ state: 'busy', picks: [] });
+    ask(swapPrompt(swapping, candidates, today, lastTime), SWAP_SCHEMA, (t) => parseSwap(t, candidates), 15000)
+      .then((picks) => {
+        swapCache.set(key, picks);
+        if (live) setState(picks.length ? { state: 'done', picks } : { state: 'off', picks: [] });
+      })
+      .catch((e) => live && setState({ state: 'error', picks: [], error: (e as Error).message }));
+    return () => { live = false; };
+  }, [key, all.length > 0]);
+  return state;
 }

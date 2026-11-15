@@ -62,27 +62,48 @@ export function buildPrompt(rows: PickRequest[]): string {
 export async function pickWithGemini(key: string, images: Blob[], rows: PickRequest[]): Promise<(string | undefined)[]> {
   const parts: object[] = [{ text: buildPrompt(rows) }];
   for (const img of images) parts.push({ inline_data: { mime_type: img.type || 'image/jpeg', data: await toBase64(img) } });
-  const res = await fetch(`${URL_BASE}/${MODEL}:generateContent`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
-    body: JSON.stringify({
-      contents: [{ role: 'user', parts }],
-      generationConfig: {
-        temperature: 0,
-        responseMimeType: 'application/json',
-        responseSchema: {
-          type: 'OBJECT',
-          properties: {
-            picks: {
-              type: 'ARRAY',
-              items: { type: 'OBJECT', properties: { row: { type: 'INTEGER' }, pick: { type: 'STRING' } }, required: ['row', 'pick'] },
-            },
-          },
-          required: ['picks'],
-        },
+  const schema = {
+    type: 'OBJECT',
+    properties: {
+      picks: {
+        type: 'ARRAY',
+        items: { type: 'OBJECT', properties: { row: { type: 'INTEGER' }, pick: { type: 'STRING' } }, required: ['row', 'pick'] },
       },
-    }),
-  });
+    },
+    required: ['picks'],
+  };
+  const text = await askGemini(key, parts, schema, { temperature: 0, timeoutMs: 60000 });
+  return parsePicks(text, rows);
+}
+
+/**
+ * Sends one request to Gemini and returns its JSON answer as text. Throws a readable message on failure
+ * (bad key, free limit used up, offline, too slow).
+ */
+export async function askGemini(
+  key: string,
+  parts: object[],
+  schema: object,
+  opts: { temperature?: number; timeoutMs?: number } = {},
+): Promise<string> {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), opts.timeoutMs ?? 20000);
+  let res: Response;
+  try {
+    res = await fetch(`${URL_BASE}/${MODEL}:generateContent`, {
+      method: 'POST',
+      signal: ctrl.signal,
+      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
+      body: JSON.stringify({
+        contents: [{ role: 'user', parts }],
+        generationConfig: { temperature: opts.temperature ?? 0.4, responseMimeType: 'application/json', responseSchema: schema },
+      }),
+    });
+  } catch (e) {
+    throw new Error((e as Error).name === 'AbortError' ? 'Gemini took too long, try again' : 'no connection to Gemini');
+  } finally {
+    clearTimeout(timer);
+  }
   if (!res.ok) {
     let msg = `error ${res.status}`;
     try {
@@ -95,8 +116,7 @@ export async function pickWithGemini(key: string, images: Blob[], rows: PickRequ
     throw new Error(msg);
   }
   const data = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
-  const text = data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? '').join('') ?? '';
-  return parsePicks(text, rows);
+  return data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? '').join('') ?? '';
 }
 
 /** Reads Gemini's answer, keeping only picks that are on that row's candidate list. */

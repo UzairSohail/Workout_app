@@ -14,6 +14,8 @@ import { SettingsPage } from './pages/Settings';
 import { RecordsPage } from './pages/Records';
 import { WeightPage } from './pages/Weight';
 import { StartPage } from './pages/Start';
+import { DescribePage } from './pages/Describe';
+import { CheckInPage } from './pages/CheckIn';
 import { UndoBar } from './components/UndoBar';
 import { CalendarIcon, DumbbellIcon, HistoryIcon, HomeIcon, SlidersIcon } from './components/Icons';
 
@@ -41,6 +43,8 @@ function Shell() {
           <Route path="/programs/:id" element={<ProgramEdit />} />
           <Route path="/import" element={<ImportPlan />} />
           <Route path="/start" element={<StartPage />} />
+          <Route path="/describe" element={<DescribePage />} />
+          <Route path="/checkin" element={<CheckInPage />} />
           <Route path="/workout" element={<WorkoutPage />} />
           <Route path="/history" element={<History />} />
           <Route path="/history/:id" element={<WorkoutDetail />} />
