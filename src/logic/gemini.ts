@@ -7,7 +7,15 @@
 import type { Exercise } from '../types';
 
 const KEY = 'gemini-key';
-const MODEL = 'gemini-flash-latest';
+/**
+ * Free Gemini models to try in order, all on the same key (each has its own free allowance). When one is
+ * busy, rate limited, retired or failing, the next one answers instead. The "latest" names follow Google's
+ * newest free models, the numbered ones are backups in case those names ever stop working.
+ */
+export const MODELS = ['gemini-flash-latest', 'gemini-flash-lite-latest', 'gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.0-flash'];
+/** How long a busy model is skipped before it is tried first again. */
+const COOLDOWN_MS = 2 * 60 * 1000;
+const busyUntil = new Map<string, number>();
 const URL_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
 
 export function geminiKey(): string {
@@ -76,9 +84,33 @@ export async function pickWithGemini(key: string, images: Blob[], rows: PickRequ
   return parsePicks(text, rows);
 }
 
+/** Errors where another model may well answer: busy, rate limited, model missing or retired, server trouble. */
+export function worthTryingAnother(status: number): boolean {
+  return status === 404 || status === 408 || status === 429 || status >= 500;
+}
+
+/** Models in the order to try now: ones that were busy a moment ago go last instead of first. */
+export function modelOrder(now = Date.now()): string[] {
+  const ready = MODELS.filter((m) => (busyUntil.get(m) ?? 0) <= now);
+  const resting = MODELS.filter((m) => (busyUntil.get(m) ?? 0) > now);
+  return [...ready, ...resting];
+}
+
+/** Test helper: forget which models were busy. */
+export function resetBusyModels() {
+  busyUntil.clear();
+}
+
+class GeminiError extends Error {
+  constructor(message: string, readonly status: number) {
+    super(message);
+  }
+}
+
 /**
- * Sends one request to Gemini and returns its JSON answer as text. Throws a readable message on failure
- * (bad key, free limit used up, offline, too slow).
+ * Sends one request to Gemini and returns its JSON answer as text. If the model is overloaded, rate limited
+ * or failing, it tries the other free models on the same key before giving up. Throws a readable message on
+ * failure (bad key, free limit used up everywhere, offline, too slow). The timeout covers all tries together.
  */
 export async function askGemini(
   key: string,
@@ -86,21 +118,46 @@ export async function askGemini(
   schema: object,
   opts: { temperature?: number; timeoutMs?: number } = {},
 ): Promise<string> {
+  const deadline = Date.now() + (opts.timeoutMs ?? 20000);
+  const body = JSON.stringify({
+    contents: [{ role: 'user', parts }],
+    generationConfig: { temperature: opts.temperature ?? 0.4, responseMimeType: 'application/json', responseSchema: schema },
+  });
+  let last: GeminiError | undefined;
+  const order = modelOrder();
+  for (const [i, model] of order.entries()) {
+    const left = deadline - Date.now();
+    if (left < 1000) break;
+    // A model that is slow under load gets most of the time, but leaves some for a backup.
+    const slice = i < order.length - 1 ? Math.round(left * 0.6) : left;
+    try {
+      return await askModel(key, model, body, slice);
+    } catch (e) {
+      if (!(e instanceof GeminiError) || !worthTryingAnother(e.status)) throw e;
+      busyUntil.set(model, Date.now() + COOLDOWN_MS);
+      last = e;
+    }
+  }
+  if (!last || last.status === 408) throw new Error('Gemini took too long, try again');
+  if (last.status === 429) throw new Error('the free limit is used up for now, try again later');
+  if (last.status === 404) throw new Error('Gemini models were not found for this key');
+  throw new Error('Gemini is busy right now, try again in a minute');
+}
+
+async function askModel(key: string, model: string, body: string, timeoutMs: number): Promise<string> {
   const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), opts.timeoutMs ?? 20000);
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
   let res: Response;
   try {
-    res = await fetch(`${URL_BASE}/${MODEL}:generateContent`, {
+    res = await fetch(`${URL_BASE}/${model}:generateContent`, {
       method: 'POST',
       signal: ctrl.signal,
       headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
-      body: JSON.stringify({
-        contents: [{ role: 'user', parts }],
-        generationConfig: { temperature: opts.temperature ?? 0.4, responseMimeType: 'application/json', responseSchema: schema },
-      }),
+      body,
     });
   } catch (e) {
-    throw new Error((e as Error).name === 'AbortError' ? 'Gemini took too long, try again' : 'no connection to Gemini');
+    if ((e as Error).name === 'AbortError') throw new GeminiError('Gemini took too long, try again', 408);
+    throw new Error('no connection to Gemini');
   } finally {
     clearTimeout(timer);
   }
@@ -113,7 +170,7 @@ export async function askGemini(
     }
     if (res.status === 400 && /api key/i.test(msg)) msg = 'the key was not accepted';
     if (res.status === 429) msg = 'the free limit is used up for now, try again later';
-    throw new Error(msg);
+    throw new GeminiError(msg, res.status);
   }
   const data = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
   return data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? '').join('') ?? '';

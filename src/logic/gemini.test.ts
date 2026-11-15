@@ -1,8 +1,8 @@
 import { readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { withExtras } from '../exercises';
 import type { Exercise } from '../types';
-import { buildPrompt, parsePicks } from './gemini';
+import { askGemini, buildPrompt, MODELS, modelOrder, parsePicks, resetBusyModels, worthTryingAnother } from './gemini';
 import { candidatesFor } from './planImport';
 
 const all = withExtras(JSON.parse(readFileSync(new URL('../../public/exercises.json', import.meta.url), 'utf8')) as Exercise[]);
@@ -34,5 +34,48 @@ describe('Gemini double-check', () => {
     const text = JSON.stringify({ picks: [{ row: 1, pick: 'Dips_-_Chest_Version' }, { row: 2, pick: 'Not_A_Real_Id' }, { row: 3, pick: '' }, { row: 9, pick: 'Pushups' }] });
     expect(parsePicks(text, rows)).toEqual(['Dips_-_Chest_Version', undefined, undefined]);
     expect(parsePicks('not json', rows)).toEqual([undefined, undefined, undefined]);
+  });
+});
+
+describe('Gemini backup models', () => {
+  const ok = (text: string) => new Response(JSON.stringify({ candidates: [{ content: { parts: [{ text }] } }] }), { status: 200 });
+  const fail = (status: number) => new Response(JSON.stringify({ error: { message: `status ${status}` } }), { status });
+  const called: string[] = [];
+  const mockFetch = (answers: Response[]) => {
+    called.length = 0;
+    vi.stubGlobal('fetch', async (url: string) => {
+      called.push(url.split('/models/')[1].split(':')[0]);
+      return answers.shift() ?? fail(503);
+    });
+  };
+  beforeEach(() => resetBusyModels());
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('moves on to the next free model when one is overloaded or rate limited', async () => {
+    mockFetch([fail(503), fail(429), ok('{"a":1}')]);
+    expect(await askGemini('k', [], {})).toBe('{"a":1}');
+    expect(called).toEqual(MODELS.slice(0, 3));
+  });
+
+  it('tries a model that was just busy last next time', async () => {
+    mockFetch([fail(503), ok('{}')]);
+    await askGemini('k', [], {});
+    mockFetch([ok('{}')]);
+    await askGemini('k', [], {});
+    expect(called).toEqual([MODELS[1]]);
+    expect(modelOrder().at(-1)).toBe(MODELS[0]);
+  });
+
+  it('does not try other models when the key itself is wrong', async () => {
+    mockFetch([fail(400)]);
+    await expect(askGemini('k', [], {})).rejects.toThrow('status 400');
+    expect(called).toHaveLength(1);
+  });
+
+  it('gives a readable message when every model is busy', async () => {
+    mockFetch([]);
+    await expect(askGemini('k', [], {})).rejects.toThrow('busy');
+    expect(called).toEqual(MODELS);
+    expect(worthTryingAnother(500)).toBe(true);
   });
 });
