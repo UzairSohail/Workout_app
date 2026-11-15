@@ -726,3 +726,14 @@ img.avatar-art { width: 100%; height: 100%; object-fit: cover; }
 .crop-zoom { display: flex; align-items: center; gap: 12px; width: min(320px, 100%); color: var(--muted); font-size: 0.85rem; }
 .crop-zoom input { flex: 1; min-height: 0; padding: 0; accent-color: var(--accent); }
 .crop-modal > button.wide { width: min(320px, 100%); margin-top: 8px; }
+
+/* Screenshot import: progress replaces the upload button while a screenshot is being read. */
+.file-button.disabled { opacity: 0.5; pointer-events: none; }
+.import-progress { display: flex; flex-direction: column; gap: 10px; }
+.import-progress-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.import-pct { font-size: 1.6rem; font-weight: 700; color: var(--accent-2); font-variant-numeric: tabular-nums; }
+.progress-bar { position: relative; height: 10px; border-radius: 999px; background: var(--surface-3); overflow: hidden; }
+.progress-bar span { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 999px; transition: width 0.3s; }
+.progress-bar.indeterminate span { width: 35%; animation: progress-slide 1.2s ease-in-out infinite; }
+@keyframes progress-slide { from { transform: translateX(-100%); } to { transform: translateX(300%); } }
+@media (prefers-reduced-motion: reduce) { .progress-bar.indeterminate span { animation: none; width: 100%; opacity: 0.5; } }
