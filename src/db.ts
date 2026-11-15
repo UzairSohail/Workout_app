@@ -56,6 +56,10 @@ export async function initDb() {
     if (!(await db.settings.get('me'))) await db.settings.put(DEFAULT_SETTINGS);
     await db.programs.bulkPut(BUILT_IN_PROGRAMS);
   });
+  // Plans copied before the import learned to skip Fitbod's "Coach BETA" label were named after it.
+  const coachLabel = (w: Workout) => /coach\s*beta/i.test(w.name);
+  await db.workouts.filter(coachLabel).modify({ name: 'Imported workout' });
+  await db.savedWorkouts.filter(coachLabel).modify({ name: 'Imported workout' });
   // Ask the browser not to evict our data (important on iOS).
   try {
     await navigator.storage?.persist?.();

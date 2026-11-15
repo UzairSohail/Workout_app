@@ -25,7 +25,10 @@ const CHROME = /^(start|begin|resume|log|finish|edit|add|replace|swap|done|cance
 // Header lines such as "6 exercises · 55 min" or "Total volume".
 const SUMMARY = /\bexercises?\b|\bworkout\b|\btotal\b|\bvolume\b|\bcalories\b|\bkcal\b|\bmuscles?\b/i;
 // Labels anywhere on a line that mark it as app text, e.g. Fitbod's "Coach BETA" under its summary blurb.
-const LABEL = /\bcoach\b|\bbeta\b|\bfocus exercise\b|\brounds?\b/i;
+// No exercise name contains "coach" or "beta", so match them even when OCR runs words together ("CoachBETA").
+const LABEL = /coach|beta|focus\s*exercise|\brounds?\b/i;
+// The workout header under a title, e.g. "9 Exercises · 3 Muscles" (not Fitbod's "Focus exercise" tag).
+const HEADER = /\d+\s*exercises?\b/i;
 // A day type named in the plan's own words ("Your push day leans…"), used as the title when there's no header.
 const DAY_NAME = /\b(push|pull|legs?|upper(?: body)?|lower(?: body)?|full body|arms?|chest|back|shoulders?|glutes?|core|abs)(?: and \w+)? day\b/i;
 
@@ -147,7 +150,7 @@ export function parsePlan(text: string): ParsedPlan {
     const name = label ? null : cleanName(line);
     if (!name) {
       // A header like "6 exercises · 55 min" follows the title, so remember the name above it.
-      if (SUMMARY.test(line) && pending.length && !titleFromHeader) {
+      if (HEADER.test(line) && pending.length && !titleFromHeader) {
         titleCandidate = pending[pending.length - 1];
         titleFromHeader = true;
       }
