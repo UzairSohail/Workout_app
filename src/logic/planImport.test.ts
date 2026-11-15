@@ -83,6 +83,17 @@ describe('plan screenshot import', () => {
       .toEqual(['Dumbbell Tricep Extension', 'Cable Rope Tricep Extension', 'Dumbbell Skullcrusher', 'Dip']);
   });
 
+  it('never names the workout after Fitbod\'s Coach label, however OCR spaces it', () => {
+    for (const label of ['CoachBETA', 'Coach BETA', 'bo MM Coach BETA', 'Coach 8ETA']) {
+      const plan = parsePlan(pushDay.replace('Ww LA Coach BETA', label));
+      expect(plan.title).toBe('Push Day');
+      const noDay = parsePlan(pushDay.replace('Your push day', 'Your session').replace('Ww LA Coach BETA', label));
+      expect(noDay.title).toBeUndefined();
+      expect(noDay.rows).toHaveLength(12);
+    }
+    expect(parsePlan(pullDay.replace('bo Coach BETA', 'CoachBETA')).title).toBe('Pull Day');
+  });
+
   it('prefers plan aliases over exercises already in the history', () => {
     const barbell = all.find((e) => e.name === 'Standing Overhead Barbell Triceps Extension')!;
     expect(matchExercise(all, 'Dumbbell Tricep Extension', new Set([barbell.id]))?.name).toBe('Standing Dumbbell Triceps Extension');
