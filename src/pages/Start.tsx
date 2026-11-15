@@ -4,7 +4,7 @@ import { db } from '../db';
 import { exerciseName, useExercises } from '../exercises';
 import { useActiveWorkout } from '../hooks';
 import { startWorkout } from '../logic/session';
-import { CalendarIcon, CameraIcon, ChevronLeft, PlusIcon, SparkIcon, XIcon } from '../components/Icons';
+import { CalendarIcon, ChatIcon, CameraIcon, ChevronLeft, PlusIcon, SparkIcon, XIcon } from '../components/Icons';
 import type { Workout } from '../types';
 import { toast } from '../components/UndoBar';
 
@@ -39,6 +39,12 @@ export function StartPage() {
             <Link className="list-item" to="/programs/generate?mode=today">
               <span className="lead-ico" aria-hidden><SparkIcon /></span>
               <span><strong>Make today's workout for me</strong><small className="muted">Built from your history, sized to the time you have</small></span>
+            </Link>
+          </li>
+          <li>
+            <Link className="list-item" to="/describe">
+              <span className="lead-ico" aria-hidden><ChatIcon /></span>
+              <span><strong>Describe what you want</strong><small className="muted">“45 min, sore shoulders, no barbell”, and the AI coach builds it</small></span>
             </Link>
           </li>
           <li>

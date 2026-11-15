@@ -159,7 +159,7 @@ const SECTIONS = [
   { key: 'rest', icon: <TimerIcon />, group: 'Training', title: 'Rest timer alert', blurb: 'Beep, vibrate or notify when rest is over' },
   { key: 'gym', icon: <DumbbellIcon />, group: 'Training', title: "My gym's equipment", blurb: 'Hide exercises your gym can\'t do' },
   { key: 'plates', icon: <PlateIcon />, group: 'Training', title: 'Plate calculator', blurb: 'Which plates go on each side' },
-  { key: 'ai', icon: <SparkIcon />, group: 'Training', title: 'AI matching', blurb: 'Free Gemini key so plan imports match exactly' },
+  { key: 'ai', icon: <SparkIcon />, group: 'Training', title: 'AI coach', blurb: 'Free Gemini key for coach notes, smarter weights and more' },
   { key: 'theme', icon: <PaletteIcon />, group: 'Appearance', title: 'Theme', blurb: 'Colours for the whole app' },
   { key: 'data', icon: <BoxIcon />, group: 'Data', title: 'Backup and data', blurb: 'Export, import and spreadsheet' },
 ];
@@ -232,7 +232,7 @@ export function SettingsPage() {
                 <li key={x.key}>
                   <Link className="list-item" to={`/settings/${x.key}`}>
                     <span className="ico" aria-hidden>{x.icon}</span>
-                    <span><strong>{x.title}</strong><small className="muted">{x.key === 'account' && account.signedIn ? `Syncing as ${account.email}` : x.key === 'theme' ? themeOf(s.theme).name : x.key === 'ai' && geminiKey() ? 'On: Gemini checks plan imports' : x.key === 'data' && s.lastBackupAt ? `Last backup ${fmtDate(s.lastBackupAt)}` : x.blurb}</small></span>
+                    <span><strong>{x.title}</strong><small className="muted">{x.key === 'account' && account.signedIn ? `Syncing as ${account.email}` : x.key === 'theme' ? themeOf(s.theme).name : x.key === 'ai' && geminiKey() ? 'On: coach notes, tuned weights, check-ins' : x.key === 'data' && s.lastBackupAt ? `Last backup ${fmtDate(s.lastBackupAt)}` : x.blurb}</small></span>
                   </Link>
                 </li>
               ))}

@@ -11,7 +11,8 @@ import { muscleBalance } from '../logic/balance';
 import { MuscleBalance } from '../components/MuscleBalance';
 import { daysAgo, weeklySummary, weekStreaks } from '../logic/progress';
 import { toDisplay } from '../logic/units';
-import { ScaleIcon, TrophyIcon } from '../components/Icons';
+import { ScaleIcon, SparkIcon, TrophyIcon } from '../components/Icons';
+import { savedCheckIn } from './CheckIn';
 
 const shortDate = (t: number) => new Date(t).toLocaleDateString(undefined, { day: 'numeric', month: 'numeric' });
 const compact = (n: number) => (n >= 10000 ? `${Math.round(n / 1000)}k` : n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(Math.round(n)));
@@ -29,6 +30,7 @@ export function ProgressView() {
   const monthAgo = daysAgo(30);
   const recentPrs = bests.filter((b) => b.lastPrAt >= monthAgo).length;
   const weights = useLiveQuery(() => db.bodyWeight.toArray(), []);
+  const checkIn = savedCheckIn();
   const wk = weekStats(weights ?? []);
   const weightLine = wk.thisWeek.avg != null ? `This week avg ${kgText(wk.thisWeek.avg, units)}${wk.thisWeekChange != null ? ` · ${changeText(wk.thisWeekChange, units)} vs last week` : ''}`
     : wk.lastWeek.avg != null ? `Last week avg ${kgText(wk.lastWeek.avg, units)}` : 'Log your weight daily and see the weekly average';
@@ -40,6 +42,14 @@ export function ProgressView() {
         <div><strong>{streak}</strong><small>Week streak</small></div>
         <div><strong>{finished?.length ?? 0}</strong><small>All time</small></div>
       </div>
+
+      <Link className="list-item" to="/checkin">
+        <span className="pr-link-icon" aria-hidden><SparkIcon /></span>
+        <span>
+          <strong>Weekly check-in</strong>
+          <small className="muted">{checkIn ? checkIn.data.headline : 'The AI coach spots stalled lifts and skipped muscles'}</small>
+        </span>
+      </Link>
 
       <Link className="list-item" to="/records">
         <span className="pr-link-icon" aria-hidden><TrophyIcon /></span>

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { db } from '../db';
@@ -10,7 +10,9 @@ import { startWorkout } from '../logic/session';
 import { workoutPrs } from '../logic/records';
 import { recordsFor, sessionPrs, workoutVolume, type PrKind } from '../logic/stats';
 import { compareWorkouts, previousLike, workingSets, type Change } from '../logic/summary';
-import { ChevronLeft, TrophyIcon } from '../components/Icons';
+import { ChevronLeft, SparkIcon, TrophyIcon } from '../components/Icons';
+import { ask, coachNotePrompt, coachOn, NOTE_SCHEMA, parseNote, weightTrend } from '../logic/coach';
+import type { Exercise, Settings, Workout } from '../types';
 import { fmt, fmtWeight, toDisplay } from '../logic/units';
 import { toast } from '../components/UndoBar';
 
@@ -46,12 +48,12 @@ export function WorkoutDetail() {
     return { prs, cmp, kcal, prevKcal };
   }, [w, finished, byId, settings]);
 
+  const justDone = params.get('done') === '1';
+
   if (w === undefined) return <p className="muted">Loading…</p>;
   if (!w) return <p>Workout not found. <Link to="/history">Back to history</Link></p>;
 
   const prCount = [...prsByExercise.values()].flat().filter((p) => p.length > 0).length;
-  const justDone = params.get('done') === '1';
-
   const repeat = async () => {
     await startWorkout({ copyOf: w }, byId);
     navigate('/workout');
@@ -81,6 +83,7 @@ export function WorkoutDetail() {
           <p className="muted small">Your next session will suggest weights based on today.</p>
         </section>
       )}
+      {finished && <CoachNote w={w} finished={finished} byId={byId} settings={settings} auto={justDone} />}
 
       <div className="stats two">
         <div><strong>{w.finishedAt ? fmtDuration(w.finishedAt - w.startedAt) : '–'}</strong><small>Duration</small></div>
@@ -170,4 +173,60 @@ function CompareRow({ label, c, show, neutral = false }: { label: string; c: Cha
       </span>
     </li>
   );
+}
+
+/**
+ * Gemini's short take on the workout. Written once, right after finishing (or on request for older
+ * workouts), and saved on the workout so it syncs and never costs a second call.
+ */
+function CoachNote({ w, finished, byId, settings, auto }: { w: Workout; finished: Workout[]; byId: Map<string, Exercise>; settings: Settings; auto: boolean }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const started = useRef(false);
+  const on = coachOn();
+  const write = async () => {
+    setBusy(true);
+    setError('');
+    try {
+      const weights = await db.bodyWeight.toArray();
+      const prompt = coachNotePrompt(w, finished, byId, settings.units, weightTrend(weights, settings.units, w.startedAt));
+      const note = await ask(prompt, NOTE_SCHEMA, parseNote);
+      if (!note) throw new Error('Gemini sent an empty note');
+      await db.workouts.update(w.id, { coachNote: note });
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+  useEffect(() => {
+    if (!auto || !on || w.coachNote || started.current || !byId.size || !w.finishedAt) return;
+    started.current = true;
+    write();
+  }, [auto, on, w.coachNote, byId.size]);
+
+  if (w.coachNote) {
+    return (
+      <section className="card coach-note">
+        <h2 className="row" style={{ gap: 8 }}><span className="lead-ico small" aria-hidden><SparkIcon /></span>Coach note</h2>
+        <p style={{ margin: 0 }}>{w.coachNote}</p>
+      </section>
+    );
+  }
+  if (!w.finishedAt) return null;
+  if (!on) {
+    return auto ? (
+      <p className="muted small">Want a short coach note after each workout? <Link to="/settings/ai">Turn on the AI coach</Link> (free).</p>
+    ) : null;
+  }
+  if (busy) return <section className="card coach-note"><p className="muted" style={{ margin: 0 }}>Your coach is reading the workout…</p></section>;
+  if (error) {
+    return (
+      <section className="card coach-note">
+        <p className="muted small" style={{ margin: 0 }}>No coach note: {error}.</p>
+        <button className="secondary" onClick={write}>Try again</button>
+      </section>
+    );
+  }
+  return <button className="secondary wide" onClick={write}><SparkIcon />Get a coach note</button>;
 }

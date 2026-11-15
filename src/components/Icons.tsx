@@ -16,6 +16,7 @@ export const SlidersIcon = () => (
 /** Kept for older imports; the tab bar uses SlidersIcon. */
 export const GearIcon = SlidersIcon;
 export const PlusIcon = () => <Svg><path d="M12 5v14M5 12h14" /></Svg>;
+export const ChatIcon = () => <Svg><path d="M4 5h16v11H9l-5 4z" /><path d="M8 9.5h8M8 12.5h5" /></Svg>;
 export const SparkIcon = () => <Svg><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z" /></Svg>;
 export const ScaleIcon = () => <Svg><rect x="3" y="3" width="18" height="18" rx="4" /><path d="M8.5 9a5 5 0 0 1 7 0l-2 2.5h-3z" /></Svg>;
 export const FlameIcon = () => <Svg><path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2 1-3.5 2-4.5.3 1.5 1 2.5 2 2.5 0-3 0-5.5 1-8z" /></Svg>;
