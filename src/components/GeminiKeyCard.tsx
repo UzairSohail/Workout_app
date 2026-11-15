@@ -20,7 +20,8 @@ export function GeminiKeyCard() {
         <p className="muted small">
           With a free key from Google's Gemini, the app adds a short coach note after each workout, fine-tunes your
           weights from how your last sessions felt, builds a workout from a sentence, explains swaps, and does a weekly
-          check-in. It also double-checks plans copied from screenshots. Without a key, everything works as before.
+          check-in. It also double-checks plans copied from screenshots. If one Gemini model is busy, the same key tries
+          Google's other free models. Without a key, everything works as before.
         </p>
         <ol className="muted small">
           <li>Open <a href="https://aistudio.google.com/apikey" target="_blank" rel="noreferrer">Google AI Studio</a> and sign in with a Google account.</li>
