@@ -472,10 +472,10 @@ a.list-item::after, button.list-item::after {
 .mini-bars { display: flex; align-items: flex-end; gap: 5px; height: 26px; }
 .mini-bars span { flex: 1; border-radius: 3px; background: var(--bar-dim); min-height: 3px; }
 .mini-bars span:last-child { background: var(--accent); }
-.quick { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.quick { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 .quick a, .quick button {
   display: flex; flex-direction: column; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border);
-  border-radius: 18px; padding: 14px 6px; color: var(--text); font-size: 0.75rem; font-weight: 500; min-height: 0; text-align: center;
+  border-radius: 18px; padding: 14px 4px; color: var(--text); font-size: 0.75rem; font-weight: 500; min-height: 0; text-align: center;
 }
 .quick .ico { color: var(--accent-2); display: grid; place-items: center; }
 .quick .ico svg { width: 22px; height: 22px; }

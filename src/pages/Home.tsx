@@ -16,7 +16,7 @@ import { changeText, weekStats } from '../components/WeightSummary';
 import { AvatarFace, hasArt } from '../components/Avatar';
 import { InstallTip } from '../components/InstallTip';
 import { ExerciseImage } from '../components/ExerciseImage';
-import { BoxIcon, FlameIcon, MoonIcon, MoreIcon, PlayIcon, PlusIcon, ScaleIcon, SparkIcon } from '../components/Icons';
+import { BoxIcon, CameraIcon, FlameIcon, MoonIcon, MoreIcon, PlayIcon, PlusIcon, ScaleIcon, SparkIcon } from '../components/Icons';
 import { muscleBalance } from '../logic/balance';
 import { deloadActive, deloadDue, DELOAD_AFTER_WEEKS } from '../logic/deload';
 import { fresherDay, recentLoad, recoveryNote, tiredGroups } from '../logic/recovery';
@@ -273,6 +273,7 @@ export function Home() {
       {!active && (
         <nav className="quick" aria-label="Other ways to train">
           <Link to="/programs/generate?mode=today"><span className="ico"><SparkIcon /></span>Build for today</Link>
+          <Link to="/import"><span className="ico"><CameraIcon /></span>From screenshot</Link>
           <button onClick={() => start({})}><span className="ico"><PlusIcon /></span>Empty workout</button>
           <Link to="/start"><span className="ico"><MoreIcon /></span>More ways</Link>
         </nav>
