@@ -852,6 +852,11 @@ export const ALIASES: Record<string, string[]> = {
   'Barbell_Incline_Bench_Press_-_Medium_Grip': ['incline bench press', 'incline barbell bench press'],
   Side_Lateral_Raise: ['lateral raise', 'dumbbell lateral raise', 'side raise'],
   Barbell_Deadlift: ['deadlift', 'conventional deadlift'],
+  // Names from the wger exercise list (wger.de) for exercises the app already has.
+  x_B_Stance_Romanian_Deadlift: ['kickstand rdl', 'kickstand romanian deadlift'],
+  x_Clamshell: ['banded clamshell'],
+  Cat_Stretch: ['cat cow', 'cat-cow'],
+  Overhead_Slam: ['ball slam', 'medicine ball slam'],
 };
 
 /**

@@ -240,7 +240,7 @@ export function SettingsPage() {
           </section>
         ))}
         <p className="muted small credit">
-          Exercise images and instructions from free-exercise-db (public domain). This app is free and has no ads.
+          Exercise images and instructions from free-exercise-db (public domain). Some exercise names come from the wger list (wger.de). This app is free and has no ads.
         </p>
       </>
     );
