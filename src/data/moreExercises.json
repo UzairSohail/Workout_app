@@ -6762,28 +6762,6 @@
   ]
  },
  {
-  "name": "One-Arm Push-Up",
-  "equipment": "body only",
-  "mechanic": "compound",
-  "primary": [
-   "chest"
-  ],
-  "secondary": [
-   "triceps",
-   "shoulders",
-   "abdominals"
-  ],
-  "instructions": [
-   "Set up in a push-up position with your feet wide and one hand under your chest. Put the other hand behind your back.",
-   "Lower your chest towards the floor, keeping your hips square and your body straight.",
-   "Push back up. Finish all reps, then switch arms."
-  ],
-  "aliases": [
-   "single arm push up",
-   "one handed push up"
-  ]
- },
- {
   "name": "Push-Up with Rotation",
   "equipment": "body only",
   "mechanic": "compound",
@@ -6826,28 +6804,6 @@
   "similarTo": "Bent Over Two-Dumbbell Row",
   "aliases": [
    "standing chest supported row"
-  ]
- },
- {
-  "name": "Cable Pullover",
-  "equipment": "cable",
-  "mechanic": "isolation",
-  "primary": [
-   "lats"
-  ],
-  "secondary": [
-   "chest",
-   "triceps"
-  ],
-  "instructions": [
-   "Attach a rope or straight bar to a high cable. Step back, hinge forward slightly and hold it overhead with your arms nearly straight.",
-   "Pull the handle down in an arc until your hands reach your thighs, keeping your elbows only slightly bent.",
-   "Squeeze your lats, then let your arms rise back up slowly."
-  ],
-  "similarTo": "Straight-Arm Pulldown",
-  "aliases": [
-   "rope pullover",
-   "standing cable pullover"
   ]
  },
  {
@@ -7090,28 +7046,6 @@
   ]
  },
  {
-  "name": "Single-Leg Leg Press (Plate-Loaded)",
-  "equipment": "machine",
-  "mechanic": "compound",
-  "primary": [
-   "quadriceps"
-  ],
-  "secondary": [
-   "glutes",
-   "hamstrings"
-  ],
-  "instructions": [
-   "Sit in the plate-loaded leg press and put one foot in the middle of the platform.",
-   "Release the safeties and lower the platform until your knee is bent about 90 degrees.",
-   "Press back up without locking your knee. Finish all reps, then switch legs."
-  ],
-  "similarTo": "Leg Press",
-  "aliases": [
-   "single leg leg press",
-   "one leg leg press"
-  ]
- },
- {
   "name": "Kas Glute Bridge",
   "equipment": "barbell",
   "mechanic": "isolation",
@@ -7210,26 +7144,6 @@
   "aliases": [
    "tuck l sit",
    "tucked l-sit"
-  ]
- },
- {
-  "name": "Frog Stand",
-  "equipment": "body only",
-  "mechanic": "isolation",
-  "primary": [
-   "shoulders"
-  ],
-  "secondary": [
-   "abdominals",
-   "forearms"
-  ],
-  "instructions": [
-   "Squat down and put your hands on the floor shoulder-width apart, with your knees resting on the backs of your upper arms.",
-   "Lean forward slowly until your feet lift off the floor and you balance on your hands.",
-   "Hold for time, looking slightly ahead. It is the first step towards a handstand."
-  ],
-  "aliases": [
-   "crow pose"
   ]
  },
  {
