@@ -25,15 +25,31 @@ describe('Gemini double-check', () => {
     expect(p).toContain('Dips_-_Triceps_Version: Dips - Triceps Version (body only)');
   });
 
+  it('offers versions with the equipment the plan names first', () => {
+    const list = candidatesFor(all, 'Dumbbell Bench Press');
+    const gear = list.map((e) => e.equipment === 'dumbbell');
+    expect(gear.slice(0, 3)).toEqual([true, true, true]);
+    // Once another kind of equipment shows up, no dumbbell version comes after it.
+    expect(gear.slice(gear.indexOf(false) >>> 0)).not.toContain(true);
+    const curl = candidatesFor(all, 'Barbell Curl');
+    expect(curl[0].equipment).toBe('barbell');
+    expect(buildPrompt([{ name: 'Dumbbell Bench Press', candidates: list }])).toMatch(/equipment is binding/);
+  });
+
   it('keeps only picks from the offered list', () => {
     const rows = [
       { name: 'Dip', candidates: candidatesFor(all, 'Dip') },
       { name: 'Push Up', candidates: candidatesFor(all, 'Push Up') },
       { name: 'Hanging Leg Raise', candidates: candidatesFor(all, 'Hanging Leg Raise') },
     ];
-    const text = JSON.stringify({ picks: [{ row: 1, pick: 'Dips_-_Chest_Version' }, { row: 2, pick: 'Not_A_Real_Id' }, { row: 3, pick: '' }, { row: 9, pick: 'Pushups' }] });
-    expect(parsePicks(text, rows)).toEqual(['Dips_-_Chest_Version', undefined, undefined]);
-    expect(parsePicks('not json', rows)).toEqual([undefined, undefined, undefined]);
+    const text = JSON.stringify({ picks: [
+      { row: 1, equipment: 'bodyweight', pick: 'Dips_-_Chest_Version' },
+      { row: 2, equipment: 'other', pick: 'Not_A_Real_Id' },
+      { row: 3, pick: '' },
+      { row: 9, pick: 'Pushups' },
+    ] });
+    expect(parsePicks(text, rows)).toEqual([{ id: 'Dips_-_Chest_Version', gear: 'body only' }, {}, {}]);
+    expect(parsePicks('not json', rows)).toEqual([{}, {}, {}]);
   });
 });
 

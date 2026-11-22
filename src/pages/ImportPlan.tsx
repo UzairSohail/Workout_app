@@ -5,7 +5,7 @@ import { ExercisePicker } from '../components/ExercisePicker';
 import { NumInput } from '../components/NumInput';
 import { exerciseName, useExercises } from '../exercises';
 import { useActiveWorkout, useFinished, useSettings } from '../hooks';
-import { candidatesFor, matchExercise, parsePlan, type PlanRow } from '../logic/planImport';
+import { candidatesFor, matchExercise, parsePlan, settlePick, type PlanRow } from '../logic/planImport';
 import { geminiKey, pickWithGemini } from '../logic/gemini';
 import { historyFor, startWorkout, suggestionFor } from '../logic/session';
 import { fmtWeight } from '../logic/units';
@@ -56,7 +56,11 @@ export function ImportPlan() {
         setStatus('checking');
         try {
           const picks = await pickWithGemini(key, files, next.map((r) => ({ name: r.name, candidates: candidatesFor(all, r.name, used) })));
-          next = next.map((r, i) => (picks[i] && picks[i] !== r.exerciseId ? { ...r, exerciseId: picks[i], byGemini: true } : r));
+          // The equipment in the name (or, failing that, in the photo) is binding over Gemini's pick.
+          next = next.map((r, i) => {
+            const id = settlePick(all, r.name, r.exerciseId ? byId.get(r.exerciseId) : undefined, picks[i].id ? byId.get(picks[i].id!) : undefined, picks[i].gear, used)?.id;
+            return id && id !== r.exerciseId ? { ...r, exerciseId: id, byGemini: true } : r;
+          });
           const changed = next.filter((r) => r.byGemini).length;
           setAiNote(changed ? `Gemini changed ${changed} of ${next.length} after looking at the photos.` : 'Gemini agreed with every match.');
         } catch (e) {

@@ -179,12 +179,44 @@ const words = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim().
 // "… (Plate-Loaded)" or "Machine …", so they count as the same thing when matching.
 const MACHINE_WORDS = new Set(['machine', 'plate', 'loaded', 'pin', 'selectorized', 'lever', 'leverage', 'stack']);
 const EQUIPMENT_WORDS = new Set([...MACHINE_WORDS, 'dumbbell', 'barbell', 'cable', 'kettlebell', 'band', 'smith', 'ez', 'bar', 'db', 'bb', 'kb']);
-const GEAR_OF: Record<string, string> = { dumbbell: 'dumbbell', db: 'dumbbell', barbell: 'barbell', bb: 'barbell', cable: 'cable', kettlebell: 'kettlebells', kb: 'kettlebells' };
 const COMMON_GEAR = new Set(['barbell', 'dumbbell', 'cable', 'machine', 'body only', 'e-z curl bar', 'kettlebells']);
 const stemWord = (w: string) => {
   if (/^fl(y|ie|ye)s?$/.test(w)) return 'fly';
   return w.length > 3 && w.endsWith('s') && !w.endsWith('ss') ? w.slice(0, -1) : w;
 };
+
+/**
+ * Equipment the plan states, as the library's own equipment names. 'smith' is a Smith machine (a 'machine'
+ * in the library whose name says Smith). Checked most specific first, so "Smith Machine Squat" is a Smith
+ * squat and "EZ Bar Curl" an EZ-bar curl rather than a barbell one.
+ */
+const GEAR_WORDS: [string, RegExp][] = [
+  ['smith', /\bsmith\b/],
+  ['e-z curl bar', /\bez\b|\be z\b/],
+  ['kettlebells', /\bkettlebells?\b|\bkb\b/],
+  ['dumbbell', /\bdumbbells?\b|\bdb\b/],
+  ['barbell', /\bbarbells?\b|\bbb\b/],
+  ['cable', /\bcables?\b/],
+  ['bands', /\b(resistance )?bands?\b/],
+  ['machine', /\b(machine|plate loaded|pin loaded|selectorized|lever|leverage)\b/],
+];
+
+/** The equipment a plan's exercise name states ("Dumbbell Bench Press" -> 'dumbbell'), if any. */
+export function gearIn(name: string): string | undefined {
+  const s = words(name).join(' ');
+  return GEAR_WORDS.find(([, re]) => re.test(s))?.[0];
+}
+
+/** Whether an exercise uses the given equipment, by its equipment type or by what its name says. */
+export function fitsGear(e: Exercise, gear: string): boolean {
+  const s = words(e.name).join(' ');
+  const said = (g: string) => GEAR_WORDS.find(([k]) => k === g)?.[1].test(s) ?? false;
+  if (gear === 'smith') return said('smith');
+  // A Smith machine bar is not a free barbell, and an EZ bar is not a straight one.
+  if (gear === 'barbell') return (e.equipment === 'barbell' || said('barbell')) && !said('smith') && !said('e-z curl bar');
+  if (gear === 'machine') return e.equipment === 'machine' || said('machine') || said('smith');
+  return e.equipment === gear || said(gear);
+}
 
 /**
  * Finds the catalog exercise for a name read off a screenshot. In order:
@@ -195,7 +227,23 @@ const stemWord = (w: string) => {
  *  4. fuzzy word overlap, so names worded differently or small OCR slips still land somewhere sensible.
  * `used` holds exercise ids from the user's history, preferred when several fit equally well.
  */
-export function matchExercise(all: Exercise[], name: string, used?: ReadonlySet<string>): Exercise | undefined {
+export function matchExercise(all: Exercise[], name: string, used?: ReadonlySet<string>, gear = gearIn(name)): Exercise | undefined {
+  const found = looseMatch(all, name, used);
+  // The equipment the plan states is binding: a dumbbell press never becomes a barbell one when the
+  // library has a dumbbell version. Only when it has none does the closest other version stand.
+  if (!gear || !found || fitsGear(found, gear)) return found;
+  return gearMatch(all, name, gear, used) ?? found;
+}
+
+/** The best match among exercises with the given equipment only, or undefined when none fits. */
+export function gearMatch(all: Exercise[], name: string, gear: string, used?: ReadonlySet<string>): Exercise | undefined {
+  const pool = all.filter((e) => fitsGear(e, gear));
+  const w = words(name);
+  const core = w.filter((x) => !EQUIPMENT_WORDS.has(x)).join(' ');
+  return looseMatch(pool, name, used) ?? (core && core !== w.join(' ') ? looseMatch(pool, core, used) : undefined);
+}
+
+function looseMatch(all: Exercise[], name: string, used?: ReadonlySet<string>): Exercise | undefined {
   // OCR can leave an icon fragment in front of the name ("Fl Seated Dumbbell Curl"), so also try without it.
   // Only short scraps are dropped, never a real word like "Machine" in "Machine Calf Raise".
   const tokens = name.split(' ');
@@ -230,14 +278,15 @@ function searchMatch(all: Exercise[], name: string, used?: ReadonlySet<string>, 
   const qw = words(name);
   const q = new Set(qw.map(stemWord));
   const wantsMachine = machine || qw.some((w) => MACHINE_WORDS.has(w));
-  const wantsGear = qw.map((w) => GEAR_OF[w]).find(Boolean);
+  const wantsGear = gearIn(name);
   // Fewest words the plan didn't mention (loading words don't count), so "Lat Pulldown" doesn't land on
   // a niche variation; gear the plan named wins; bands and odd gear only when nothing else fits;
   // exercises already in the history win ties.
   const extra = (e: Exercise) =>
     Math.min(...[e.name, ...(e.aliases ?? [])].map((n) => words(n).map(stemWord).filter((w) => !q.has(w) && !MACHINE_WORDS.has(w)).length)) +
     (wantsMachine && e.equipment !== 'machine' ? 1 : 0) +
-    (wantsGear && e.equipment !== wantsGear ? 1 : 0) +
+    // Other equipment than the plan named only when nothing with that equipment came up at all.
+    (wantsGear && !fitsGear(e, wantsGear) ? 10 : 0) +
     (COMMON_GEAR.has(e.equipment) || e.custom ? 0 : 1) -
     (used?.has(e.id) ? 0.5 : 0);
   const top = found.slice(0, 30);
@@ -298,5 +347,33 @@ export function candidatesFor(all: Exercise[], name: string, used?: ReadonlySet<
     .filter((s) => s.score > 0)
     .sort((a, b) => b.score - a.score);
   add(scored.map((s) => s.e), n);
-  return out.slice(0, n);
+  // Versions with the equipment the plan names go first, so they make the list and are read first.
+  const gear = gearIn(name);
+  if (!gear) return out.slice(0, n);
+  const fit = out.filter((e) => fitsGear(e, gear));
+  return [...fit, ...out.filter((e) => !fit.includes(e))].slice(0, n);
+}
+
+const PHOTO_GEAR = new Set(['dumbbell', 'barbell', 'e-z curl bar', 'kettlebells']);
+
+/**
+ * Settles one row after Gemini's look at the screenshot. The equipment the name states is binding, and
+ * otherwise the free weights Gemini saw in the photo are: a pick with other equipment is swapped for the
+ * best version with the right equipment when the library has one. Gemini's pick stands when it fits
+ * (or nothing fits), and the app's own match when Gemini gave no pick.
+ */
+export function settlePick(
+  all: Exercise[],
+  name: string,
+  local: Exercise | undefined,
+  pick: Exercise | undefined,
+  seenGear?: string,
+  used?: ReadonlySet<string>,
+): Exercise | undefined {
+  // From the photo alone only free weights count: a cable station and a machine look alike, a Smith bar and a barbell too.
+  const gear = gearIn(name) ?? (seenGear && PHOTO_GEAR.has(seenGear) ? seenGear : undefined);
+  const choice = pick ?? local;
+  if (!gear || !choice || fitsGear(choice, gear)) return choice;
+  if (local && fitsGear(local, gear)) return local;
+  return gearMatch(all, name, gear, used) ?? choice;
 }
