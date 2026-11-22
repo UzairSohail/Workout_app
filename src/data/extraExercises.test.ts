@@ -52,6 +52,10 @@ describe('extra exercises', () => {
     expect(find('rdl')).toContain('Romanian Deadlift');
     expect(find('pull up')).toContain('Assisted Pull-Up');
     expect(find('hip abduction')).toContain('Machine Hip Abduction');
+    expect(find('press around')).toContain('Cable Press Around');
+    expect(find('kickstand rdl')).toContain('B-Stance Romanian Deadlift');
+    expect(find('silverback shrug')).toContain('Silverback Shrug');
+    expect(find('cat cow')).toContain('Cat Stretch');
   });
   it('match equipment words, plurals and gym shorthand', () => {
     const find = (q: string) => filterExercises(all, q, '', '', false).map((e) => e.name);

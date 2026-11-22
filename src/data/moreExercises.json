@@ -2653,7 +2653,9 @@
   ],
   "similarTo": "Chin-Up",
   "aliases": [
-   "bent arm hang"
+   "bent arm hang",
+   "pull up hold",
+   "isometric pull up"
   ]
  },
  {
@@ -6691,5 +6693,479 @@
    "Walk forward with short steps for the set distance, then set it back down."
   ],
   "category": "strongman"
+ },
+ {
+  "name": "Cable Press Around",
+  "equipment": "cable",
+  "mechanic": "isolation",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "shoulders",
+   "triceps"
+  ],
+  "instructions": [
+   "Set a cable at chest height, stand side-on to the stack and hold the handle in the far hand with your arm bent behind your body.",
+   "Press the handle around and across the front of your chest until your arm is straight and your hand is past the middle of your body.",
+   "Squeeze your chest at the end, then let the handle come back slowly. Finish all reps, then switch sides."
+  ],
+  "aliases": [
+   "press around",
+   "cable press-around"
+  ]
+ },
+ {
+  "name": "Reverse-Grip Bench Press",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders"
+  ],
+  "instructions": [
+   "Lie on a flat bench and take the bar with an underhand grip, hands a little wider than your shoulders. Use a spotter.",
+   "Unrack and lower the bar to your lower chest, keeping your elbows close to your sides.",
+   "Press back up until your arms are straight. Keep a firm grip the whole set."
+  ],
+  "similarTo": "Barbell Bench Press - Medium Grip",
+  "aliases": [
+   "reverse grip bench",
+   "underhand bench press",
+   "supinated bench press"
+  ]
+ },
+ {
+  "name": "Clap Push-Up",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders"
+  ],
+  "instructions": [
+   "Start in a push-up position with your hands just wider than your shoulders.",
+   "Lower your chest towards the floor, then push up hard enough for your hands to leave the floor.",
+   "Clap quickly, put your hands back down and land softly with your elbows slightly bent."
+  ],
+  "category": "plyometrics",
+  "similarTo": "Plyo Push-up",
+  "aliases": [
+   "clapping push up",
+   "plyometric push up"
+  ]
+ },
+ {
+  "name": "Push-Up with Rotation",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "shoulders",
+   "triceps",
+   "abdominals"
+  ],
+  "instructions": [
+   "Do a normal push-up.",
+   "At the top, turn your body to one side and lift that arm towards the ceiling so you finish in a side plank.",
+   "Return to the push-up position and repeat, turning to the other side."
+  ],
+  "aliases": [
+   "t push up",
+   "push up rotation",
+   "rotating push up"
+  ]
+ },
+ {
+  "name": "Helms Row",
+  "equipment": "dumbbell",
+  "mechanic": "compound",
+  "primary": [
+   "middle back"
+  ],
+  "secondary": [
+   "lats",
+   "biceps",
+   "shoulders"
+  ],
+  "instructions": [
+   "Set a bench to a steep incline and stand behind it, leaning forward so your chest rests lightly on the top of the pad.",
+   "Hold a dumbbell in each hand with your arms hanging straight down.",
+   "Row the dumbbells up and back, squeezing your shoulder blades together, then lower them slowly. Keep your chest on the pad without pushing into it."
+  ],
+  "similarTo": "Bent Over Two-Dumbbell Row",
+  "aliases": [
+   "standing chest supported row"
+  ]
+ },
+ {
+  "name": "Single-Arm Cross-Body Lat Pulldown",
+  "equipment": "cable",
+  "mechanic": "compound",
+  "primary": [
+   "lats"
+  ],
+  "secondary": [
+   "biceps",
+   "middle back"
+  ],
+  "instructions": [
+   "Set a single handle on a high cable. Kneel or sit facing the stack and take the handle with the opposite hand, so your arm reaches across your body.",
+   "Pull your elbow down and out to your side until your hand is beside your shoulder.",
+   "Let the arm return slowly across your body for a full stretch. Finish all reps, then switch sides."
+  ],
+  "aliases": [
+   "cross body lat pulldown",
+   "crossbody pulldown"
+  ]
+ },
+ {
+  "name": "Typewriter Pull-Up",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "lats"
+  ],
+  "secondary": [
+   "biceps",
+   "middle back"
+  ],
+  "instructions": [
+   "Hang from a pull-up bar with a wide overhand grip.",
+   "Pull up towards one hand until your chin is near the bar, then slide your body across to the other hand while staying up.",
+   "Lower down from that side. Alternate the side you pull to first."
+  ],
+  "aliases": [
+   "typewriter pull ups"
+  ]
+ },
+ {
+  "name": "Ice Cream Maker",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "lats"
+  ],
+  "secondary": [
+   "abdominals",
+   "shoulders"
+  ],
+  "instructions": [
+   "Hang from a pull-up bar with your arms straight.",
+   "Pull your body up, then lean back and swing your legs up until your body is horizontal under the bar, like a front lever.",
+   "Swing back down into a pull-up position and lower under control."
+  ],
+  "category": "strength"
+ },
+ {
+  "name": "Reverse Snow Angel",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "middle back"
+  ],
+  "secondary": [
+   "shoulders",
+   "lower back"
+  ],
+  "instructions": [
+   "Lie face down with your arms at your sides, palms down, and lift your chest and hands slightly off the floor.",
+   "Sweep your arms out to the sides and up over your head, keeping them just off the floor.",
+   "Sweep them back down to your sides. Keep your neck long and move slowly."
+  ],
+  "aliases": [
+   "prone snow angel"
+  ]
+ },
+ {
+  "name": "Trap-3 Raise",
+  "equipment": "dumbbell",
+  "mechanic": "isolation",
+  "primary": [
+   "traps"
+  ],
+  "secondary": [
+   "shoulders"
+  ],
+  "instructions": [
+   "Lean forward over an incline bench or brace one hand on a bench, holding a light dumbbell with the other arm hanging down.",
+   "Raise your straight arm up and forward at an angle, thumb up, in line with your body, until it is level with your ear.",
+   "Lower slowly. This trains the lower traps, so keep the weight light and do not shrug."
+  ],
+  "aliases": [
+   "trap 3 raise",
+   "lower trap raise",
+   "y raise one arm"
+  ]
+ },
+ {
+  "name": "Cable Shrug-In",
+  "equipment": "cable",
+  "mechanic": "isolation",
+  "primary": [
+   "traps"
+  ],
+  "secondary": [
+   "middle back"
+  ],
+  "instructions": [
+   "Stand between two low cables, holding a handle in each hand with the cables crossing in front of you.",
+   "Shrug your shoulders straight up and slightly back towards your ears.",
+   "Hold for a moment at the top, then lower slowly."
+  ],
+  "similarTo": "Cable Shrugs",
+  "aliases": [
+   "shrug in",
+   "cable shrug in"
+  ]
+ },
+ {
+  "name": "Silverback Shrug",
+  "equipment": "barbell",
+  "mechanic": "isolation",
+  "primary": [
+   "traps"
+  ],
+  "secondary": [
+   "middle back"
+  ],
+  "instructions": [
+   "Hold a barbell with your hands a little wider than your shoulders and lean your torso forward slightly.",
+   "Shrug your shoulders up and back at the same time, squeezing your shoulder blades together.",
+   "Pause, then lower the bar slowly."
+  ],
+  "similarTo": "Barbell Shrug",
+  "aliases": [
+   "silverback shrugs"
+  ]
+ },
+ {
+  "name": "Floor Skull Crusher",
+  "equipment": "e-z curl bar",
+  "mechanic": "isolation",
+  "primary": [
+   "triceps"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Lie on the floor holding an EZ bar over your chest with your arms straight and a narrow grip.",
+   "Bend your elbows to lower the bar towards your forehead until your upper arms touch the floor.",
+   "Straighten your arms to press the bar back up. The floor stops each rep at the same depth."
+  ],
+  "similarTo": "EZ-Bar Skullcrusher",
+  "aliases": [
+   "floor skullcrusher",
+   "floor lying triceps extension"
+  ]
+ },
+ {
+  "name": "Incline Skull Crusher",
+  "equipment": "e-z curl bar",
+  "mechanic": "isolation",
+  "primary": [
+   "triceps"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Lie on a bench set to a low incline, holding an EZ bar over your face with your arms straight.",
+   "Bend your elbows to lower the bar behind your head, keeping your upper arms still.",
+   "Straighten your arms to bring the bar back up. The incline gives the triceps long head a bigger stretch."
+  ],
+  "similarTo": "EZ-Bar Skullcrusher",
+  "aliases": [
+   "incline skullcrusher",
+   "incline lying triceps extension"
+  ]
+ },
+ {
+  "name": "Prisoner Squat",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "glutes",
+   "hamstrings"
+  ],
+  "instructions": [
+   "Stand with your feet shoulder-width apart and your hands behind your head, elbows wide.",
+   "Squat down until your thighs are at least parallel to the floor, keeping your chest up.",
+   "Drive through your whole foot to stand back up."
+  ],
+  "similarTo": "Bodyweight Squat",
+  "aliases": [
+   "bodyweight squat hands behind head"
+  ]
+ },
+ {
+  "name": "Cable Split Squat",
+  "equipment": "cable",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "glutes",
+   "hamstrings"
+  ],
+  "instructions": [
+   "Hold a handle from a low cable in each hand, or one handle at your chest, and take a long stride into a split stance.",
+   "Lower straight down until your back knee nearly touches the floor.",
+   "Push through your front foot to rise. Finish all reps, then switch legs."
+  ],
+  "similarTo": "Split Squat with Dumbbells"
+ },
+ {
+  "name": "Cable Reverse Lunge",
+  "equipment": "cable",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "glutes",
+   "hamstrings"
+  ],
+  "instructions": [
+   "Stand facing a low cable, holding a handle at your chest or in each hand.",
+   "Step one foot back and lower until both knees are bent about 90 degrees.",
+   "Push through your front foot to step back to standing. Alternate legs or finish one side first."
+  ],
+  "similarTo": "Dumbbell Rear Lunge",
+  "aliases": [
+   "cable lunge"
+  ]
+ },
+ {
+  "name": "Kas Glute Bridge",
+  "equipment": "barbell",
+  "mechanic": "isolation",
+  "primary": [
+   "glutes"
+  ],
+  "secondary": [
+   "hamstrings"
+  ],
+  "instructions": [
+   "Sit with your upper back against a bench and a padded barbell across your hips, feet flat.",
+   "Lift your hips until your torso and thighs are level, using a short range so the glutes stay under tension.",
+   "Lower only a few inches before the next rep. Keep your chin tucked and ribs down."
+  ],
+  "similarTo": "Barbell Glute Bridge",
+  "aliases": [
+   "kas bridge",
+   "kas hip thrust"
+  ]
+ },
+ {
+  "name": "Hip Airplane",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "glutes"
+  ],
+  "secondary": [
+   "abductors",
+   "hamstrings"
+  ],
+  "instructions": [
+   "Stand on one leg and hinge forward until your torso is near level, holding something for balance if you need to.",
+   "Rotate your hips and torso open towards the side of your raised leg, then turn them back down towards the standing leg.",
+   "Move slowly with control. Finish all reps, then switch legs."
+  ],
+  "aliases": [
+   "hip airplanes"
+  ]
+ },
+ {
+  "name": "Toe Taps",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Lie on your back with your hips and knees bent 90 degrees and your lower back pressed into the floor.",
+   "Lower one foot to tap the floor while keeping the knee bent, then bring it back up.",
+   "Alternate legs. Keep your lower back flat the whole time."
+  ],
+  "aliases": [
+   "lying toe taps",
+   "dead bug toe taps"
+  ]
+ },
+ {
+  "name": "Plank with Leg Lift",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "glutes",
+   "lower back"
+  ],
+  "instructions": [
+   "Hold a forearm plank with your body straight from head to heels.",
+   "Lift one leg a few inches, keeping your hips level, and hold for a second.",
+   "Lower it and lift the other leg. Do not let your hips twist or sag."
+  ],
+  "aliases": [
+   "plank leg raise",
+   "plank leg lift"
+  ]
+ },
+ {
+  "name": "Tuck L-Sit",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders"
+  ],
+  "instructions": [
+   "Sit between parallettes or dip bars and press up so your arms are straight and your shoulders are pushed down.",
+   "Lift your knees to your chest so your feet leave the ground.",
+   "Hold for time while keeping your arms locked."
+  ],
+  "aliases": [
+   "tuck l sit",
+   "tucked l-sit"
+  ]
+ },
+ {
+  "name": "Butcher's Block Stretch",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "lats"
+  ],
+  "secondary": [
+   "triceps",
+   "chest"
+  ],
+  "instructions": [
+   "Kneel in front of a bench and rest your elbows on it, holding a dowel or with your palms together.",
+   "Sit your hips back and let your chest sink towards the floor while bending your elbows so your hands go behind your head.",
+   "Breathe and hold for 30 to 60 seconds."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "butchers block stretch",
+   "bench lat stretch"
+  ]
  }
 ]
