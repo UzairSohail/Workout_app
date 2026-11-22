@@ -48,13 +48,37 @@ async function toBase64(file: Blob): Promise<string> {
   return btoa(s);
 }
 
+/** Equipment Gemini can report for a row, and the library equipment each one means. */
+export const GEMINI_GEAR: Record<string, string | undefined> = {
+  dumbbell: 'dumbbell',
+  barbell: 'barbell',
+  'ez bar': 'e-z curl bar',
+  'smith machine': 'smith',
+  cable: 'cable',
+  machine: 'machine',
+  kettlebell: 'kettlebells',
+  band: 'bands',
+  bodyweight: 'body only',
+  other: undefined,
+};
+
+export interface GeminiPick {
+  /** The chosen exercise id, only when it is on that row's list. */
+  id?: string;
+  /** The equipment Gemini read for the row, as a library equipment name ('smith' for a Smith machine). */
+  gear?: string;
+}
+
 export function buildPrompt(rows: PickRequest[]): string {
   const list = rows.map((r, i) =>
     `${i + 1}. "${r.name}"\n${r.candidates.map((c) => `   - ${c.id}: ${c.name} (${c.equipment})`).join('\n')}`,
   ).join('\n');
   return [
     'These screenshots show a workout plan from a fitness app. Each exercise has a name and a small photo of someone doing it.',
-    'For each numbered exercise below, look at its name and its photo, and pick the candidate that is the same exercise:',
+    'For each numbered exercise below, first say which equipment it uses: what its name says, or when the name names none, what the',
+    `photo shows. Use one of: ${Object.keys(GEMINI_GEAR).join(', ')}. The equipment is binding: if the plan says dumbbells, pick a dumbbell`,
+    'version, never a barbell one, even when the barbell version is better known. Only pick other equipment when no candidate uses it.',
+    'Then pick the candidate that is the same exercise:',
     'same equipment (dumbbell, barbell, cable, machine, bodyweight), same attachment (rope, bar), same body position',
     '(standing, seated, lying, incline, decline) and same movement (for example a triceps pushdown is not an overhead extension).',
     'Prefer the plain standard version when the plan does not say otherwise. If no candidate is the same exercise, answer with an empty pick.',
@@ -67,7 +91,7 @@ export function buildPrompt(rows: PickRequest[]): string {
  * Asks Gemini to choose an exercise for each row. Returns the chosen id per row (undefined where
  * Gemini found no fit or picked something not on the list). Throws with a readable message on failure.
  */
-export async function pickWithGemini(key: string, images: Blob[], rows: PickRequest[]): Promise<(string | undefined)[]> {
+export async function pickWithGemini(key: string, images: Blob[], rows: PickRequest[]): Promise<GeminiPick[]> {
   const parts: object[] = [{ text: buildPrompt(rows) }];
   for (const img of images) parts.push({ inline_data: { mime_type: img.type || 'image/jpeg', data: await toBase64(img) } });
   const schema = {
@@ -75,7 +99,16 @@ export async function pickWithGemini(key: string, images: Blob[], rows: PickRequ
     properties: {
       picks: {
         type: 'ARRAY',
-        items: { type: 'OBJECT', properties: { row: { type: 'INTEGER' }, pick: { type: 'STRING' } }, required: ['row', 'pick'] },
+        items: {
+          type: 'OBJECT',
+          properties: {
+            row: { type: 'INTEGER' },
+            equipment: { type: 'STRING', enum: Object.keys(GEMINI_GEAR) },
+            pick: { type: 'STRING' },
+          },
+          required: ['row', 'equipment', 'pick'],
+          propertyOrdering: ['row', 'equipment', 'pick'],
+        },
       },
     },
     required: ['picks'],
@@ -176,10 +209,10 @@ async function askModel(key: string, model: string, body: string, timeoutMs: num
   return data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? '').join('') ?? '';
 }
 
-/** Reads Gemini's answer, keeping only picks that are on that row's candidate list. */
-export function parsePicks(text: string, rows: PickRequest[]): (string | undefined)[] {
-  const out: (string | undefined)[] = rows.map(() => undefined);
-  let picks: { row?: number; pick?: string }[] = [];
+/** Reads Gemini's answer, keeping only picks that are on that row's candidate list, and the equipment it read. */
+export function parsePicks(text: string, rows: PickRequest[]): GeminiPick[] {
+  const out: GeminiPick[] = rows.map(() => ({}));
+  let picks: { row?: number; pick?: string; equipment?: string }[] = [];
   try {
     picks = (JSON.parse(text) as { picks?: typeof picks }).picks ?? [];
   } catch {
@@ -187,8 +220,10 @@ export function parsePicks(text: string, rows: PickRequest[]): (string | undefin
   }
   for (const p of picks) {
     const i = (p.row ?? 0) - 1;
-    if (i < 0 || i >= rows.length || !p.pick) continue;
-    if (rows[i].candidates.some((c) => c.id === p.pick)) out[i] = p.pick;
+    if (i < 0 || i >= rows.length) continue;
+    const gear = GEMINI_GEAR[p.equipment?.toLowerCase() ?? ''];
+    if (gear) out[i].gear = gear;
+    if (p.pick && rows[i].candidates.some((c) => c.id === p.pick)) out[i].id = p.pick;
   }
   return out;
 }

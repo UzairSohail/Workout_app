@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { withExtras } from '../exercises';
 import type { Exercise } from '../types';
-import { cleanName, matchExercise, parseDetail, parsePlan } from './planImport';
+import { cleanName, fitsGear, gearIn, matchExercise, parseDetail, parsePlan, settlePick } from './planImport';
 
 const library = JSON.parse(readFileSync(new URL('../../public/exercises.json', import.meta.url), 'utf8')) as Exercise[];
 const all = withExtras(library);
@@ -134,5 +134,47 @@ describe('plan screenshot import', () => {
   it('counts one set per line when the plan lists each set', () => {
     const plan = parsePlan('Barbell Squat\n10 reps × 100 kg\n10 reps × 100 kg\n8 reps × 100 kg\nLeg Extension\n3 sets • 12 reps');
     expect(plan.rows.map((r) => [r.name, r.sets])).toEqual([['Barbell Squat', 3], ['Leg Extension', 3]]);
+  });
+
+  it('reads the equipment a plan name states', () => {
+    expect(gearIn('Dumbbell Bench Press')).toBe('dumbbell');
+    expect(gearIn('Incline DB Press')).toBe('dumbbell');
+    expect(gearIn('EZ Bar Curl')).toBe('e-z curl bar');
+    expect(gearIn('Smith Machine Squat')).toBe('smith');
+    expect(gearIn('Kettlebell Swing')).toBe('kettlebells');
+    expect(gearIn('Machine Fly')).toBe('machine');
+    expect(gearIn('Lat Pulldown')).toBeUndefined();
+  });
+
+  it('keeps the equipment the plan names whenever the library has that version', () => {
+    const names = [
+      'Dumbbell Bench Press', 'Dumbbell Incline Bench Press', 'Dumbbell Shoulder Press', 'Dumbbell Romanian Deadlift',
+      'Dumbbell Bent Over Row', 'Dumbbell Squat', 'Dumbbell Front Squat', 'Dumbbell Overhead Press', 'Dumbbell Hang Clean',
+      'Dumbbell Upright Row', 'Dumbbell Shrug', 'Dumbbell Deadlift', 'Dumbbell Close Grip Bench Press', 'Dumbbell Hip Thrust',
+    ];
+    for (const n of names) expect([n, matchExercise(all, n)?.equipment]).toEqual([n, 'dumbbell']);
+    for (const n of ['Barbell Bench Press', 'Barbell Row', 'Barbell Curl']) expect([n, matchExercise(all, n)?.equipment]).toEqual([n, 'barbell']);
+    expect(matchExercise(all, 'EZ Bar Curl')?.equipment).toBe('e-z curl bar');
+  });
+
+  it('never lets Gemini swap the stated equipment when a version with it exists', () => {
+    const byId = (id: string) => all.find((e) => e.id === id)!;
+    const local = matchExercise(all, 'Dumbbell Incline Bench Press');
+    expect(local?.equipment).toBe('dumbbell');
+    const barbell = byId('Barbell_Incline_Bench_Press_-_Medium_Grip');
+    // The name says dumbbell: a barbell pick gives way to the dumbbell version.
+    expect(settlePick(all, 'Dumbbell Incline Bench Press', local, barbell)).toBe(local);
+    // The name names no equipment but Gemini saw dumbbells in the photo: its barbell pick still gives way.
+    const seen = settlePick(all, 'Incline Bench Press', byId('Barbell_Incline_Bench_Press_-_Medium_Grip'), barbell, 'dumbbell');
+    expect(fitsGear(seen!, 'dumbbell')).toBe(true);
+    expect(seen!.name).toMatch(/incline/i);
+    // A pick with the right equipment stands, and with no equipment stated Gemini's pick stands.
+    const db = byId('Hammer_Grip_Incline_DB_Bench_Press');
+    expect(settlePick(all, 'Dumbbell Incline Bench Press', local, db)).toBe(db);
+    expect(settlePick(all, 'Incline Bench Press', local, barbell)).toBe(barbell);
+    expect(settlePick(all, 'Lat Pulldown', undefined, barbell, 'machine')).toBe(barbell);
+    // No version with that equipment at all: the closest other one stands rather than nothing.
+    const band = byId('Band_Good_Morning');
+    expect(settlePick(all, 'Dumbbell Good Morning', band, undefined)).toBe(band);
   });
 });
