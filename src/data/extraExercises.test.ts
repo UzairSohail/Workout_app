@@ -56,6 +56,8 @@ describe('extra exercises', () => {
     expect(find('kickstand rdl')).toContain('B-Stance Romanian Deadlift');
     expect(find('silverback shrug')).toContain('Silverback Shrug');
     expect(find('cat cow')).toContain('Cat Stretch');
+    expect(find('behind the back curl')[0]).toBe('Bayesian Cable Curl');
+    expect(find('behind-the-back cable curls')).toContain('Bayesian Cable Curl');
   });
   it('match equipment words, plurals and gym shorthand', () => {
     const find = (q: string) => filterExercises(all, q, '', '', false).map((e) => e.name);

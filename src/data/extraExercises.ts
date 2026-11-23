@@ -819,6 +819,7 @@ export const ALIASES: Record<string, string[]> = {
   Face_Pull: ['face pull rope'],
   External_Rotation: ['dumbbell external rotation'],
   Preacher_Curl: ['ez bar preacher curl'],
+  x_Bayesian_Cable_Curl: ['behind the back curl', 'behind the back cable curl', 'cable behind the back curl', 'behind the back bicep curl'],
   Reverse_Barbell_Curl: ['reverse grip ez bar curl', 'reverse curl'],
   'Palms-Down_Wrist_Curl_Over_A_Bench': ['reverse wrist curl'],
   Triceps_Pushdown: ['straight bar pushdown'],
