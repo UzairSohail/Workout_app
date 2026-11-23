@@ -14,7 +14,12 @@ import { MuscleTags } from './MuscleTags';
 const STRENGTH = new Set(['strength', 'powerlifting', 'olympic weightlifting', 'strongman', 'custom']);
 
 /** Everyday shorthand, mapped to the words the library uses. Applied to queries and names alike. */
-const SYNONYMS: Record<string, string> = { db: 'dumbbell', bb: 'barbell', kb: 'kettlebell' };
+// Gym shorthand, expanded in both the query and the names, so "sl rdl" finds "Single-Leg Romanian Deadlift".
+const SYNONYMS: Record<string, string> = {
+  db: 'dumbbell', bb: 'barbell', kb: 'kettlebell', hex: 'trap', sl: 'single leg',
+  rdl: 'romanian deadlift', sldl: 'stiff legged deadlift', cgbp: 'close grip bench press',
+  rfess: 'bulgarian split squat', ghr: 'glute ham raise', ohp: 'overhead press',
+};
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim().split(' ').map((w) => SYNONYMS[w] ?? w).join(' ');
 /**
  * Words people add that names often leave out ("incline dumbbell bench press", "flat dumbbell press",

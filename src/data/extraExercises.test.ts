@@ -58,6 +58,19 @@ describe('extra exercises', () => {
     expect(find('cat cow')).toContain('Cat Stretch');
     expect(find('behind the back curl')[0]).toBe('Bayesian Cable Curl');
     expect(find('behind-the-back cable curls')).toContain('Bayesian Cable Curl');
+    expect(find('french press')[0]).toBe('Lying Triceps Press');
+    expect(find('australian pull up')[0]).toBe('Inverted Row');
+    expect(find('egyptian lateral raise')[0]).toBe('Leaning Lateral Raise');
+    expect(find('leg curl')[0]).toBe('Machine Lying Leg Curl');
+  });
+  it('expand gym shorthand', () => {
+    const find = (q: string) => filterExercises(all, q, '', '', false).map((e) => e.name);
+    expect(find('sl rdl')[0]).toBe('Single-Leg Romanian Deadlift');
+    expect(find('hex bar deadlift')[0]).toBe('Trap Bar Deadlift');
+    expect(find('rfess')).toContain('Bulgarian Split Squat');
+    expect(find('ghr')[0]).toBe('Glute Ham Raise');
+    expect(find('cgbp')[0]).toBe('Close-Grip Barbell Bench Press');
+    expect(find('ohp')[0]).toBe('Standing Military Press');
   });
   it('match equipment words, plurals and gym shorthand', () => {
     const find = (q: string) => filterExercises(all, q, '', '', false).map((e) => e.name);
