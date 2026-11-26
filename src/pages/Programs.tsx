@@ -80,7 +80,7 @@ export function Programs() {
 
       <Link className="list-item" to="/programs/generate?mode=week">
         <span className="lead-ico" aria-hidden><SparkIcon /></span>
-        <span><strong>Build a routine for me</strong><small>Goal, time and equipment → a weekly plan</small></span>
+        <span><strong>Build a routine for me</strong><small>Pick a split like Push / Pull / Legs, then your time and goal</small></span>
       </Link>
 
       <section>

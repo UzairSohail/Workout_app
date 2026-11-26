@@ -1,8 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import type { Exercise } from '../types';
-import { estimateMinutes, GENERATOR_EXERCISES, generateProgram, isFinisherMove, SESSION_MINUTES, weekCoverage, weeklySets, WEEKLY_SETS, type GeneratorInput } from './generator';
-import { MOVE_BY_ID } from './targets';
+import { estimateMinutes, GENERATOR_EXERCISES, daysForSplit, generateProgram, isFinisherMove, SESSION_MINUTES, weekCoverage, weeklySets, WEEKLY_SETS, type GeneratorInput } from './generator';
+import { groupCredit, MOVE_BY_ID } from './targets';
 import { warmupSets } from './warmup';
 import { toDisplay } from './units';
 
@@ -79,6 +79,27 @@ describe('generateProgram', () => {
     expect(ul.days.map((d) => d.name)).toEqual(['Upper A', 'Lower A', 'Upper B', 'Lower B']);
     expect(ul.days[0].exercises[0].exerciseId).not.toBe(ul.days[2].exercises[0].exerciseId);
     expect(generateProgram({ ...base, experience: 'intermediate' }, 'p').days.map((d) => d.name)).toEqual(['Push', 'Pull', 'Legs']);
+  });
+
+  it('builds the split you pick, whatever your experience', () => {
+    const names = (split: GeneratorInput['split'], days: number) => generateProgram({ ...base, split, days }, 'p').days.map((d) => d.name);
+    expect(names('ppl', 3)).toEqual(['Push', 'Pull', 'Legs']);
+    expect(names('ppl', 6)).toEqual(['Push A', 'Pull A', 'Legs A', 'Push B', 'Pull B', 'Legs B']);
+    expect(names('upperLower', 2)).toEqual(['Upper', 'Lower']);
+    expect(names('full', 4)).toEqual(['Full Body A', 'Full Body B', 'Full Body C', 'Full Body D']);
+    expect(names('bro', 5)).toEqual(['Chest', 'Back', 'Shoulders', 'Arms', 'Legs']);
+    expect(daysForSplit('ppl', 4)).toBe(3);
+    expect(daysForSplit('ppl', 5)).toBe(6);
+    expect(daysForSplit('bro', 3)).toBe(5);
+  });
+
+  it('keeps each bro split day on its own muscle group', () => {
+    const p = generateProgram({ ...base, split: 'bro', days: 5, experience: 'intermediate' }, 'p');
+    const want = [['chest'], ['back', 'traps', 'rearDelts', 'lowerBack'], ['delts', 'rearDelts', 'traps'], ['biceps', 'triceps'], ['quads', 'hams', 'glutes', 'calves']];
+    p.days.forEach((d, i) => {
+      expect(main(d).length).toBeGreaterThanOrEqual(3);
+      for (const e of main(d)) expect([...groupCredit(MOVE_BY_ID.get(e.exerciseId)!)].some(([g, c]) => c >= 0.5 && want[i].includes(g))).toBe(true);
+    });
   });
 
   it('hits the chest from more than one angle on a push day', () => {

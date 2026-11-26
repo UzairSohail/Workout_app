@@ -9,7 +9,7 @@ import { fmtWeight } from '../logic/units';
 import type { Day } from '../types';
 import { GEAR, generatorEquipment, hasGear } from '../logic/equipment';
 import { GROUP_LABEL, mainTargets, TARGETS } from '../logic/targets';
-import { estimateMinutes, generateProgram, generateToday, isFinisherMove, SESSION_MINUTES, weekCoverage, weeklySets, WEEKLY_SETS, type Equipment, type Experience, type GeneratorInput, type Goal } from '../logic/generator';
+import { estimateMinutes, generateProgram, generateToday, isFinisherMove, SESSION_MINUTES, SPLITS, daysForSplit, TODAY_CHOICES, weekCoverage, weeklySets, WEEKLY_SETS, type Equipment, type Experience, type GeneratorInput, type Goal, type SplitKind, type TodayInput } from '../logic/generator';
 import { ChevronLeft } from '../components/Icons';
 import { MOVE_BY_ID } from '../logic/targets';
 
@@ -97,7 +97,7 @@ function TodayGenerator() {
   const settings = useSettings();
   const { missingEquipment } = settings;
   const finished = useFinished();
-  const [input, setInput] = useState<Omit<GeneratorInput, 'days'>>({ goal: 'muscle', experience: 'beginner', equipment: 'gym', minutes: 60 });
+  const [input, setInput] = useState<TodayInput>({ goal: 'muscle', experience: 'beginner', equipment: 'gym', minutes: 60 });
   useEffect(() => setInput((i) => ({
     ...i,
     equipment: generatorEquipment(missingEquipment),
@@ -119,7 +119,9 @@ function TodayGenerator() {
 
   return (
     <>
-      <OptionsFold summary={`${GOAL_TEXT[input.goal]} · ${minutesText(input.minutes)} · ${GEAR_TEXT[input.equipment]}`}>
+      <OptionsFold summary={`${input.kind ?? 'Best for today'} · ${GOAL_TEXT[input.goal]} · ${minutesText(input.minutes)} · ${GEAR_TEXT[input.equipment]}`}>
+        <Choice<string> label="What to train" value={input.kind ?? ''} onChange={(v) => setInput({ ...input, kind: v || undefined })}
+          options={[['', 'Best for today'], ...TODAY_CHOICES.map((k) => [k, k] as [string, string])]} />
         <Choice<Goal> label="Main goal" value={input.goal} onChange={set('goal')}
           options={[['muscle', 'Build muscle'], ['strength', 'Get stronger'], ['general', 'General fitness']]} />
         <Choice<number> label="How long have you got?" value={input.minutes} onChange={set('minutes')}
@@ -164,8 +166,13 @@ function TodayGenerator() {
 function WeekGenerator() {
   const navigate = useNavigate();
   const { byId } = useExercises();
-  const { missingEquipment } = useSettings();
-  const [input, setInput] = useState<GeneratorInput>({ goal: 'muscle', days: 3, experience: 'beginner', equipment: 'gym', minutes: 60 });
+  const { missingEquipment, experience } = useSettings();
+  const [params] = useSearchParams();
+  const [input, setInput] = useState<GeneratorInput>(() => {
+    const split = (SPLITS.find((s) => s.kind === params.get('split'))?.kind ?? 'auto') as SplitKind;
+    return { goal: 'muscle', days: daysForSplit(split, 3), experience: 'beginner', equipment: 'gym', minutes: 60, split };
+  });
+  useEffect(() => { if (experience && experience !== 'beginner') setInput((i) => ({ ...i, experience: 'intermediate' })); }, [experience]);
   // Start from what the gym has once settings load.
   useEffect(() => setInput((i) => ({ ...i, equipment: generatorEquipment(missingEquipment) })), [missingEquipment]);
   const [id] = useState(uid);
@@ -180,6 +187,8 @@ function WeekGenerator() {
   const finisher = (id: string) => { const mv = MOVE_BY_ID.get(id); return !!mv && isFinisherMove(mv); };
   const shortDays = program.days.filter((d) => estimateMinutes(d) <= input.minutes - 15);
   const set = <K extends keyof GeneratorInput>(k: K) => (v: GeneratorInput[K]) => setInput({ ...input, [k]: v });
+  const split = SPLITS.find((s) => s.kind === (input.split ?? 'auto'))!;
+  const pickSplit = (kind: SplitKind) => setInput({ ...input, split: kind, days: daysForSplit(kind, input.days) });
 
   const save = async () => {
     await db.programs.put({ ...program, createdAt: Date.now() });
@@ -189,11 +198,19 @@ function WeekGenerator() {
 
   return (
     <>
-      <OptionsFold summary={`${input.days} days · ${minutesText(input.minutes)} · ${GOAL_TEXT[input.goal]} · ${GEAR_TEXT[input.equipment]}`}>
+      <section className="card form">
+        <Choice<SplitKind> label="Split" value={split.kind} onChange={pickSplit}
+          options={SPLITS.map((s) => [s.kind, s.name] as [SplitKind, string])} />
+        <p className="muted small">{split.blurb}</p>
+        {split.days.length > 1 && (
+          <Choice<number> label="Days per week" value={input.days} onChange={set('days')}
+            options={split.days.map((d) => [d, String(d)] as [number, string])} />
+        )}
+      </section>
+
+      <OptionsFold summary={`${minutesText(input.minutes)} · ${GOAL_TEXT[input.goal]} · ${input.experience === 'beginner' ? 'New' : '1+ years'} · ${GEAR_TEXT[input.equipment]}`}>
         <Choice<Goal> label="Main goal" value={input.goal} onChange={set('goal')}
           options={[['muscle', 'Build muscle'], ['strength', 'Get stronger'], ['general', 'General fitness']]} />
-        <Choice<number> label="Days per week" value={input.days} onChange={set('days')}
-          options={[[2, '2'], [3, '3'], [4, '4'], [5, '5'], [6, '6']]} />
         <Choice<number> label="How long is each session?" value={input.minutes} onChange={set('minutes')}
           options={SESSION_MINUTES.map((m) => [m, m < 120 ? `${m} min` : '2 hours'] as [number, string])} />
         <p className="muted small">Longer sessions get more exercises. Every workout ends with a core finisher: 2 ab exercises and 1 lower back exercise.</p>
