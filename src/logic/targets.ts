@@ -195,6 +195,10 @@ export const MOVES: Move[] = [
   m('Ab_Roller', 'bodyweight', false, 'anti-ext', 0.95, { abs: 1, lowerAbs: 0.5 }),
   m('Plank', 'bodyweight', false, 'anti-ext', 0.75, { abs: 0.8, lowerAbs: 0.4, obliques: 0.3 }),
   m('Russian_Twist', 'bodyweight', false, 'rotation', 0.7, { obliques: 1, abs: 0.4 }),
+  m('Standing_Cable_Wood_Chop', 'gym', false, 'rotation', 0.85, { obliques: 1, abs: 0.3 }),
+  m('x_Low_to_High_Cable_Woodchop', 'gym', false, 'rotation', 0.85, { obliques: 1, abs: 0.3 }),
+  m('x_Captain_s_Chair_Leg_Raise', 'gym', false, 'leg-raise', 0.9, { lowerAbs: 1, abs: 0.6 }),
+  m('x_Captain_s_Chair_Knee_Raise', 'gym', false, 'leg-raise', 0.85, { lowerAbs: 1, abs: 0.5 }),
 
   // Lower back: extensions for the spinal erectors, finished off at the end of a workout.
   m('Superman', 'bodyweight', false, 'back-ext', 0.75, { lowerBack: 1, glutes: 0.4 }),

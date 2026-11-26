@@ -5,8 +5,10 @@ import { estimateMinutes, GENERATOR_EXERCISES, daysForSplit, generateProgram, is
 import { groupCredit, MOVE_BY_ID } from './targets';
 import { warmupSets } from './warmup';
 import { toDisplay } from './units';
+import { withExtras } from '../exercises';
 
-const library: Exercise[] = JSON.parse(readFileSync(new URL('../../public/exercises.json', import.meta.url), 'utf8'));
+// The library the app sees: free-exercise-db plus the app's own exercises (ids starting x_).
+const library: Exercise[] = withExtras(JSON.parse(readFileSync(new URL('../../public/exercises.json', import.meta.url), 'utf8')));
 const byId = new Map(library.map((e) => [e.id, e]));
 const base: GeneratorInput = { goal: 'muscle', days: 3, experience: 'beginner', equipment: 'gym', minutes: 60 };
 

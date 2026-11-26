@@ -1611,7 +1611,9 @@
   ],
   "similarTo": "Knee/Hip Raise On Parallel Bars",
   "aliases": [
-   "vertical leg raise"
+   "vertical leg raise",
+   "captain chair leg raise",
+   "roman chair leg raise"
   ]
  },
  {
@@ -2850,6 +2852,82 @@
    "Return slowly and repeat, then switch sides."
   ],
   "similarTo": "Standing Cable Wood Chop"
+ },
+ {
+  "name": "Low-to-High Cable Woodchop",
+  "equipment": "cable",
+  "mechanic": "compound",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "shoulders",
+   "glutes"
+  ],
+  "instructions": [
+   "Set a handle at the lowest pulley and stand side-on to it, feet a bit wider than shoulder-width.",
+   "Squat slightly and hold the handle with both hands outside the near knee, arms long.",
+   "Stand up and pull the handle diagonally up and across your body to above the far shoulder, rotating through your torso and pivoting your back foot.",
+   "Lower it back down slowly along the same line. Finish all reps, then switch sides."
+  ],
+  "similarTo": "Standing Cable Wood Chop",
+  "aliases": [
+   "low to high woodchop",
+   "low to high wood chop",
+   "low to high cable chop",
+   "reverse woodchop",
+   "reverse cable woodchop",
+   "cable lift",
+   "upward woodchop"
+  ]
+ },
+ {
+  "name": "Low-to-High Band Woodchop",
+  "equipment": "bands",
+  "mechanic": "compound",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "shoulders"
+  ],
+  "instructions": [
+   "Anchor a band low (or stand on one end) and stand side-on to it, holding it with both hands by the near knee.",
+   "Pull it diagonally up and across your body to above the far shoulder, rotating through your torso.",
+   "Return slowly and switch sides."
+  ],
+  "similarTo": "Standing Cable Wood Chop",
+  "aliases": [
+   "low to high band wood chop",
+   "low to high wood chop band",
+   "low to high band chop",
+   "reverse band woodchop"
+  ]
+ },
+ {
+  "name": "Horizontal Cable Woodchop",
+  "equipment": "cable",
+  "mechanic": "compound",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "shoulders"
+  ],
+  "instructions": [
+   "Set a handle at chest height and stand side-on to it, feet shoulder-width apart.",
+   "Hold the handle with both hands, arms straight in front of your chest.",
+   "Rotate your torso away from the stack, keeping your arms straight and level and pivoting your back foot.",
+   "Return slowly. Finish all reps, then switch sides."
+  ],
+  "similarTo": "Standing Cable Wood Chop",
+  "aliases": [
+   "horizontal wood chop",
+   "mid cable woodchop",
+   "straight across woodchop",
+   "cable rotation",
+   "standing cable rotation"
+  ]
  },
  {
   "name": "Hand Gripper",
