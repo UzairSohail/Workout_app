@@ -22,6 +22,7 @@ import { countedSets, recordsFor, sessionPrs, type PrKind } from '../logic/stats
 import { fmt, fromDisplay, toDisplay } from '../logic/units';
 import { ArrowDown, ArrowRight, ArrowUp, CheckIcon, ChevronDown, ClipboardIcon, MoreIcon, NoteIcon, PlusIcon, ShuffleIcon, SparkIcon, SwapIcon, TargetIcon, TrophyIcon } from '../components/Icons';
 import { coachOn, withAi } from '../logic/coach';
+import { exerciseParts, workoutCoverage } from '../logic/workoutCoverage';
 import { tuneWorkout } from '../logic/coachTune';
 import type { Exercise, ExerciseNote, Feel, LoggedExercise, LogMode, SetType, Workout } from '../types';
 
@@ -50,6 +51,32 @@ function useWakeLock(enabled: boolean) {
       lock?.release().catch(() => {});
     };
   }, [enabled]);
+}
+
+/** Which parts of which muscles this exercise trains: the main ones first, then the ones it helps. */
+function ExerciseParts({ exercise }: { exercise: Exercise | undefined }) {
+  const { main, also } = exerciseParts(exercise);
+  if (!main.length) return null;
+  return (
+    <span className="ex-parts">
+      <TargetIcon />
+      <span><b>{main.join(' · ')}</b>{also.length > 0 && <span className="muted"> · also {also.map((x) => x.charAt(0).toLowerCase() + x.slice(1)).join(', ')}</span>}</span>
+    </span>
+  );
+}
+
+/** A note at the top of the workout: what it trains and what it leaves for another day. */
+function CoverageNote({ exercises }: { exercises: (Exercise | undefined)[] }) {
+  const { covered, skipped } = useMemo(() => workoutCoverage(exercises), [exercises.map((e) => e?.id).join()]);
+  if (!covered.length) return null;
+  return (
+    <section className="coverage-note" aria-label="What this workout covers">
+      <p><span className="cov-tag ok">Covers</span>
+        {covered.map((c, i) => <span key={c.group}>{i > 0 && ' · '}<b>{c.label}</b>{c.parts.length > 0 && ` (${c.parts.join(', ')})`}</span>)}
+      </p>
+      <p><span className="cov-tag skip">Skips</span>{skipped.length ? skipped.join(' · ') : 'Nothing, every part gets its own exercise'}</p>
+    </section>
+  );
 }
 
 function Elapsed({ since }: { since: number }) {
@@ -302,6 +329,8 @@ export function WorkoutPage() {
         )}
       </header>
 
+      {w.exercises.length > 0 && <CoverageNote exercises={w.exercises.map((e) => byId.get(e.exerciseId))} />}
+
       {w.exercises.map((le, ei) => {
         const ex = byId.get(le.exerciseId);
         const key = `${ei}:${le.exerciseId}`;
@@ -319,6 +348,7 @@ export function WorkoutPage() {
               <span className="grow">
                 <strong>{exerciseName(byId, le.exerciseId)}</strong>
                 <small className="muted">{le.scheme ? SCHEME_LABEL[le.scheme] : `${le.sets.filter((x) => x.type !== 'warmup').length} × ${fmtReps(le.repMin, le.repMax)}${le.mode === 'time' ? ' sec' : ''}`}</small>
+                {exerciseParts(ex).main.length > 0 && <small className="ex-row-parts">{exerciseParts(ex).main.join(' · ')}</small>}
               </span>
               <span className="ex-count">{all ? <><CheckIcon />{le.feel ? FEEL_LABEL[le.feel] : 'Done'}</> : `${done}/${le.sets.length}`}</span>
             </button>
@@ -444,6 +474,7 @@ export function WorkoutPage() {
               </details>
             </div>
 
+            <ExerciseParts exercise={ex} />
             {s && (
               <div className={`suggestion ${s.kind}`}>
                 <span className="sug-icon">{s.ai ? <SparkIcon /> : s.kind === 'increase' ? <ArrowUp /> : s.kind === 'deload' ? <ArrowDown /> : <ArrowRight />}</span>
