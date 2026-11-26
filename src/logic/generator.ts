@@ -12,6 +12,25 @@ export interface GeneratorInput {
   experience: Experience;
   equipment: Equipment;
   minutes: number; // how long each session is, e.g. 30–120
+  /** Which split to build. Left out (or 'auto'), it's picked from days and experience. */
+  split?: SplitKind;
+}
+
+export type SplitKind = 'auto' | 'ppl' | 'upperLower' | 'full' | 'bro';
+
+/** The splits you can ask for, how they read, and the days a week each one works with. */
+export const SPLITS: { kind: SplitKind; name: string; blurb: string; days: number[] }[] = [
+  { kind: 'auto', name: 'Pick for me', blurb: 'Chosen from your days a week and experience.', days: [2, 3, 4, 5, 6] },
+  { kind: 'ppl', name: 'Push / Pull / Legs', blurb: 'Chest, shoulders and triceps; back and biceps; then legs.', days: [3, 6] },
+  { kind: 'upperLower', name: 'Upper / Lower', blurb: 'Alternate upper body and lower body days.', days: [2, 4] },
+  { kind: 'full', name: 'Full body', blurb: 'Every muscle each session. Great when time is short.', days: [2, 3, 4] },
+  { kind: 'bro', name: 'Bro split', blurb: 'One muscle group a day: chest, back, shoulders, arms, legs.', days: [5] },
+];
+
+/** The days a week closest to `days` that a split works with. */
+export function daysForSplit(kind: SplitKind, days: number): number {
+  const ok = SPLITS.find((s) => s.kind === kind)?.days ?? [days];
+  return ok.reduce((b, d) => (Math.abs(d - days) < Math.abs(b - days) ? d : b));
 }
 
 /** Every exercise id the generator can choose, for checking against the library. */
@@ -36,9 +55,32 @@ const F = {
   push: { spread: 0.35, groups: { chest: 1, delts: 1, triceps: 1 } },
   pull: { spread: 0.35, groups: { back: 1, rearDelts: 1, biceps: 1, traps: 0.5, lowerBack: 0.3 } },
   legs: { spread: 0.4, groups: { quads: 1, hams: 1, glutes: 1, calves: 1, core: 0.8, lowerBack: 0.4 } },
+  // Bro split days: one area each, so the day goes deep on every part of it.
+  chest: { spread: 0.1, groups: { chest: 1 } },
+  back: { spread: 0.25, groups: { back: 1, traps: 0.6, rearDelts: 0.5, lowerBack: 0.4 } },
+  shoulders: { spread: 0.3, groups: { delts: 1, rearDelts: 1, traps: 0.6 } },
+  arms: { spread: 0.3, groups: { biceps: 1, triceps: 1 } },
 } satisfies Record<string, Focus>;
 
-function splitFor(days: number, experience: Experience): { name: string; days: [string, Focus][] } {
+function splitFor(days: number, experience: Experience, kind: SplitKind = 'auto'): { name: string; days: [string, Focus][] } {
+  const ab = (base: [string, Focus][], times: number): [string, Focus][] => (times === 1 ? base
+    : Array.from({ length: times }, (_, i) => base.map(([n, f]) => [`${n} ${'ABCD'[i]}`, f] as [string, Focus])).flat());
+  switch (kind) {
+    case 'ppl':
+      return days >= 6
+        ? { name: 'Push / Pull / Legs ×2', days: ab([['Push', F.push], ['Pull', F.pull], ['Legs', F.legs]], 2) }
+        : { name: 'Push / Pull / Legs', days: [['Push', F.push], ['Pull', F.pull], ['Legs', F.legs]] };
+    case 'upperLower':
+      return days >= 4
+        ? { name: 'Upper / Lower', days: [['Upper A', F.upper], ['Lower A', F.lower], ['Upper B', F.upper], ['Lower B', F.lower]] }
+        : { name: 'Upper / Lower', days: [['Upper', F.upper], ['Lower', F.lower]] };
+    case 'full': {
+      const n = Math.max(2, Math.min(4, days));
+      return { name: 'Full Body', days: Array.from({ length: n }, (_, i) => [`Full Body ${'ABCD'[i]}`, F.full] as [string, Focus]) };
+    }
+    case 'bro':
+      return { name: 'Bro Split', days: [['Chest', F.chest], ['Back', F.back], ['Shoulders', F.shoulders], ['Arms', F.arms], ['Legs', F.legs]] };
+  }
   switch (Math.max(2, Math.min(6, days))) {
     case 2:
       return { name: 'Full Body', days: [['Full Body A', F.full], ['Full Body B', F.full]] };
@@ -194,7 +236,7 @@ function fillMain(o: {
  * Pure and deterministic, so the same answers give the same routine.
  */
 export function generateProgram(input: GeneratorInput, id: string, now = Date.now(), available: (exerciseId: string) => boolean = () => true): Program {
-  const split = splitFor(input.days, input.experience);
+  const split = splitFor(input.days, input.experience, input.split);
   const allowed = new Set(ALLOWED[input.equipment]);
   const budget = input.minutes * 60;
   const usable = MOVES.filter((mv) => allowed.has(mv.eq) && available(mv.id));
@@ -234,7 +276,7 @@ export function generateProgram(input: GeneratorInput, id: string, now = Date.no
   return {
     id,
     name: `My ${split.name}`,
-    description: `Built for ${goalText}: ${input.days} days a week, about ${input.minutes} min, ${eqText}, ${input.experience}.`,
+    description: `Built for ${goalText}: ${split.days.length} days a week, about ${input.minutes} min, ${eqText}, ${input.experience}.`,
     days,
     createdAt: now,
   };
@@ -329,7 +371,10 @@ function balanceWeeklySets(days: Day[], secondsFor: (dayIndex: number) => number
 
 /* ---------- Today's workout, built from what you've logged ---------- */
 
-export type TodayInput = Omit<GeneratorInput, 'days'>;
+export type TodayInput = Omit<GeneratorInput, 'days' | 'split'> & {
+  /** A kind of session to build, e.g. "Push". Left out, it picks the one you're most ready for. */
+  kind?: string;
+};
 
 export interface TodayPlan {
   day: Day;
@@ -346,6 +391,8 @@ export interface TodayPlan {
 const TODAY_KINDS: [string, Focus][] = [
   ['Full Body', F.full], ['Upper Body', F.upper], ['Lower Body', F.lower], ['Push', F.push], ['Pull', F.pull],
 ];
+/** Kinds of session you can ask "Just today" for. Legs is the same day as Lower Body. */
+export const TODAY_CHOICES = ['Push', 'Pull', 'Legs', 'Upper Body', 'Full Body'];
 const DAY = 864e5;
 
 /**
@@ -383,12 +430,16 @@ export function generateToday(
     const main = mainOf(focus);
     return { name, focus, value: main.reduce((n, g) => n + want(g), 0) / main.length };
   });
-  const best = rated.reduce((b, r) => (r.value > b.value + 1e-9 ? r : b));
+  const asked = input.kind === 'Legs' ? 'Lower Body' : input.kind;
+  const chosen = rated.find((r) => r.name === asked);
+  const best = chosen ?? rated.reduce((b, r) => (r.value > b.value + 1e-9 ? r : b));
+  // A kind you asked for still trains its muscles if they're tired, just with less priority on those.
   const focus: Focus = {
     spread: best.focus.spread,
     groups: Object.fromEntries((Object.entries(best.focus.groups) as [Group, number][])
-      .map(([g, r]) => [g, r * want(g)]).filter(([, r]) => (r as number) > 0)),
+      .map(([g, r]) => [g, r * (chosen ? Math.max(want(g), 0.25) : want(g))]).filter(([, r]) => (r as number) > 0)),
   };
+  const name = input.kind === 'Legs' ? 'Legs' : best.name;
 
   // What the last 7 days already trained, down to the part of the muscle.
   const week: Tally = {};
@@ -451,12 +502,12 @@ export function generateToday(
   const trainedToday = new Set(picked.flatMap((mv) => [...groupCredit(mv)].filter(([, c]) => c === 1).map(([g]) => g)));
   const everyMain = [...new Set(TODAY_KINDS.flatMap(([, f]) => mainOf(f)))];
   return {
-    day: { id: `today-${now}`, name: best.name, exercises: [...main, ...finisher] },
-    kind: best.name,
+    day: { id: `today-${now}`, name, exercises: [...main, ...finisher] },
+    kind: name,
     resting: everyMain.filter((g) => readiness(g) === 0).sort((a, b) => recent.get(b)! - recent.get(a)!),
     behind: kindMain.filter((g) => trainedToday.has(g) && (weekSets.get(g) ?? 0) < WEEKLY_SETS.low / 2)
       .sort((a, b) => (weekSets.get(a) ?? 0) - (weekSets.get(b) ?? 0)),
-    restDay: best.value < 0.2,
+    restDay: !chosen && best.value < 0.2,
   };
 }
 
