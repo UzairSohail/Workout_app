@@ -140,6 +140,7 @@ function TodayGenerator() {
           {finished!.length === 0 && <p className="small">No workouts logged yet, so this is a full-body start. It gets smarter with every workout you log.</p>}
           {plan.resting.length > 0 && <p className="small muted">Resting your {groupList(plan.resting)}: trained hard in the last 2 days.</p>}
           {plan.behind.length > 0 && finished!.length > 0 && <p className="small muted">Catching up your {groupList(plan.behind)}, the furthest behind this week.</p>}
+          {plan.leftOut.length > 0 && <p className="small muted">No room in {minutesText(input.minutes)} for your {plan.leftOut.map((t) => TARGETS[t].label.toLowerCase()).join(', ')}. A longer session covers every part.</p>}
           {plan.restDay && <p className="notice">Almost everything was trained hard in the last 2 days. A rest day would probably do more for you than this session.</p>}
           <ul className="plain">
             {plan.day.exercises.map((e, i) => {

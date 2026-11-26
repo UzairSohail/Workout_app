@@ -23,6 +23,8 @@ import { fresherDay, recentLoad, recoveryNote, tiredGroups } from '../logic/reco
 import { NumInput } from '../components/NumInput';
 import { hasGear } from '../logic/equipment';
 import { fitDay, lastSplitDay, nextDayIndex, sessionSize } from '../logic/generator';
+import { splitCatchUp } from '../logic/splitCatchUp';
+import { TARGETS, type Target } from '../logic/targets';
 import type { Day, Program, Settings, Workout } from '../types';
 
 const greeting = (h = new Date().getHours()) => (h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening');
@@ -98,7 +100,7 @@ export function Home() {
 
   const weights = useLiveQuery(() => db.bodyWeight.toArray(), []);
 
-  const start = async (opts: { program?: Program; day?: Day; copyOf?: Workout }) => {
+  const start = async (opts: { program?: Program; day?: Day; copyOf?: Workout; generated?: boolean }) => {
     await startWorkout(opts, byId);
     navigate('/workout');
   };
@@ -121,6 +123,14 @@ export function Home() {
     : planned,
   // eslint-disable-next-line react-hooks/exhaustive-deps
   [planned, byId, finished, settings.sessionSize, settings.sessionExercises, settings.sessionMinutes, settings.coreFinisher, settings.missingEquipment]);
+  // Finished the split's last day: offer a workout for whatever this round skipped before it starts over.
+  const roundCatchUp = useMemo(() => program && byId.size
+    ? splitCatchUp(program, finished, byId, {
+      minutes: settings.sessionSize === 'minutes' ? settings.sessionMinutes ?? 60 : 60,
+      available: (id) => byId.has(id) && hasGear(byId.get(id), settings.missingEquipment),
+    })
+    : undefined,
+  [program, finished, byId, settings.sessionSize, settings.sessionMinutes, settings.missingEquipment]);
   // 5/3/1 has its own deload week built in.
   const deloadNow = deloadActive(settings);
   const suggestDeload = !is531 && !!finished && deloadDue(finished, settings);
@@ -204,6 +214,14 @@ export function Home() {
             <div className="notice">
               {recoveryNote(tired, load)} {fresher ? <>{fresher.name} is fresher today.</> : <>A rest day or a lighter session would help.</>}
               {fresher && <button className="secondary wide" onClick={() => start({ program, day: fresher })}>Do {fresher.name} instead</button>}
+            </div>
+          )}
+          {roundCatchUp && (
+            <div className="notice">
+              That's every day of the split done. This round skipped your {partList(roundCatchUp.missed)}.
+              <button className="secondary wide" onClick={() => start({ program, day: roundCatchUp.day, generated: true })}>
+                Catch-up workout first ({roundCatchUp.day.exercises.length} exercises)
+              </button>
             </div>
           )}
           <ul className="hero-list">
@@ -299,4 +317,11 @@ export function Home() {
       )}
     </>
   );
+}
+
+/** "lats, upper traps and soleus", or the first few and how many more. */
+function partList(parts: Target[]): string {
+  const names = parts.map((t) => TARGETS[t].label.replace(' and forearm', '').toLowerCase());
+  const shown = names.length > 5 ? [...names.slice(0, 4), `${names.length - 4} more`] : names;
+  return shown.length > 1 ? `${shown.slice(0, -1).join(', ')} and ${shown[shown.length - 1]}` : shown[0];
 }

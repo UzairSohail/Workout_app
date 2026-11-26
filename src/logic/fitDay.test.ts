@@ -13,9 +13,13 @@ describe('fitDay', () => {
     expect(fitDay(push, { size: { kind: 'plan' }, finisher: false }).exercises).toEqual(push.exercises);
   });
 
-  it('trims to fewer exercises from the end', () => {
-    const d = fitDay(push, { size: { kind: 'exercises', n: 4 }, finisher: false });
-    expect(d.exercises.map((e) => e.exerciseId)).toEqual(push.exercises.slice(0, 4).map((e) => e.exerciseId));
+  it('trims first the exercises whose muscle parts the rest of the day covers, then from the end', () => {
+    // Bench, military press, incline press, lateral raise, pushdown, overhead extension. The incline
+    // press already works the front delts, so the military press goes before any triceps head does.
+    const ids = (n: number) => fitDay(push, { size: { kind: 'exercises', n }, finisher: false }).exercises.map((e) => e.exerciseId);
+    const all = push.exercises.map((e) => e.exerciseId);
+    expect(ids(5)).toEqual(all.filter((id) => id !== 'Seated_Barbell_Military_Press'));
+    expect(ids(4)).toEqual(ids(5).slice(0, 4));
   });
 
   it('adds push exercises without repeats to reach a bigger count', () => {

@@ -64,13 +64,13 @@ describe('generateToday', () => {
 
   it('prefers lifts you already know', () => {
     const fresh = generateToday(input, [], byId, NOW);
-    const alt = MOVE_BY_ID.get('Dumbbell_Bench_Press');
-    expect(alt).toBeDefined();
+    const known = 'Barbell_Incline_Bench_Press_-_Medium_Grip';
+    expect(MOVE_BY_ID.get(known)).toBeDefined();
     // Done two weeks ago, so it's familiar but not recent.
-    const old = workout(24 * 14, done('Dumbbell_Bench_Press', 3));
+    const old = workout(24 * 14, done(known, 3));
     const p = generateToday(input, [old], byId, NOW);
-    expect(mainIds(fresh)).not.toContain('Dumbbell_Bench_Press');
-    expect(mainIds(p)).toContain('Dumbbell_Bench_Press');
+    expect(mainIds(fresh)).not.toContain(known);
+    expect(mainIds(p)).toContain(known);
   });
 
   it('suggests a rest day when everything is still recovering', () => {
