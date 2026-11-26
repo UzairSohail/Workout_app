@@ -100,4 +100,15 @@ describe('extra exercises', () => {
     expect(find('row machine')).not.toContain('Narrow Stance Hack Squats');
     expect(find('plate loaded')).toContain('Lat Pulldown (Plate-Loaded)');
   });
+
+  it('finds woodchops by direction and captain\'s chair raises however they are typed', () => {
+    const find = (q: string) => filterExercises(all, q, '', '', false).map((e) => e.name);
+    expect(find('low to high woodchop')[0]).toBe('Low-to-High Cable Woodchop');
+    expect(find('low to high wood chop')).toContain('Low-to-High Band Woodchop');
+    expect(find('high to low woodchop')).toContain('Standing Cable Wood Chop');
+    expect(find('cable lift')).toContain('Low-to-High Cable Woodchop');
+    expect(find('captain chair leg raises')[0]).toBe("Captain's Chair Leg Raise");
+    expect(find("captain's chair knee raises")[0]).toBe("Captain's Chair Knee Raise");
+    expect(find('vertical knee raise')).toContain("Captain's Chair Knee Raise");
+  });
 });
