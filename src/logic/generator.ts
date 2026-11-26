@@ -49,7 +49,7 @@ const ALLOWED: Record<Equipment, Equipment[]> = {
  */
 interface Focus { groups: Partial<Record<Group, number>>; spread: number }
 const F = {
-  full: { spread: 2, groups: { chest: 1, back: 1, quads: 1, hams: 0.9, glutes: 0.8, delts: 0.7, rearDelts: 0.5, biceps: 0.5, triceps: 0.5, calves: 0.4, core: 0.5 } },
+  full: { spread: 2, groups: { chest: 1, back: 1, quads: 1, hams: 0.9, glutes: 0.8, delts: 0.7, rearDelts: 0.5, biceps: 0.5, triceps: 0.5, calves: 0.5, core: 0.5 } },
   upper: { spread: 1, groups: { chest: 1, back: 1, delts: 1, rearDelts: 0.8, biceps: 0.75, triceps: 0.75, traps: 0.3 } },
   lower: { spread: 0.4, groups: { quads: 1, hams: 1, glutes: 1, calves: 1, core: 0.8, lowerBack: 0.4 } },
   push: { spread: 0.35, groups: { chest: 1, delts: 1, triceps: 1 } },
@@ -176,6 +176,27 @@ const add = (tally: Tally, mv: Move) => {
 };
 
 /**
+ * A part of a muscle (upper chest, biceps long head, soleus, ...) counts as covered when at least one
+ * exercise trains it this hard, so every part of a trained muscle gets an exercise of its own and not
+ * just spill-over (flat bench alone doesn't count for the lower chest, chin-ups don't for the biceps).
+ */
+export const COVER = 0.7;
+// Every press works the front delts hard enough, so an incline press counts for them too.
+const COVER_AT: Partial<Record<Target, number>> = { deltFront: 0.6 };
+export const covers = (mv: Pick<Move, 'hits'>, t: Target) => (mv.hits[t] ?? 0) >= (COVER_AT[t] ?? COVER);
+/**
+ * The groups a day trains for real, so each of their parts needs an exercise. Abs and lower back are
+ * the core finisher's job, and upper traps only get spill-over from pulls and deadlifts.
+ */
+const coverGroups = (f: Focus) => (Object.entries(f.groups) as [Group, number][])
+  .filter(([g, r]) => r >= 0.5 && g !== 'core' && g !== 'lowerBack' && g !== 'traps').map(([g]) => g);
+/** The parts of these groups that some exercise in the pool can cover (bodyweight has no side raise). */
+function partsOf(groups: Iterable<Group>, pool: Move[]): Target[] {
+  const want = new Set(groups);
+  return (Object.keys(TARGETS) as Target[]).filter((t) => want.has(TARGETS[t].group) && pool.some((mv) => covers(mv, t)));
+}
+
+/**
  * How much picking this exercise now would add. Each part of a muscle the day is meant to train is
  * worth its priority, and that worth falls quickly once it's been trained today and more slowly once
  * it's been trained earlier in the week. So the second chest exercise of a day goes after the part the
@@ -206,12 +227,42 @@ function score(mv: Move, focus: Focus, today: Tally, week: Tally, patternsToday:
 function fillMain(o: {
   pool: Move[]; focus: Focus; seconds: number; week: Tally; usedThisWeek: Set<string>; goal: Goal;
   plan: (mv: Move) => PlannedExercise; fitsWeek: (mv: Move) => boolean; onPick?: (mv: Move) => void; bonus?: (mv: Move) => number;
+  /** Parts of muscles this day should cover, with how much each matters. They're picked for first. */
+  need?: Map<Target, number>;
+  /** Stop once those parts are covered instead of filling the rest of the session. */
+  onlyNeed?: boolean;
 }): Move[] {
   let left = o.seconds;
   const today: Tally = {};
   const patterns = new Set<string>();
   const picked: Move[] = [];
-  while (picked.length < MAX_MAIN) {
+  const take = (mv: Move) => {
+    left -= exerciseSeconds(o.plan(mv));
+    o.onPick?.(mv);
+    picked.push(mv);
+    add(today, mv);
+    patterns.add(mv.pattern);
+  };
+  // First make sure every part the day needs gets an exercise of its own, using as few exercises as
+  // possible (a cable crossover covers mid and lower chest at once), within the session's time.
+  const open = new Map(o.need ?? []);
+  while (open.size && picked.length < MAX_MAIN) {
+    let best: Move | undefined;
+    let bestScore = 0;
+    for (const mv of o.pool) {
+      if (picked.includes(mv) || exerciseSeconds(o.plan(mv)) > left) continue;
+      let gain = 0;
+      for (const [t, w] of open) if (covers(mv, t)) gain += w;
+      if (!gain) continue;
+      const s = (gain * mv.quality * (patterns.has(mv.pattern) ? 0.4 : 1) + 0.1 * score(mv, o.focus, today, o.week, patterns, o.usedThisWeek, o.goal))
+        * (o.bonus?.(mv) ?? 1);
+      if (s > bestScore) { best = mv; bestScore = s; }
+    }
+    if (!best) break;
+    take(best);
+    for (const t of [...open.keys()]) if (covers(best, t)) open.delete(t);
+  }
+  while (!o.onlyNeed && picked.length < MAX_MAIN) {
     let best: Move | undefined;
     let bestScore = 0;
     for (const mv of o.pool) {
@@ -221,11 +272,7 @@ function fillMain(o: {
       if (s > bestScore) { best = mv; bestScore = s; }
     }
     if (!best) break;
-    left -= exerciseSeconds(o.plan(best));
-    o.onPick?.(best);
-    picked.push(best);
-    add(today, best);
-    patterns.add(best.pattern);
+    take(best);
   }
   return picked;
 }
@@ -252,21 +299,34 @@ export function generateProgram(input: GeneratorInput, id: string, now = Date.no
   const fitsWeek = (mv: Move) => [...groupCredit(mv)].every(([g, c]) => (floorSets.get(g) ?? 0) + c * MIN_SETS <= WEEKLY_SETS.high);
   const plan = (mv: Move): PlannedExercise => ({ exerciseId: mv.id, ...prescription(input.goal, input.experience, mv.compound) });
 
+  const coveredWeek = new Set<Target>();
   const finishers: PlannedExercise[][] = [];
   const days: Day[] = split.days.map(([name, focus], di) => {
     const finisher = pickFinisher(finisherPool, finisherUses, finisherPatterns).map((mv) => finisherPrescription(mv, input.minutes));
     finishers.push(finisher);
     // The core finisher's time comes off the top; main exercises fill the rest of the session.
     const left = budget - finisher.reduce((n, e) => n + exerciseSeconds(e), 0);
+    // Parts of today's muscles the week hasn't covered yet. What doesn't fit today goes to the next day
+    // that trains the same muscle (Upper B picks up what Upper A had no room for).
+    const need = new Map(partsOf(coverGroups(focus), pool).filter((t) => !coveredWeek.has(t))
+      .map((t) => [t, TARGETS[t].priority * (focus.groups[TARGETS[t].group] ?? 0)]));
     const picked = fillMain({
-      pool, focus, seconds: left, week, usedThisWeek, goal: input.goal, plan, fitsWeek,
+      pool, focus, seconds: left, week, usedThisWeek, goal: input.goal, plan, fitsWeek, need,
       onPick: (mv) => { for (const [g, c] of groupCredit(mv)) floorSets.set(g, (floorSets.get(g) ?? 0) + c * MIN_SETS); },
     });
-    for (const mv of picked) { add(week, mv); usedThisWeek.add(mv.id); }
-    // Heavy compound lifts first while fresh, then isolation work, otherwise in the order picked.
-    const ordered = [...picked.filter((mv) => mv.compound), ...picked.filter((mv) => !mv.compound)];
-    return { id: `${id}-d${di}`, name, exercises: ordered.map(plan) };
+    for (const mv of picked) { add(week, mv); usedThisWeek.add(mv.id); for (const t of Object.keys(mv.hits) as Target[]) if (covers(mv, t)) coveredWeek.add(t); }
+    return { id: `${id}-d${di}`, name, exercises: picked.map(plan) };
   });
+
+  // Anything the week still leaves out gets an exercise on a day that trains that muscle.
+  const required = partsOf(split.days.flatMap(([, f]) => coverGroups(f)), pool);
+  const secondsLeft = (di: number) => budget - finishers[di].reduce((n, e) => n + exerciseSeconds(e), 0);
+  coverRest(days, split.days.map(([, f]) => f), required, pool, plan, secondsLeft, () => budget);
+  // Heavy compound lifts first while fresh, then isolation work, otherwise in the order picked.
+  for (const d of days) {
+    const compound = (e: PlannedExercise) => !!MOVE_BY_ID.get(e.exerciseId)?.compound;
+    d.exercises = [...d.exercises.filter(compound), ...d.exercises.filter((e) => !compound(e))];
+  }
 
   balanceWeeklySets(days, (di) => budget - finishers[di].reduce((n, e) => n + exerciseSeconds(e), 0));
   days.forEach((d, di) => d.exercises.push(...finishers[di]));
@@ -283,17 +343,71 @@ export function generateProgram(input: GeneratorInput, id: string, now = Date.no
 }
 
 /**
+ * Gives every part in `required` that no exercise of the week covers an exercise of its own, on the day
+ * that trains its muscle most and has the most time to spare. With no time left there, it swaps out an
+ * exercise whose parts the rest of the week already covers; failing that, the part still gets its
+ * exercise and the day's sets are trimmed afterwards to make room.
+ */
+function coverRest(days: Day[], focus: Focus[], required: Target[], pool: Move[], plan: (mv: Move) => PlannedExercise, secondsFor: (di: number) => number, budgetFor: (di: number) => number) {
+  const moves = (d: Day) => d.exercises.map((e) => MOVE_BY_ID.get(e.exerciseId)).filter((mv): mv is Move => !!mv);
+  const coveredBy = (t: Target, skip?: PlannedExercise) =>
+    days.some((d) => d.exercises.some((e) => e !== skip && covers(MOVE_BY_ID.get(e.exerciseId) ?? { hits: {} }, t)));
+  const daySeconds = (d: Day) => d.exercises.reduce((n, e) => n + exerciseSeconds(e), 0);
+  const order = [...required].sort((a, b) => TARGETS[b].priority - TARGETS[a].priority);
+  for (const t of order) {
+    if (coveredBy(t)) continue;
+    const g = TARGETS[t].group;
+    const dayOrder = days.map((d, di) => ({ d, di, r: focus[di].groups[g] ?? 0, spare: secondsFor(di) - daySeconds(d) }))
+      .filter((x) => x.r > 0).sort((a, b) => b.r - a.r || b.spare - a.spare);
+    if (!dayOrder.length) continue;
+    // The best exercise for this part, preferring a movement the day doesn't already have.
+    const best = (d: Day) => {
+      const have = moves(d);
+      return pool.filter((mv) => covers(mv, t) && !have.includes(mv))
+        .map((mv) => ({ mv, s: (mv.hits[t] ?? 0) * mv.quality * (have.some((h) => h.pattern === mv.pattern) ? 0.5 : 1) }))
+        .sort((a, b) => b.s - a.s)[0]?.mv;
+    };
+    let done = false;
+    for (const { d, di } of dayOrder) {
+      const mv = best(d);
+      if (mv && daySeconds(d) + exerciseSeconds(plan(mv)) <= secondsFor(di)) { d.exercises.push(plan(mv)); done = true; break; }
+    }
+    if (done) continue;
+    for (const { d, di } of dayOrder) {
+      const mv = best(d);
+      if (!mv) continue;
+      const need = daySeconds(d) + exerciseSeconds(plan(mv)) - secondsFor(di);
+      // An exercise everything of which the rest of the week covers anyway, the cheapest to lose first.
+      const spare = d.exercises
+        .filter((e) => {
+          const em = MOVE_BY_ID.get(e.exerciseId);
+          return em && exerciseSeconds(e) >= need && (Object.keys(em.hits) as Target[]).every((x) => !covers(em, x) || !required.includes(x) || coveredBy(x, e));
+        })
+        .sort((a, b) => (MOVE_BY_ID.get(a.exerciseId)!.quality - MOVE_BY_ID.get(b.exerciseId)!.quality))[0];
+      if (spare) { d.exercises.splice(d.exercises.indexOf(spare), 1, plan(mv)); done = true; break; }
+    }
+    if (done) continue;
+    // Last resort: add it and trim the day's sets to make room (balanceWeeklySets does that), letting the
+    // day run up to a fifth over its time if it has to. Past
+    // that the session is simply too short for this split; the routine page says what's left out.
+    for (const { d, di } of dayOrder) {
+      const mv = best(d);
+      const e = mv && { ...plan(mv), sets: MIN_SETS };
+      const floor = d.exercises.reduce((n, x) => n + exerciseSeconds({ ...x, sets: Math.min(x.sets, MIN_SETS) }), 0);
+      if (e && floor + exerciseSeconds(e) <= secondsFor(di) + 0.2 * budgetFor(di)) { d.exercises.push(e); break; }
+    }
+  }
+}
+
+/**
  * Which muscle parts a week of this program trains (a solid share of at least one exercise,
  * counting the share from compound lifts), and which important ones it leaves out.
  */
 export function weekCoverage(program: Pick<Program, 'days'>): { covered: Target[]; missing: Target[] } {
-  const week: Tally = {};
-  for (const d of program.days) for (const e of d.exercises) {
-    const mv = MOVE_BY_ID.get(e.exerciseId);
-    if (mv) add(week, mv);
-  }
+  const moves = program.days.flatMap((d) => d.exercises.map((e) => MOVE_BY_ID.get(e.exerciseId)).filter((mv): mv is Move => !!mv));
   const all = Object.keys(TARGETS) as Target[];
-  const done = (t: Target) => (week[t] ?? 0) >= 0.6;
+  // Covered means an exercise of its own, not bits of spill-over from several.
+  const done = (t: Target) => moves.some((mv) => covers(mv, t));
   return {
     covered: all.filter(done),
     // Small extras (traps, side glutes, front delts that every press already trains) aren't flagged.
@@ -386,6 +500,8 @@ export interface TodayPlan {
   behind: Group[];
   /** True when nearly everything is still recovering, so a rest day may be the better call. */
   restDay: boolean;
+  /** Parts of today's muscles there was no time for. */
+  leftOut: Target[];
 }
 
 const TODAY_KINDS: [string, Focus][] = [
@@ -475,8 +591,12 @@ export function generateToday(
   // Sets each muscle would have this week if today's exercises got their minimum.
   const floorSets = new Map(weekSets);
   const fitsWeek = (mv: Move) => [...groupCredit(mv)].every(([g, c]) => c < 1 || (floorSets.get(g) ?? 0) + c * MIN_SETS <= WEEKLY_SETS.high);
+  // Every part of today's muscles gets an exercise, the ones the last 7 days missed first.
+  const coveredWeek = new Set((Object.keys(TARGETS) as Target[]).filter((t) => (week[t] ?? 0) >= COVER));
+  const todayParts = partsOf(coverGroups(focus).filter((g) => (best.focus.groups[g] ?? 0) >= 0.75), pool);
+  const todayNeed = new Map(todayParts.map((t) => [t, TARGETS[t].priority * (focus.groups[TARGETS[t].group] ?? 0) * (coveredWeek.has(t) ? 0.3 : 1)]));
   const picked = fillMain({
-    pool, focus, seconds, week, usedThisWeek, goal: input.goal, plan, fitsWeek,
+    pool, focus, seconds, week, usedThisWeek, goal: input.goal, plan, fitsWeek, need: todayNeed,
     onPick: (mv) => { for (const [g, c] of groupCredit(mv)) floorSets.set(g, (floorSets.get(g) ?? 0) + c * MIN_SETS); },
     // Lifts you know come with your own weights; ones from the last few days give way to another angle.
     bonus: (mv) => (known.has(mv.id) ? 1.3 : 1) * (usedLately.has(mv.id) ? 0.6 : 1),
@@ -508,7 +628,26 @@ export function generateToday(
     behind: kindMain.filter((g) => trainedToday.has(g) && (weekSets.get(g) ?? 0) < WEEKLY_SETS.low / 2)
       .sort((a, b) => (weekSets.get(a) ?? 0) - (weekSets.get(b) ?? 0)),
     restDay: !chosen && best.value < 0.2,
+    leftOut: todayParts.filter((t) => !picked.some((mv) => covers(mv, t))),
   };
+}
+
+/**
+ * One workout that gives each of these muscle parts an exercise, as few exercises as it takes, within
+ * `minutes` (always at least MIN_MAIN). For the catch-up session at the end of a split.
+ */
+export function coverDay(parts: Target[], o: { id: string; name: string; minutes: number; available?: (exerciseId: string) => boolean }): Day {
+  const available = o.available ?? (() => true);
+  const pool = MOVES.filter((mv) => available(mv.id));
+  const want = parts.filter((t) => pool.some((mv) => covers(mv, t)));
+  const focus: Focus = { spread: 0.4, groups: Object.fromEntries(want.map((t) => [TARGETS[t].group, 1])) };
+  const plan = (mv: Move): PlannedExercise => ({ exerciseId: mv.id, ...prescription('muscle', 'intermediate', mv.compound) });
+  const picked = fillMain({
+    pool, focus, seconds: o.minutes * 60, week: {}, usedThisWeek: new Set(), goal: 'muscle', plan, fitsWeek: () => true,
+    need: new Map(want.map((t) => [t, TARGETS[t].priority])), onlyNeed: true,
+  });
+  const ordered = [...picked.filter((mv) => mv.compound), ...picked.filter((mv) => !mv.compound)];
+  return { id: o.id, name: o.name, exercises: ordered.map(plan) };
 }
 
 /* ---------- Fitting any planned day to the user's session size ---------- */
@@ -598,7 +737,18 @@ export function fitDay(day: Day, o: FitOptions): Omit<Day, 'exercises'> & { exer
     : seconds(main) + exerciseSeconds(next) <= budget;
   const tooMany = () => o.size.kind === 'exercises' ? main.length > o.size.n : seconds(main) > budget;
 
-  while (main.length > 1 && tooMany()) main = main.slice(0, -1);
+  // Trimming drops from the end, but first the exercises whose parts the rest of the day covers anyway,
+  // so a shorter session keeps an exercise for every part it can.
+  const hitsOf = (e: PlannedExercise) => moveLike(e.exerciseId)?.hits ?? {};
+  while (main.length > 1 && tooMany()) {
+    let drop = main.length - 1;
+    for (let i = main.length - 1; i >= 0; i--) {
+      const others = main.filter((_, j) => j !== i);
+      const parts = (Object.keys(hitsOf(main[i])) as Target[]).filter((t) => covers({ hits: hitsOf(main[i]) }, t));
+      if (parts.every((t) => others.some((e) => covers({ hits: hitsOf(e) }, t)))) { drop = i; break; }
+    }
+    main = main.filter((_, j) => j !== drop);
+  }
 
   const used = new Set(main.map((e) => e.exerciseId));
   // What the day is for: the muscle groups its own exercises mainly train.

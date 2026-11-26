@@ -176,6 +176,7 @@ export const MOVES: Move[] = [
   m('Barbell_Glute_Bridge', 'gym', true, 'bridge', 0.9, { glutes: 1 }),
   m('Single_Leg_Glute_Bridge', 'bodyweight', false, 'bridge', 0.75, { glutes: 1, hamsHip: 0.3 }),
   m('Thigh_Abductor', 'gym', false, 'abduction', 0.85, { gluteSide: 1 }),
+  m('Side_Leg_Raises', 'bodyweight', false, 'abduction', 0.6, { gluteSide: 1 }),
 
   // Calves: straight-knee raises for the gastrocnemius, bent-knee (seated) for the soleus.
   m('Standing_Calf_Raises', 'gym', false, 'calf-straight', 1, { gastroc: 1, soleus: 0.4 }),
