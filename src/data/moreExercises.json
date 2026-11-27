@@ -1166,7 +1166,11 @@
    "Push your body back with your forearms so your shoulders move past your elbows.",
    "Pull back to the start without letting your hips drop."
   ],
-  "similarTo": "Plank"
+  "similarTo": "Plank",
+  "aliases": [
+   "trx body saw",
+   "suspension body saw"
+  ]
  },
  {
   "name": "Bodyweight Bulgarian Split Squat",
@@ -7244,6 +7248,1824 @@
   "aliases": [
    "butchers block stretch",
    "bench lat stretch"
+  ]
+ },
+ {
+  "name": "TRX Chest Press",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "triceps",
+   "shoulders"
+  ],
+  "instructions": [
+   "Face away from the anchor holding a handle in each hand, arms straight in front at chest height.",
+   "Walk your feet back to lean forward; the further you lean, the harder it gets.",
+   "Bend your elbows to lower your chest between the handles, then press back to straight arms with your body in one line."
+  ],
+  "aliases": [
+   "suspension chest press"
+  ]
+ },
+ {
+  "name": "TRX Atomic Push-Up",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "abdominals",
+   "triceps"
+  ],
+  "instructions": [
+   "Put your feet in the foot cradles and get into a push-up position with your hands under your shoulders.",
+   "Do a push-up, keeping your hips level.",
+   "At the top, pull your knees in to your chest, push them back out, and go straight into the next push-up."
+  ],
+  "aliases": [
+   "suspension atomic push-up",
+   "trx push up knee tuck"
+  ]
+ },
+ {
+  "name": "TRX Fly",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "shoulders"
+  ],
+  "instructions": [
+   "Face away from the anchor holding the handles with your arms straight in front and palms facing each other.",
+   "Lean forward and let your arms open wide with a small bend in the elbows until you feel a stretch across your chest.",
+   "Squeeze your arms back together in a hugging arc to return."
+  ],
+  "aliases": [
+   "suspension fly"
+  ]
+ },
+ {
+  "name": "TRX Triceps Extension",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "triceps"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Face away from the anchor holding the handles with straight arms at forehead height, leaning forward.",
+   "Keep your upper arms still and bend only at the elbows so your head moves toward and under the handles.",
+   "Straighten your arms to push yourself back up, squeezing your triceps."
+  ],
+  "aliases": [
+   "suspension triceps extension"
+  ]
+ },
+ {
+  "name": "TRX Face Pull",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "traps",
+   "middle back"
+  ],
+  "instructions": [
+   "Face the anchor holding the handles with palms facing down and lean back with straight arms.",
+   "Pull the handles toward your face, elbows high and wide, until your hands are beside your ears.",
+   "Squeeze your shoulder blades together, then lower back under control."
+  ],
+  "aliases": [
+   "suspension face pull",
+   "ring face pull"
+  ]
+ },
+ {
+  "name": "TRX Reverse Fly",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "middle back",
+   "traps"
+  ],
+  "instructions": [
+   "Face the anchor holding the handles in front of you with straight arms and lean back.",
+   "Open your arms out to the sides in a wide arc, keeping a soft bend in the elbows, until your body is upright.",
+   "Lower slowly back to the start without letting your hips sag."
+  ],
+  "aliases": [
+   "suspension reverse fly",
+   "ring reverse fly"
+  ]
+ },
+ {
+  "name": "TRX Y Raise",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "traps"
+  ],
+  "instructions": [
+   "Face the anchor holding the handles at chest height and lean back with straight arms.",
+   "Raise your arms up and out into a Y shape over your head, pulling your body upright.",
+   "Lower back to the start slowly, keeping your body straight."
+  ],
+  "aliases": [
+   "suspension y raise",
+   "trx y fly"
+  ]
+ },
+ {
+  "name": "TRX Single-Arm Row",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "middle back"
+  ],
+  "secondary": [
+   "lats",
+   "biceps",
+   "abdominals"
+  ],
+  "instructions": [
+   "Hold one handle with one hand, face the anchor and lean back with your arm straight.",
+   "Row your body up by pulling your elbow back beside your ribs, without twisting toward the handle.",
+   "Lower under control. Finish your reps, then switch arms."
+  ],
+  "aliases": [
+   "suspension single-arm row"
+  ]
+ },
+ {
+  "name": "TRX Wide-Grip Row",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "middle back"
+  ],
+  "secondary": [
+   "shoulders",
+   "biceps"
+  ],
+  "instructions": [
+   "Face the anchor holding the handles with palms down and lean back with straight arms.",
+   "Pull your chest up with your elbows flaring out wide, level with your shoulders.",
+   "Squeeze your upper back at the top, then lower slowly."
+  ],
+  "aliases": [
+   "suspension wide-grip row",
+   "ring wide row"
+  ]
+ },
+ {
+  "name": "TRX Power Pull",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "middle back"
+  ],
+  "secondary": [
+   "lats",
+   "abdominals",
+   "biceps"
+  ],
+  "instructions": [
+   "Hold one handle and lean back, reaching your free arm toward the anchor.",
+   "Row with the working arm while rotating your chest open and reaching your free arm back toward the floor.",
+   "Rotate back in and lower under control. Finish your reps, then switch sides."
+  ],
+  "aliases": [
+   "suspension power pull"
+  ]
+ },
+ {
+  "name": "TRX Assisted Pull-Up",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "lats"
+  ],
+  "secondary": [
+   "biceps"
+  ],
+  "instructions": [
+   "Set the handles high and sit or kneel below them, holding one in each hand with straight arms.",
+   "Pull your chest up toward your hands, using your legs only as much as you need.",
+   "Lower slowly to straight arms."
+  ],
+  "aliases": [
+   "suspension assisted pull-up",
+   "ring assisted pull up"
+  ]
+ },
+ {
+  "name": "TRX Hammer Curl",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "biceps"
+  ],
+  "secondary": [
+   "forearms"
+  ],
+  "instructions": [
+   "Face the anchor holding the handles with palms facing each other and lean back with straight arms.",
+   "Keep your elbows up and still and curl your hands toward your temples, pulling your body up.",
+   "Lower back to straight arms slowly."
+  ],
+  "aliases": [
+   "suspension hammer curl"
+  ]
+ },
+ {
+  "name": "TRX Squat",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "glutes"
+  ],
+  "instructions": [
+   "Face the anchor holding the handles with arms bent at your sides and feet shoulder-width apart.",
+   "Sit back and down into a deep squat, using the straps only for balance.",
+   "Drive through your heels to stand up."
+  ],
+  "aliases": [
+   "suspension squat",
+   "trx assisted squat"
+  ]
+ },
+ {
+  "name": "TRX Jump Squat",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "glutes",
+   "calves"
+  ],
+  "instructions": [
+   "Face the anchor holding the handles, feet shoulder-width apart.",
+   "Squat down, then jump straight up, using the straps to help with height and balance.",
+   "Land softly back into the squat and go straight into the next rep."
+  ],
+  "category": "plyometrics",
+  "aliases": [
+   "suspension jump squat"
+  ]
+ },
+ {
+  "name": "TRX Pistol Squat",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "glutes"
+  ],
+  "instructions": [
+   "Face the anchor holding the handles and stand on one leg with the other held straight in front.",
+   "Sit down as low as you can on the standing leg, using the straps to stay balanced.",
+   "Push through your heel to stand back up. Finish your reps, then switch legs."
+  ],
+  "aliases": [
+   "suspension pistol squat",
+   "trx single leg squat"
+  ]
+ },
+ {
+  "name": "TRX Side Lunge",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "glutes",
+   "adductors"
+  ],
+  "instructions": [
+   "Face the anchor holding the handles with your feet together.",
+   "Step wide to one side and sit back into that hip, keeping the other leg straight.",
+   "Push back to the middle and repeat on the other side."
+  ],
+  "aliases": [
+   "suspension side lunge",
+   "trx lateral lunge"
+  ]
+ },
+ {
+  "name": "TRX Hamstring Curl",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "hamstrings"
+  ],
+  "secondary": [
+   "glutes"
+  ],
+  "instructions": [
+   "Lie on your back with your heels in the foot cradles and your arms on the floor.",
+   "Lift your hips so your body is straight, then pull your heels in toward your glutes.",
+   "Straighten your legs back out slowly, keeping your hips up."
+  ],
+  "aliases": [
+   "suspension hamstring curl",
+   "trx leg curl",
+   "ring leg curl"
+  ]
+ },
+ {
+  "name": "TRX Hamstring Runner",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "hamstrings"
+  ],
+  "secondary": [
+   "glutes",
+   "abdominals"
+  ],
+  "instructions": [
+   "Lie on your back with your heels in the foot cradles and lift your hips.",
+   "Pull one heel in toward your glute while the other leg stays straight.",
+   "Switch legs in a running motion, keeping your hips high throughout."
+  ],
+  "aliases": [
+   "suspension hamstring runner"
+  ]
+ },
+ {
+  "name": "TRX Hip Bridge",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "glutes"
+  ],
+  "secondary": [
+   "hamstrings"
+  ],
+  "instructions": [
+   "Lie on your back with your heels in the foot cradles and knees bent at 90 degrees.",
+   "Drive your heels down into the straps and lift your hips until your body is straight from shoulders to knees.",
+   "Squeeze your glutes at the top, then lower slowly."
+  ],
+  "aliases": [
+   "suspension hip bridge"
+  ]
+ },
+ {
+  "name": "TRX Single-Leg Deadlift",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "hamstrings"
+  ],
+  "secondary": [
+   "glutes",
+   "lower back"
+  ],
+  "instructions": [
+   "Face the anchor holding the handles with straight arms and stand on one leg.",
+   "Hinge at the hips, reaching your hands forward and your free leg back, keeping your back flat.",
+   "Drive your hips forward to stand tall. Finish your reps, then switch legs."
+  ],
+  "aliases": [
+   "suspension single-leg deadlift"
+  ]
+ },
+ {
+  "name": "TRX Sprinter Start",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "glutes",
+   "calves"
+  ],
+  "instructions": [
+   "Face away from the anchor with the straps over your shoulders, leaning forward with one foot back.",
+   "Drive the back knee up to hip height and rise onto the toes of the standing foot.",
+   "Step back to the lean and repeat. Finish your reps, then switch legs."
+  ],
+  "category": "plyometrics",
+  "aliases": [
+   "suspension sprinter start"
+  ]
+ },
+ {
+  "name": "TRX Pike",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "shoulders"
+  ],
+  "instructions": [
+   "Put your feet in the foot cradles and get into a high plank with hands under your shoulders.",
+   "Keep your legs straight and lift your hips high until your body forms an upside-down V.",
+   "Lower back to the plank under control without letting your hips sag."
+  ],
+  "aliases": [
+   "suspension pike"
+  ]
+ },
+ {
+  "name": "TRX Mountain Climber",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "quadriceps",
+   "shoulders"
+  ],
+  "instructions": [
+   "Put your feet in the foot cradles and get into a high plank.",
+   "Drive one knee toward your chest, then switch legs quickly.",
+   "Keep your hips level and your shoulders over your hands the whole time."
+  ],
+  "category": "cardio",
+  "aliases": [
+   "suspension mountain climber"
+  ]
+ },
+ {
+  "name": "TRX Plank",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "shoulders"
+  ],
+  "instructions": [
+   "Put your feet in the foot cradles and set your forearms on the floor under your shoulders.",
+   "Lift your body into a straight line from head to heels.",
+   "Hold, keeping your hips level and the straps still."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "suspension plank"
+  ]
+ },
+ {
+  "name": "TRX Side Plank",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "abductors",
+   "shoulders"
+  ],
+  "instructions": [
+   "Lie on your side with both feet in the foot cradles and your forearm under your shoulder.",
+   "Lift your hips until your body is straight.",
+   "Hold, then switch sides."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "suspension side plank"
+  ]
+ },
+ {
+  "name": "TRX Torso Rotation",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "shoulders"
+  ],
+  "instructions": [
+   "Face the anchor holding both handles together in front of your chest with straight arms, leaning back.",
+   "Rotate your arms and chest to one side while keeping your hips facing the anchor.",
+   "Rotate through the middle to the other side under control."
+  ],
+  "aliases": [
+   "suspension torso rotation",
+   "trx twist"
+  ]
+ },
+ {
+  "name": "TRX Shoulder External Rotation",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "middle back"
+  ],
+  "instructions": [
+   "Face the anchor holding the handles with elbows bent 90 degrees and tucked in front of your ribs.",
+   "Lean back, then rotate your forearms up and out while keeping your elbows at shoulder height.",
+   "Return slowly to the start."
+  ],
+  "aliases": [
+   "suspension shoulder external rotation"
+  ]
+ },
+ {
+  "name": "TRX Lat Stretch",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "lats"
+  ],
+  "secondary": [
+   "shoulders"
+  ],
+  "instructions": [
+   "Face the anchor holding both handles with straight arms.",
+   "Sit your hips back and down, letting your arms reach overhead and your chest drop.",
+   "Hold, shifting your hips slightly to one side to deepen the stretch, then the other."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "suspension lat stretch"
+  ]
+ },
+ {
+  "name": "Ring Pull-Up",
+  "equipment": "other",
+  "mechanic": "compound",
+  "primary": [
+   "lats"
+  ],
+  "secondary": [
+   "biceps"
+  ],
+  "instructions": [
+   "Hang from a pair of gymnastic rings with straight arms and palms facing forward.",
+   "Pull your chest up between the rings, letting your hands turn in to face each other as you rise.",
+   "Lower slowly to a full hang."
+  ],
+  "aliases": [
+   "gymnastic ring pull up",
+   "trx pull up"
+  ]
+ },
+ {
+  "name": "Ring Fly",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "shoulders"
+  ],
+  "instructions": [
+   "Hold a pair of low rings in a push-up position with your arms straight.",
+   "Let the rings slide apart slowly, keeping a soft bend in the elbows, until you feel a deep chest stretch.",
+   "Squeeze the rings back together under your chest."
+  ],
+  "aliases": [
+   "gymnastic ring fly"
+  ]
+ },
+ {
+  "name": "Upward Dog",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "lower back",
+   "chest"
+  ],
+  "instructions": [
+   "Lie face down with your hands beside your lower ribs and the tops of your feet on the floor.",
+   "Straighten your arms to lift your chest and thighs off the floor, opening your chest.",
+   "Hold with your shoulders down away from your ears."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "upward facing dog",
+   "up dog"
+  ]
+ },
+ {
+  "name": "Sphinx Pose",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "lower back"
+  ],
+  "secondary": [
+   "abdominals"
+  ],
+  "instructions": [
+   "Lie face down with your forearms on the floor and elbows under your shoulders.",
+   "Press into your forearms to lift your chest, keeping your hips on the floor.",
+   "Relax your lower back and hold."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "sphinx stretch"
+  ]
+ },
+ {
+  "name": "Puppy Pose",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "lats"
+  ],
+  "secondary": [
+   "shoulders",
+   "chest"
+  ],
+  "instructions": [
+   "Start on all fours, then walk your hands forward while keeping your hips over your knees.",
+   "Let your chest sink toward the floor and rest your forehead down.",
+   "Hold, reaching your arms long."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "puppy stretch",
+   "extended puppy pose"
+  ]
+ },
+ {
+  "name": "Warrior I",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "glutes",
+   "shoulders"
+  ],
+  "instructions": [
+   "Step one foot back into a long stance and turn the back foot out slightly.",
+   "Bend your front knee over the ankle and raise your arms overhead, hips facing forward.",
+   "Hold, then switch sides."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "warrior 1",
+   "warrior one pose"
+  ]
+ },
+ {
+  "name": "Warrior II",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "adductors",
+   "shoulders"
+  ],
+  "instructions": [
+   "Stand with your feet wide, front foot pointing forward and back foot turned in slightly.",
+   "Bend your front knee over the ankle and reach your arms out level with your shoulders.",
+   "Look over your front hand and hold, then switch sides."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "warrior 2",
+   "warrior two pose"
+  ]
+ },
+ {
+  "name": "Warrior III",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "hamstrings"
+  ],
+  "secondary": [
+   "glutes",
+   "lower back"
+  ],
+  "instructions": [
+   "Stand on one leg and hinge forward, lifting the other leg behind you.",
+   "Reach your arms forward until your body and back leg make a straight line parallel to the floor.",
+   "Hold, then switch legs."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "warrior 3",
+   "warrior three pose"
+  ]
+ },
+ {
+  "name": "Triangle Pose",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "hamstrings"
+  ],
+  "secondary": [
+   "adductors",
+   "abdominals"
+  ],
+  "instructions": [
+   "Stand with your feet wide, front foot pointing forward and back foot turned in.",
+   "Keep both legs straight and reach your front hand down toward your shin as your other arm rises up.",
+   "Hold with your chest open, then switch sides."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "trikonasana"
+  ]
+ },
+ {
+  "name": "Extended Side Angle Pose",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "adductors"
+  ],
+  "secondary": [
+   "quadriceps",
+   "lats"
+  ],
+  "instructions": [
+   "From a wide stance, bend your front knee over the ankle.",
+   "Rest your front forearm on your thigh and reach your other arm over your ear.",
+   "Hold in a long line from back foot to fingertips, then switch sides."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "side angle pose"
+  ]
+ },
+ {
+  "name": "Chair Pose",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "glutes",
+   "shoulders"
+  ],
+  "instructions": [
+   "Stand with your feet together and raise your arms overhead.",
+   "Bend your knees and sit your hips back as if into a chair.",
+   "Hold with your weight in your heels and your chest lifted."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "utkatasana"
+  ]
+ },
+ {
+  "name": "Tree Pose",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abductors"
+  ],
+  "secondary": [
+   "calves",
+   "abdominals"
+  ],
+  "instructions": [
+   "Stand on one leg and place the other foot on your inner calf or thigh, not on the knee.",
+   "Press the foot and leg into each other and bring your hands together at your chest.",
+   "Hold your balance, then switch legs."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "vrksasana"
+  ]
+ },
+ {
+  "name": "Camel Pose",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "abdominals",
+   "chest"
+  ],
+  "instructions": [
+   "Kneel with your knees hip-width apart and hands on your lower back.",
+   "Push your hips forward and lean back, lifting your chest.",
+   "Reach your hands to your heels if you can, hold, then come up slowly."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "ustrasana"
+  ]
+ },
+ {
+  "name": "Bow Pose",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "chest",
+   "lower back"
+  ],
+  "instructions": [
+   "Lie face down, bend your knees and hold your ankles.",
+   "Kick your feet into your hands to lift your chest and thighs off the floor.",
+   "Hold, breathing steadily, then lower slowly."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "dhanurasana"
+  ]
+ },
+ {
+  "name": "Locust Pose",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "lower back"
+  ],
+  "secondary": [
+   "glutes",
+   "shoulders"
+  ],
+  "instructions": [
+   "Lie face down with your arms by your sides, palms down.",
+   "Lift your chest, arms and legs off the floor together.",
+   "Hold with your neck long, then lower."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "salabhasana"
+  ]
+ },
+ {
+  "name": "Fish Pose",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "neck",
+   "abdominals"
+  ],
+  "instructions": [
+   "Lie on your back with your hands under your hips.",
+   "Press into your forearms to lift your chest and gently rest the top of your head on the floor.",
+   "Hold, keeping most of your weight in your arms."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "matsyasana"
+  ]
+ },
+ {
+  "name": "Plow Pose",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "lower back"
+  ],
+  "secondary": [
+   "hamstrings",
+   "neck"
+  ],
+  "instructions": [
+   "Lie on your back with your arms by your sides.",
+   "Lift your legs and hips over your head until your toes reach the floor behind you.",
+   "Hold with your weight on your shoulders, not your neck, then roll down slowly."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "halasana"
+  ]
+ },
+ {
+  "name": "Garland Pose",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "adductors"
+  ],
+  "secondary": [
+   "glutes",
+   "calves"
+  ],
+  "instructions": [
+   "Stand with your feet a little wider than your hips, toes turned out.",
+   "Squat all the way down, keeping your heels on the floor if you can.",
+   "Press your elbows into your inner knees with your hands together and hold."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "malasana",
+   "deep squat hold",
+   "yoga squat"
+  ]
+ },
+ {
+  "name": "Seated Spinal Twist",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "lower back",
+   "glutes"
+  ],
+  "instructions": [
+   "Sit with one leg straight, then cross the other foot over it beside the knee.",
+   "Hug the bent knee with your opposite arm and turn your chest toward it.",
+   "Sit tall and hold, then switch sides."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "half lord of the fishes",
+   "ardha matsyendrasana",
+   "seated twist stretch"
+  ]
+ },
+ {
+  "name": "Pyramid Pose",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "hamstrings"
+  ],
+  "secondary": [
+   "calves"
+  ],
+  "instructions": [
+   "Step one foot back into a short stance with both feet flat and hips facing forward.",
+   "Keep both legs straight and fold over the front leg with a flat back.",
+   "Hold, then switch sides."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "parsvottanasana"
+  ]
+ },
+ {
+  "name": "Wide-Legged Forward Fold",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "hamstrings"
+  ],
+  "secondary": [
+   "adductors"
+  ],
+  "instructions": [
+   "Stand with your feet very wide and parallel.",
+   "Hinge at your hips and fold forward, placing your hands on the floor.",
+   "Let your head hang and hold."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "prasarita padottanasana"
+  ]
+ },
+ {
+  "name": "Standing Forward Fold",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "hamstrings"
+  ],
+  "secondary": [
+   "lower back",
+   "calves"
+  ],
+  "instructions": [
+   "Stand with your feet hip-width apart.",
+   "Fold forward from your hips, letting your head and arms hang, knees soft.",
+   "Hold, letting your back relax a little more with each breath."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "uttanasana",
+   "forward bend"
+  ]
+ },
+ {
+  "name": "Cow Face Pose",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "glutes"
+  ],
+  "secondary": [
+   "shoulders",
+   "triceps"
+  ],
+  "instructions": [
+   "Sit and stack one knee on top of the other with your feet beside your hips.",
+   "Reach one arm up and bend it behind your head, and the other behind your back, trying to clasp your fingers.",
+   "Sit tall and hold, then switch sides."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "gomukhasana"
+  ]
+ },
+ {
+  "name": "Sun Salutation",
+  "equipment": "body only",
+  "mechanic": "compound",
+  "primary": [
+   "hamstrings"
+  ],
+  "secondary": [
+   "shoulders",
+   "chest",
+   "abdominals"
+  ],
+  "instructions": [
+   "Stand tall, raise your arms overhead, then fold forward to the floor.",
+   "Step back to a plank, lower down, and lift into an upward dog, then press back into a downward dog.",
+   "Step your feet to your hands, rise back to standing and repeat as a flowing sequence."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "surya namaskar",
+   "sun salutation a"
+  ]
+ },
+ {
+  "name": "Legs Up the Wall",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "hamstrings"
+  ],
+  "secondary": [
+   "lower back"
+  ],
+  "instructions": [
+   "Sit sideways next to a wall, then swing your legs up it as you lie back.",
+   "Rest your arms by your sides with your hips close to the wall.",
+   "Relax and breathe slowly."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "viparita karani"
+  ]
+ },
+ {
+  "name": "Boat Pose",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Sit with your knees bent and lean back slightly with a straight back.",
+   "Lift your feet off the floor and straighten your legs if you can, reaching your arms forward.",
+   "Hold your balance without rounding your back."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "navasana",
+   "v sit hold"
+  ]
+ },
+ {
+  "name": "Dolphin Pose",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "hamstrings",
+   "abdominals"
+  ],
+  "instructions": [
+   "Start on your forearms and knees with elbows under your shoulders.",
+   "Tuck your toes and lift your hips up and back into an upside-down V.",
+   "Press your forearms down and hold."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "dolphin stretch"
+  ]
+ },
+ {
+  "name": "Figure Four Stretch",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "glutes"
+  ],
+  "secondary": [
+   "abductors"
+  ],
+  "instructions": [
+   "Lie on your back and cross one ankle over the opposite knee.",
+   "Reach through and hold behind the bottom thigh, then pull it toward your chest.",
+   "Hold, then switch sides."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "reclined pigeon",
+   "piriformis stretch",
+   "figure 4 stretch"
+  ]
+ },
+ {
+  "name": "Shin Box Switch",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "glutes"
+  ],
+  "secondary": [
+   "adductors",
+   "abductors"
+  ],
+  "instructions": [
+   "Sit with both knees bent 90 degrees, one in front and one to the side, in a 90/90 position.",
+   "Keep your feet on the floor and rotate both knees over to the other side.",
+   "Sit tall and keep switching sides slowly."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "shinbox",
+   "90 90 switch"
+  ]
+ },
+ {
+  "name": "Front-to-Back Leg Swings",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "hamstrings"
+  ],
+  "secondary": [
+   "quadriceps",
+   "glutes"
+  ],
+  "instructions": [
+   "Stand side-on to a wall or rack and hold it for balance.",
+   "Swing the outside leg forward and back in a controlled arc.",
+   "Let the swing grow a little each time, then switch legs."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "leg swings",
+   "forward leg swings"
+  ]
+ },
+ {
+  "name": "Side-to-Side Leg Swings",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "adductors"
+  ],
+  "secondary": [
+   "abductors",
+   "glutes"
+  ],
+  "instructions": [
+   "Face a wall or rack and hold it for balance.",
+   "Swing one leg across your body and out to the side.",
+   "Let the swing grow a little each time, then switch legs."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "lateral leg swings"
+  ]
+ },
+ {
+  "name": "PVC Hip Hinge",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "hamstrings"
+  ],
+  "secondary": [
+   "glutes",
+   "lower back"
+  ],
+  "instructions": [
+   "Hold a dowel along your spine so it touches your head, upper back and tailbone.",
+   "Push your hips back with soft knees, keeping all three points on the dowel.",
+   "Stand back up by pushing your hips forward."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "dowel hip hinge",
+   "hip hinge drill"
+  ]
+ },
+ {
+  "name": "Scapular Wall Slide",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "traps",
+   "middle back"
+  ],
+  "instructions": [
+   "Stand with your back to a wall and your arms in a W, elbows and wrists touching the wall.",
+   "Slide your arms up into a Y while keeping them in contact with the wall.",
+   "Pull them back down into the W, squeezing your shoulder blades down."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "wall slides",
+   "wall angels"
+  ]
+ },
+ {
+  "name": "Quadruped Thoracic Rotation",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "middle back"
+  ],
+  "secondary": [
+   "shoulders"
+  ],
+  "instructions": [
+   "Get on all fours and put one hand behind your head.",
+   "Rotate that elbow down toward the opposite arm, then up toward the ceiling as far as you can.",
+   "Follow the elbow with your eyes. Finish your reps, then switch sides."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "t spine rotation",
+   "thoracic rotation",
+   "quadruped t spine"
+  ]
+ },
+ {
+  "name": "Sciatic Nerve Floss",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "hamstrings"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Sit on a bench with your back slumped and one leg out in front.",
+   "Straighten the knee and pull your toes up while you look up.",
+   "Bend the knee and look down, moving smoothly between the two. Do not hold the stretch."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "nerve glide",
+   "sciatic nerve glide"
+  ]
+ },
+ {
+  "name": "Heel Walk",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "calves"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Stand tall and lift your toes and the balls of your feet off the floor.",
+   "Walk forward on your heels in short steps.",
+   "Keep your toes pulled up the whole time."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "heel walks",
+   "tibialis walk"
+  ]
+ },
+ {
+  "name": "Wrist Flexor Stretch",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "forearms"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Hold one arm straight in front with your palm facing up.",
+   "Use your other hand to gently pull the fingers down and back.",
+   "Hold, then switch arms."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "forearm stretch",
+   "kneeling wrist stretch"
+  ]
+ },
+ {
+  "name": "Kneeling Adductor Rock Back",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "adductors"
+  ],
+  "secondary": [
+   "hamstrings"
+  ],
+  "instructions": [
+   "Kneel on all fours and straighten one leg out to the side, foot flat.",
+   "Rock your hips back toward your heel, keeping your back flat.",
+   "Rock forward again. Finish your reps, then switch sides."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "adductor rock back",
+   "groin rockback"
+  ]
+ },
+ {
+  "name": "Lacrosse Ball Pec Release",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "chest"
+  ],
+  "secondary": [
+   "shoulders"
+  ],
+  "instructions": [
+   "Place a massage ball between your chest, just inside the shoulder, and a wall.",
+   "Lean into the ball and roll it slowly in small circles.",
+   "Pause on tender spots for a few breaths, then switch sides."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "massage ball chest",
+   "pec ball release"
+  ]
+ },
+ {
+  "name": "Lacrosse Ball Foot Roll",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "calves"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Stand or sit with a massage ball under the arch of one foot.",
+   "Roll it slowly from heel to toes, pressing down as much as is comfortable.",
+   "Spend extra time on tight spots, then switch feet."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "massage ball foot",
+   "plantar fascia roll"
+  ]
+ },
+ {
+  "name": "Lacrosse Ball Glute Release",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "glutes"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Sit on the floor with a massage ball under one glute and your hands behind you.",
+   "Cross that ankle over the opposite knee and roll slowly over the area.",
+   "Pause on tender spots, then switch sides."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "massage ball glute"
+  ]
+ },
+ {
+  "name": "Lacrosse Ball Rear Shoulder Release",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [
+   "middle back"
+  ],
+  "instructions": [
+   "Lie on your back or stand against a wall with a massage ball behind your shoulder blade.",
+   "Cross that arm over your chest and roll slowly in small movements.",
+   "Pause on tender spots, then switch sides."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "massage ball shoulder",
+   "infraspinatus release"
+  ]
+ },
+ {
+  "name": "Lacrosse Ball Upper Trap Release",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "traps"
+  ],
+  "secondary": [
+   "neck"
+  ],
+  "instructions": [
+   "Stand against a wall with a massage ball on top of your shoulder, between the neck and shoulder.",
+   "Lean into it and bend your knees slightly to roll the ball over the muscle.",
+   "Pause on tender spots, then switch sides."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "massage ball trap"
+  ]
+ },
+ {
+  "name": "Lacrosse Ball Hip Flexor Release",
+  "equipment": "other",
+  "mechanic": "isolation",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "abdominals"
+  ],
+  "instructions": [
+   "Lie face down with a massage ball just inside the front of one hip bone.",
+   "Let your weight sink onto it and breathe slowly.",
+   "Make small movements over tender spots, then switch sides."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "psoas release",
+   "massage ball hip flexor"
+  ]
+ },
+ {
+  "name": "Foam Roll Triceps",
+  "equipment": "foam roll",
+  "mechanic": "isolation",
+  "primary": [
+   "triceps"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Lie on your side with the back of your upper arm on a foam roller, arm overhead.",
+   "Roll slowly from just above the elbow to the armpit.",
+   "Pause on tight spots, then switch arms."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "triceps smr"
+  ]
+ },
+ {
+  "name": "Pilates Hundred",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Lie on your back, lift your head and shoulders, and raise your legs to a tabletop or straight up.",
+   "Reach your arms long by your sides and pump them up and down in small, quick beats.",
+   "Breathe in for five beats and out for five, for ten breaths."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "the hundred"
+  ]
+ },
+ {
+  "name": "Pilates Roll Up",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "hamstrings"
+  ],
+  "instructions": [
+   "Lie on your back with your legs straight and arms overhead.",
+   "Bring your arms forward and peel your spine off the floor one bone at a time until you reach for your toes.",
+   "Roll back down slowly the same way."
+  ],
+  "aliases": [
+   "roll up"
+  ]
+ },
+ {
+  "name": "Pilates Teaser",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Lie on your back with your legs lifted at an angle and arms overhead.",
+   "Roll up to balance on your sit bones in a V, reaching your arms toward your feet.",
+   "Roll back down with control."
+  ],
+  "aliases": [
+   "teaser"
+  ]
+ },
+ {
+  "name": "Pilates Single Leg Stretch",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Lie on your back with your head and shoulders lifted and one knee pulled to your chest.",
+   "Stretch the other leg out low in front.",
+   "Switch legs smoothly, keeping your lower back on the floor."
+  ],
+  "aliases": [
+   "single leg stretch"
+  ]
+ },
+ {
+  "name": "Pilates Double Leg Stretch",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Lie on your back with your head lifted and both knees pulled in.",
+   "Reach your arms overhead and your legs out long at the same time.",
+   "Circle your arms around and pull your knees back in."
+  ],
+  "aliases": [
+   "double leg stretch"
+  ]
+ },
+ {
+  "name": "Pilates Saw",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "hamstrings",
+   "lower back"
+  ],
+  "instructions": [
+   "Sit tall with your legs wide and arms out to the sides.",
+   "Twist toward one leg and reach your opposite hand past your little toe.",
+   "Sit back up, untwist and repeat to the other side."
+  ],
+  "category": "stretching"
+ },
+ {
+  "name": "Pilates Swan",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "lower back"
+  ],
+  "secondary": [
+   "glutes",
+   "shoulders"
+  ],
+  "instructions": [
+   "Lie face down with your hands under your shoulders.",
+   "Press up to lift your chest, lengthening through your spine.",
+   "Lower back down with control."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "swan dive"
+  ]
+ },
+ {
+  "name": "Pilates Scissors",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [
+   "hamstrings"
+  ],
+  "instructions": [
+   "Lie on your back with your head lifted and both legs straight up.",
+   "Lower one leg toward the floor while holding the other near your chest.",
+   "Switch legs in a scissor motion, keeping your hips still."
+  ],
+  "aliases": [
+   "scissor kicks pilates"
+  ]
+ },
+ {
+  "name": "Pilates Corkscrew",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Lie on your back with your legs together and straight up.",
+   "Circle your legs down to one side, around and up the other side.",
+   "Keep your shoulders down and switch direction each rep."
+  ]
+ },
+ {
+  "name": "Rolling Like a Ball",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abdominals"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Sit, hug your shins and balance on your sit bones with your feet lifted.",
+   "Roll back onto your shoulder blades, keeping the tucked shape.",
+   "Roll back up to balance without your feet touching down."
+  ],
+  "aliases": [
+   "pilates rolling"
+  ]
+ },
+ {
+  "name": "Mermaid Stretch",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "lats"
+  ],
+  "secondary": [
+   "abdominals"
+  ],
+  "instructions": [
+   "Sit with both legs folded to one side.",
+   "Reach your top arm up and over your head, bending to the side.",
+   "Hold, then switch sides."
+  ],
+  "category": "stretching",
+  "aliases": [
+   "pilates mermaid",
+   "seated side bend stretch"
+  ]
+ },
+ {
+  "name": "Pilates Side Kick",
+  "equipment": "body only",
+  "mechanic": "isolation",
+  "primary": [
+   "abductors"
+  ],
+  "secondary": [
+   "glutes",
+   "abdominals"
+  ],
+  "instructions": [
+   "Lie on your side in a straight line with your head on your hand.",
+   "Lift your top leg to hip height and swing it forward, then back.",
+   "Keep your hips stacked. Finish your reps, then switch sides."
+  ],
+  "aliases": [
+   "side kick series"
+  ]
+ },
+ {
+  "name": "Poliquin Step-Up",
+  "equipment": "dumbbell",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "glutes"
+  ],
+  "instructions": [
+   "Stand on a low step on one leg with the heel raised on a plate and the other foot hanging off the side.",
+   "Bend the standing knee forward over your toes to lower the free heel toward the floor.",
+   "Straighten back up. Finish your reps, then switch legs."
+  ],
+  "aliases": [
+   "vmo step up",
+   "petersen step up"
+  ]
+ },
+ {
+  "name": "Low-Bar Squat",
+  "equipment": "barbell",
+  "mechanic": "compound",
+  "primary": [
+   "quadriceps"
+  ],
+  "secondary": [
+   "glutes",
+   "hamstrings",
+   "lower back"
+  ],
+  "instructions": [
+   "Set the bar lower on your back, across the rear of your shoulders, and grip a little wider than for a high-bar squat.",
+   "Lean your chest forward more and sit your hips back to squat to at least parallel.",
+   "Drive your hips up and back to stand."
+  ],
+  "aliases": [
+   "low bar back squat"
+  ]
+ },
+ {
+  "name": "Poliquin Lateral Raise",
+  "equipment": "dumbbell",
+  "mechanic": "isolation",
+  "primary": [
+   "shoulders"
+  ],
+  "secondary": [],
+  "instructions": [
+   "Hold dumbbells at your sides with your elbows bent 90 degrees.",
+   "Raise your elbows out to shoulder height, then straighten your arms at the top.",
+   "Bend your arms again and lower slowly."
+  ],
+  "aliases": [
+   "poliquin raise"
+  ]
+ },
+ {
+  "name": "Dumbbell Swing",
+  "equipment": "dumbbell",
+  "mechanic": "compound",
+  "primary": [
+   "glutes"
+  ],
+  "secondary": [
+   "hamstrings",
+   "shoulders"
+  ],
+  "instructions": [
+   "Hold one dumbbell by the end with both hands between your legs, knees soft and hips back.",
+   "Snap your hips forward to swing it up to chest height.",
+   "Let it fall back between your legs and hinge into the next rep."
+  ],
+  "aliases": [
+   "db swing"
+  ]
+ },
+ {
+  "name": "Barbell Overhead Shrug",
+  "equipment": "barbell",
+  "mechanic": "isolation",
+  "primary": [
+   "traps"
+  ],
+  "secondary": [
+   "shoulders"
+  ],
+  "instructions": [
+   "Press a barbell overhead with a wide grip and lock your elbows.",
+   "Shrug your shoulders up toward your ears, keeping your arms straight.",
+   "Lower your shoulders back down slowly."
+  ],
+  "aliases": [
+   "overhead shrug"
   ]
  }
 ]

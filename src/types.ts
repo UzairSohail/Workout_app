@@ -158,6 +158,10 @@ export interface LoggedExercise {
   scheme?: SchemeKind;
   /** 'time' logs seconds in the reps field. */
   mode?: LogMode;
+  /** Reps or seconds are for each side (lunges, single-arm work), so volume counts both sides. */
+  perSide?: boolean;
+  /** Swapped in as the planned backup for this exercise; offers the way back while nothing is logged. */
+  backupFor?: string;
   /** Done back to back with the next exercise; rest only after the last one. */
   supersetWithNext?: boolean;
   /** One tap after the last set: tunes the next weight suggestion. */
@@ -188,6 +192,10 @@ export interface ExerciseNote {
   exerciseId: string;
   note: string;
   mode?: LogMode;
+  /** Exercise to swap in with one tap when this one's machine or spot is taken. */
+  backupId?: string;
+  /** Reps (or seconds) are logged for each side. Absent = guessed from the name (single-arm, lunges…). */
+  perSide?: boolean;
 }
 
 export interface Workout {

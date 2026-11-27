@@ -56,6 +56,19 @@ export function defaultMode(ex: Exercise | undefined, pref?: LogMode): LogMode {
   return /\bplank\b|\bhold\b|wall sit|dead hang/i.test(ex.name) ? 'time' : 'reps';
 }
 
+const SIDED = /\b(single|one)[- ](arm|leg|side)|\balternat|\blunges?\b|split squat|step[- ]?ups?\b|pistol|side plank|side bridge|cossack|curtsy|suitcase/i;
+
+/** Single-arm and single-leg work is logged per side unless the user chose otherwise for that exercise. */
+export function defaultPerSide(ex: Exercise | undefined, pref?: boolean): boolean {
+  if (pref !== undefined) return pref;
+  return !!ex && SIDED.test(ex.name);
+}
+
+/** Marks an exercise as logged per side when that's its usual way. */
+export function withSide(le: LoggedExercise, ex: Exercise | undefined, pref?: boolean): LoggedExercise {
+  return defaultPerSide(ex, pref) ? { ...le, perSide: true } : le;
+}
+
 export function newLoggedExercise(
   exerciseId: string,
   sets: number,
@@ -187,6 +200,7 @@ export async function startWorkout(
       return d.deload ? { ...d, focus: ['Deload week: half the sets, about 10% lighter', e.focus].filter(Boolean).join(' · ') } : d;
     });
   }
+  exercises = exercises.map((e) => withSide(e, byId.get(e.exerciseId), notes.get(e.exerciseId)?.perSide));
   if (settings.warmups !== false) exercises = exercises.map((e, i) => withWarmups(e, byId.get(e.exerciseId), i === 0, settings));
   const w: Workout = {
     id: uid(),
