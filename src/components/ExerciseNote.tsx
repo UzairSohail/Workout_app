@@ -8,7 +8,8 @@ export async function saveExerciseNote(exerciseId: string, patch: Partial<Omit<E
   const cur = await db.exerciseNotes.get(exerciseId);
   const next: ExerciseNote = { note: '', ...cur, ...patch, exerciseId };
   next.note = next.note.trim();
-  if (!next.note && !next.mode) await db.exerciseNotes.delete(exerciseId);
+  if (!next.backupId) delete next.backupId;
+  if (!next.note && !next.mode && !next.backupId && next.perSide === undefined) await db.exerciseNotes.delete(exerciseId);
   else await db.exerciseNotes.put(next);
 }
 

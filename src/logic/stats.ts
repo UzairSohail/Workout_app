@@ -24,7 +24,7 @@ export function setVolume(sets: LoggedSet[]): number {
 
 export function workoutVolume(w: Workout): number {
   // Timed sets store seconds in reps, so they don't count toward volume.
-  return w.exercises.reduce((acc, e) => acc + (e.mode === 'time' ? 0 : setVolume(e.sets)), 0);
+  return w.exercises.reduce((acc, e) => acc + (e.mode === 'time' ? 0 : setVolume(e.sets) * (e.perSide ? 2 : 1)), 0);
 }
 
 export interface Records {

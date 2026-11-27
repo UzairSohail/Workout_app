@@ -12,7 +12,7 @@ import { toast as showToast } from '../components/UndoBar';
 import { exerciseName, useExercises } from '../exercises';
 import { fmtDuration, fmtReps, fmtSecs } from '../format';
 import { useActiveWorkout, useFinished, useSettings } from '../hooks';
-import { defaultMode, finishWorkout, historyFor, newLoggedExercise, suggestionFor, withWarmups } from '../logic/session';
+import { defaultMode, finishWorkout, historyFor, newLoggedExercise, suggestionFor, withSide, withWarmups } from '../logic/session';
 import { plateText } from '../logic/plates';
 import { workoutCalories } from '../logic/calories';
 import { freshAlternatives, isStale } from '../logic/variety';
@@ -136,6 +136,9 @@ export function WorkoutPage() {
     [],
   ) ?? new Map<string, ExerciseNote>();
   const modeFor = (id: string) => defaultMode(byId.get(id), notes.get(id)?.mode);
+  const sided = (le: LoggedExercise) => withSide(le, byId.get(le.exerciseId), notes.get(le.exerciseId)?.perSide);
+  /** Exercise whose backup is being picked. */
+  const [backupFor, setBackupFor] = useState<number | null>(null);
   useWakeLock(!editing);
 
   useEffect(() => {
@@ -227,7 +230,7 @@ export function WorkoutPage() {
   };
 
   /** Replaces exercise `i`, keeping any sets already done under the old one. */
-  const swapTo = (i: number, ex: Exercise) => mutate((d) => {
+  const swapTo = (i: number, ex: Exercise, asBackup = false) => mutate((d) => {
     const old = d.exercises[i];
     const done = old.sets.filter((x) => x.done);
     const todo = old.sets.filter((x) => !x.done && x.type !== 'warmup').length || 1;
@@ -237,10 +240,13 @@ export function WorkoutPage() {
     const fresh = newLoggedExercise(ex.id, done.length ? todo : old.sets.filter((x) => x.type !== 'warmup').length || 3,
       repMin, repMax, old.rest, finished ?? [], byId, settings, mode);
     if (old.supersetWithNext) fresh.supersetWithNext = true;
+    const next = sided(fresh);
+    // Remember the planned exercise so the backup can switch back while nothing is logged.
+    if (asBackup) next.backupFor = old.exerciseId;
     d.exercises[i] = done.length
       ? { ...old, sets: done }
-      : { ...fresh, note: undefined };
-    if (done.length) d.exercises.splice(i + 1, 0, fresh);
+      : { ...next, note: undefined };
+    if (done.length) d.exercises.splice(i + 1, 0, next);
   });
 
   /** Keeps the plan for another day. With nothing logged yet, also closes this workout. */
@@ -347,7 +353,7 @@ export function WorkoutPage() {
               <ExerciseImage exercise={ex} />
               <span className="grow">
                 <strong>{exerciseName(byId, le.exerciseId)}</strong>
-                <small className="muted">{le.scheme ? SCHEME_LABEL[le.scheme] : `${le.sets.filter((x) => x.type !== 'warmup').length} × ${fmtReps(le.repMin, le.repMax)}${le.mode === 'time' ? ' sec' : ''}`}</small>
+                <small className="muted">{le.scheme ? SCHEME_LABEL[le.scheme] : `${le.sets.filter((x) => x.type !== 'warmup').length} × ${fmtReps(le.repMin, le.repMax)}${le.mode === 'time' ? ' sec' : ''}${le.perSide ? ' per side' : ''}`}</small>
                 {exerciseParts(ex).main.length > 0 && <small className="ex-row-parts">{exerciseParts(ex).main.join(' · ')}</small>}
               </span>
               <span className="ex-count">{all ? <><CheckIcon />{le.feel ? FEEL_LABEL[le.feel] : 'Done'}</> : `${done}/${le.sets.length}`}</span>
@@ -379,6 +385,17 @@ export function WorkoutPage() {
           delete e.ai;
         });
         const note = notes.get(le.exerciseId)?.note ?? '';
+        const perSide = !!le.perSide;
+        const sideWord = perSide ? ' per side' : '';
+        // Planned backup for when the machine is taken, or the way back to the planned exercise.
+        const untouched = !editing && !le.sets.some((x) => x.done);
+        const backupId = notes.get(le.exerciseId)?.backupId;
+        const backup = backupId && backupId !== le.exerciseId ? byId.get(backupId) : undefined;
+        const original = le.backupFor ? byId.get(le.backupFor) : undefined;
+        const setPerSide = (v: boolean) => {
+          saveExerciseNote(le.exerciseId, { perSide: v });
+          mutate((d) => { d.exercises[ei].perSide = v || undefined; });
+        };
         const inSuperset = !!le.supersetWithNext && ei < w.exercises.length - 1;
         const afterSuperset = !!w.exercises[ei - 1]?.supersetWithNext;
         const nextSet = le.sets.findIndex((x) => !x.done);
@@ -435,7 +452,7 @@ export function WorkoutPage() {
                   <button className="link ex-title" onClick={() => setOpen(false)} aria-label={`Collapse ${exerciseName(byId, le.exerciseId)}`}>{exerciseName(byId, le.exerciseId)}</button>
                 )}
                 <small className="muted">
-                  {le.scheme ? SCHEME_LABEL[le.scheme] : timed ? `Target ${fmtReps(le.repMin, le.repMax)} sec` : `Target ${fmtReps(le.repMin, le.repMax)} reps`}
+                  {le.scheme ? SCHEME_LABEL[le.scheme] : timed ? `Target ${fmtReps(le.repMin, le.repMax)} sec${sideWord}` : `Target ${fmtReps(le.repMin, le.repMax)} reps${sideWord}`}
                   {last && <> · Last: {countedSets(last.sets).map(fmtLast).join(', ')}</>}
                 </small>
               </div>
@@ -446,7 +463,14 @@ export function WorkoutPage() {
                 <summary aria-label="Exercise options"><MoreIcon /></summary>
                 <div>
                   <button className="ghost" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); setSwapIndex(ei); }}>Swap exercise</button>
+                  <button className="ghost" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); setBackupFor(ei); }}>{backup ? `Change backup (${backup.name})` : 'Set a backup exercise'}</button>
+                  {backup && (
+                    <button className="ghost" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); saveExerciseNote(le.exerciseId, { backupId: undefined }); }}>Remove backup</button>
+                  )}
                   <button className="ghost" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); setNoteFor(ei); }}>{note ? 'Edit note' : 'Add note'}</button>
+                  <button className="ghost" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); setPerSide(!perSide); }}>
+                    {perSide ? `Count ${timed ? 'time' : 'reps'} for both sides together` : `Count ${timed ? 'time' : 'reps'} per side`}
+                  </button>
                   <Link className="button ghost" to={`/exercises/${le.exerciseId}`}>Exercise info and muscles</Link>
                   {!le.scheme && (
                     <button className="ghost" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); switchMode(timed ? 'reps' : 'time'); }}>
@@ -475,6 +499,12 @@ export function WorkoutPage() {
             </div>
 
             <ExerciseParts exercise={ex} />
+            {untouched && (backup || original) && (
+              <div className="backup-line">
+                {backup && <button className="chip" onClick={() => swapTo(ei, backup, true)}><SwapIcon />Taken? Use {backup.name}</button>}
+                {original && original.id !== backup?.id && <button className="chip" onClick={() => swapTo(ei, original)}><SwapIcon />Back to {original.name}</button>}
+              </div>
+            )}
             {s && (
               <div className={`suggestion ${s.kind}`}>
                 <span className="sug-icon">{s.ai ? <SparkIcon /> : s.kind === 'increase' ? <ArrowUp /> : s.kind === 'deload' ? <ArrowDown /> : <ArrowRight />}</span>
@@ -498,7 +528,7 @@ export function WorkoutPage() {
 
             <div className="sets">
               <div className="set-row head">
-                <span>Set</span><span>Previous</span><span>{units}</span><span>{timed ? 'Sec' : 'Reps'}</span><span />
+                <span>Set</span><span>Previous</span><span>{units}</span><span>{timed ? 'Sec' : 'Reps'}{perSide && <small className="per-side">/side</small>}</span><span />
               </div>
               {le.sets.map((set, si) => {
                 const label = TYPE_LABEL[set.type] || String(++workingIndex);
@@ -606,6 +636,20 @@ export function WorkoutPage() {
         />
       )}
 
+      {backupFor !== null && w.exercises[backupFor] && (
+        <ExercisePicker
+          title={`Backup for ${exerciseName(byId, w.exercises[backupFor].exerciseId)}`}
+          initialMuscle={byId.get(w.exercises[backupFor].exerciseId)?.primaryMuscles[0] ?? ''}
+          excludeId={w.exercises[backupFor].exerciseId}
+          onClose={() => setBackupFor(null)}
+          onPick={(ex) => {
+            saveExerciseNote(w.exercises[backupFor].exerciseId, { backupId: ex.id });
+            showToast(`${ex.name} is now the backup for ${exerciseName(byId, w.exercises[backupFor].exerciseId)}`);
+            setBackupFor(null);
+          }}
+        />
+      )}
+
       {supersetAfter !== null && w.exercises[supersetAfter] && (
         <ExercisePicker
           title="Superset with…"
@@ -618,7 +662,7 @@ export function WorkoutPage() {
               // Keep the chain intact when inserting into the middle of an existing superset.
               if (prev.supersetWithNext) next.supersetWithNext = true;
               prev.supersetWithNext = true;
-              d.exercises.splice(supersetAfter + 1, 0, next);
+              d.exercises.splice(supersetAfter + 1, 0, sided(next));
             });
             setSupersetAfter(null);
           }}
@@ -630,7 +674,7 @@ export function WorkoutPage() {
           onClose={() => setPicker(false)}
           onPick={(ex) => {
             mutate((d) => {
-              d.exercises.push(newLoggedExercise(ex.id, 3, 8, 12, settings.defaultRest, finished ?? [], byId, settings, modeFor(ex.id)));
+              d.exercises.push(sided(newLoggedExercise(ex.id, 3, 8, 12, settings.defaultRest, finished ?? [], byId, settings, modeFor(ex.id))));
             });
             setPicker(false);
           }}
