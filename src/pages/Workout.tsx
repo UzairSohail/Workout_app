@@ -74,7 +74,7 @@ function CoverageNote({ exercises }: { exercises: (Exercise | undefined)[] }) {
       <p><span className="cov-tag ok">Covers</span>
         {covered.map((c, i) => <span key={c.group}>{i > 0 && ' · '}<b>{c.label}</b>{c.parts.length > 0 && ` (${c.parts.join(', ')})`}</span>)}
       </p>
-      <p><span className="cov-tag skip">Skips</span>{skipped.length ? skipped.join(' · ') : 'Nothing, every part gets its own exercise'}</p>
+      <p><span className="cov-tag skip">Skips</span>{skipped.length ? skipped.join(' · ') : 'Nothing'}</p>
     </section>
   );
 }

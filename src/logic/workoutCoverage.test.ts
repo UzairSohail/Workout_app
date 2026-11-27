@@ -22,16 +22,13 @@ describe('workoutCoverage', () => {
     expect(covered[0].parts).toEqual(['upper', 'mid', 'lower']);
     expect(covered[1].parts).toEqual(['front', 'side']);
     expect(covered[2].parts).toEqual(['long head', 'outer heads']);
-    expect(skipped).toContain('Back');
-    expect(skipped).toContain('Biceps');
-    expect(skipped).toContain('Legs');
-    expect(skipped).not.toContain('Quads');
-    expect(skipped).toContain('Rear delts');
+    // Only parts of the groups it targets: nothing about back, biceps or legs on a push day.
+    expect(skipped).toEqual([]);
   });
 
   it('names missing parts of a group that is trained', () => {
     const { skipped } = workoutCoverage([push[0]]);
-    expect(skipped).toContain('Upper chest');
+    expect(skipped).toEqual(['Upper chest', 'Lower chest']);
   });
 
   it('shows main and helper parts for one exercise', () => {
