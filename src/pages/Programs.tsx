@@ -6,6 +6,7 @@ import { useFinished, useSettings } from '../hooks';
 import { nextDayIndex } from '../logic/generator';
 import { programUsesSchemes } from '../logic/schemes';
 import type { Program } from '../types';
+import { cloudAvailable } from '../sync/config';
 
 export async function copyProgram(p: Program): Promise<string> {
   const id = uid();
@@ -14,6 +15,7 @@ export async function copyProgram(p: Program): Promise<string> {
     id,
     name: p.builtIn ? `My ${p.name}` : `${p.name} (copy)`,
     builtIn: false,
+    shareCode: undefined,
     createdAt: Date.now(),
     days: p.days.map((d) => ({ ...structuredClone(d), id: uid() })),
   });
@@ -57,7 +59,7 @@ export function Programs() {
       {active && (
         <section className="card accent splits" onClick={() => navigate(`/programs/${active.id}`)}>
           <div className="section-head">
-            <p className="eyebrow" style={{ color: 'var(--accent-2)' }}>Active split</p>
+            <p className="eyebrow" style={{ color: 'var(--accent-2)' }}>Active split{active.shareCode ? ' · shared' : ''}</p>
             <Link className="small" to={`/programs/${active.id}`} onClick={(e) => e.stopPropagation()}>Edit</Link>
           </div>
           <h2 style={{ fontSize: '1.5rem', letterSpacing: '-0.03em', margin: '6px 0 4px' }}>{active.name}</h2>
@@ -98,6 +100,7 @@ export function Programs() {
         ))}
       </section>
       <button className="wide dashed" onClick={create}><PlusIcon />Build your own split</button>
+      {cloudAvailable && <Link className="link center-link" to="/programs/join">Join a partner's split</Link>}
     </>
   );
 }
