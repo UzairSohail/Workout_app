@@ -15,7 +15,7 @@ export const catchUpDayId = (programId: string) => `${programId}-catchup`;
 
 /**
  * Right after the last day of a split, before it starts over: the muscle parts nothing in that round
- * trained (lats, traps, side delts, biceps long head, soleus, ...) and an optional workout for them.
+ * trained (lats, traps, forearms, side delts, biceps long head, soleus, ...) and an optional workout for them.
  * Counts everything logged since the round started, split days or not. Undefined when nothing was
  * skipped, the round isn't finished, or its catch-up was already done.
  */

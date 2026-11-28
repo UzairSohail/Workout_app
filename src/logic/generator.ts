@@ -186,10 +186,11 @@ const COVER_AT: Partial<Record<Target, number>> = { deltFront: 0.6 };
 export const covers = (mv: Pick<Move, 'hits'>, t: Target) => (mv.hits[t] ?? 0) >= (COVER_AT[t] ?? COVER);
 /**
  * The groups a day trains for real, so each of their parts needs an exercise. Abs and lower back are
- * the core finisher's job, and upper traps only get spill-over from pulls and deadlifts.
+ * the core finisher's job, upper traps only get spill-over from pulls and deadlifts, and forearms
+ * (like traps) are left to the split's catch-up workout.
  */
 const coverGroups = (f: Focus) => (Object.entries(f.groups) as [Group, number][])
-  .filter(([g, r]) => r >= 0.5 && g !== 'core' && g !== 'lowerBack' && g !== 'traps').map(([g]) => g);
+  .filter(([g, r]) => r >= 0.5 && g !== 'core' && g !== 'lowerBack' && g !== 'traps' && g !== 'forearms').map(([g]) => g);
 /** The parts of these groups that some exercise in the pool can cover (bodyweight has no side raise). */
 function partsOf(groups: Iterable<Group>, pool: Move[]): Target[] {
   const want = new Set(groups);
@@ -418,7 +419,7 @@ export function weekCoverage(program: Pick<Program, 'days'>): { covered: Target[
 /** Weekly working sets aimed for per muscle: the usual range for growth (as on the Muscle balance page). */
 export const WEEKLY_SETS = { low: 10, high: 20 };
 const MAX_SETS = 5;
-const SMALL = new Set<Group>(['biceps', 'triceps', 'rearDelts', 'calves', 'core', 'lowerBack', 'traps']);
+const SMALL = new Set<Group>(['biceps', 'triceps', 'rearDelts', 'calves', 'core', 'lowerBack', 'traps', 'forearms']);
 const MIN_SETS = 2;
 
 /** Weekly sets per muscle group, counting a full set for a main target and half for a clear secondary one. */

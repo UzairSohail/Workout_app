@@ -11,7 +11,7 @@ export type Target =
   | 'chestUpper' | 'chestMid' | 'chestLower'
   | 'deltFront' | 'deltSide' | 'deltRear'
   | 'lats' | 'upperBack' | 'lowerBack' | 'traps'
-  | 'bicepsLong' | 'bicepsShort' | 'brachialis'
+  | 'bicepsLong' | 'bicepsShort' | 'brachialis' | 'forearms'
   | 'tricepsLong' | 'tricepsOuter'
   | 'quads' | 'rectusFemoris'
   | 'hamsHip' | 'hamsKnee'
@@ -21,7 +21,7 @@ export type Target =
 
 export type Group =
   | 'chest' | 'delts' | 'rearDelts' | 'back' | 'lowerBack' | 'traps'
-  | 'biceps' | 'triceps' | 'quads' | 'hams' | 'glutes' | 'calves' | 'core';
+  | 'biceps' | 'forearms' | 'triceps' | 'quads' | 'hams' | 'glutes' | 'calves' | 'core';
 
 export const TARGETS: Record<Target, { label: string; group: Group; priority: number }> = {
   chestUpper: { label: 'Upper chest', group: 'chest', priority: 1 },
@@ -39,6 +39,8 @@ export const TARGETS: Record<Target, { label: string; group: Group; priority: nu
   bicepsLong: { label: 'Biceps long head', group: 'biceps', priority: 0.8 },
   bicepsShort: { label: 'Biceps short head', group: 'biceps', priority: 0.7 },
   brachialis: { label: 'Brachialis and forearm', group: 'biceps', priority: 0.5 },
+  // Wrist curls and carries. Push/pull/legs rarely trains them on purpose, so the split's catch-up does.
+  forearms: { label: 'Forearms (wrists and grip)', group: 'forearms', priority: 0.3 },
   tricepsLong: { label: 'Triceps long head', group: 'triceps', priority: 0.85 },
   tricepsOuter: { label: 'Triceps outer heads', group: 'triceps', priority: 0.7 },
   quads: { label: 'Quads', group: 'quads', priority: 1 },
@@ -134,7 +136,12 @@ export const MOVES: Move[] = [
   m('Concentration_Curls', 'dumbbells', false, 'curl-short', 0.9, { bicepsShort: 1, bicepsLong: 0.4 }),
   m('Hammer_Curls', 'dumbbells', false, 'curl-hammer', 1, { brachialis: 1, bicepsLong: 0.5 }),
   m('Cable_Hammer_Curls_-_Rope_Attachment', 'gym', false, 'curl-hammer', 0.9, { brachialis: 1, bicepsLong: 0.5 }),
-  m('Reverse_Barbell_Curl', 'gym', false, 'curl-hammer', 0.7, { brachialis: 1 }),
+  m('Reverse_Barbell_Curl', 'gym', false, 'curl-hammer', 0.7, { brachialis: 1, forearms: 0.5 }),
+
+  // Forearms: palms-up wrist curls for the flexors, palms-down for the extensors.
+  m('Palms-Up_Dumbbell_Wrist_Curl_Over_A_Bench', 'dumbbells', false, 'wrist-curl', 0.9, { forearms: 1 }),
+  m('Palms-Up_Barbell_Wrist_Curl_Over_A_Bench', 'gym', false, 'wrist-curl', 0.85, { forearms: 1 }),
+  m('Palms-Down_Dumbbell_Wrist_Curl_Over_A_Bench', 'dumbbells', false, 'wrist-ext', 0.8, { forearms: 1 }),
 
   // Triceps: overhead work stretches the long head, pushdowns and dips work the outer heads.
   m('Triceps_Overhead_Extension_with_Rope', 'gym', false, 'tri-overhead', 1, { tricepsLong: 1, tricepsOuter: 0.4 }),
@@ -223,7 +230,7 @@ export function mainTargets(exerciseId: string, min = 0.6): string[] {
 
 export const GROUP_LABEL: Record<Group, string> = {
   chest: 'Chest', delts: 'Shoulders', rearDelts: 'Rear delts', back: 'Back', lowerBack: 'Lower back', traps: 'Traps',
-  biceps: 'Biceps', triceps: 'Triceps', quads: 'Quads', hams: 'Hamstrings', glutes: 'Glutes', calves: 'Calves', core: 'Abs',
+  biceps: 'Biceps', forearms: 'Forearms', triceps: 'Triceps', quads: 'Quads', hams: 'Hamstrings', glutes: 'Glutes', calves: 'Calves', core: 'Abs',
 };
 
 /**

@@ -184,7 +184,7 @@ function WeekGenerator() {
   const coverage = useMemo(() => weekCoverage(program), [program]);
   // Muscles with real work (a few sets or more), biggest first. Lower back and traps only get spill-over
   // from big lifts, and abs are the daily core finisher, so they aren't counted against the 10–20 range.
-  const sets = useMemo(() => [...weeklySets(program)].filter(([g, n]) => n >= 3 && g !== 'lowerBack' && g !== 'traps' && g !== 'core').sort((a, b) => b[1] - a[1]), [program]);
+  const sets = useMemo(() => [...weeklySets(program)].filter(([g, n]) => n >= 3 && g !== 'lowerBack' && g !== 'traps' && g !== 'forearms' && g !== 'core').sort((a, b) => b[1] - a[1]), [program]);
   const finisher = (id: string) => { const mv = MOVE_BY_ID.get(id); return !!mv && isFinisherMove(mv); };
   const shortDays = program.days.filter((d) => estimateMinutes(d) <= input.minutes - 15);
   const set = <K extends keyof GeneratorInput>(k: K) => (v: GeneratorInput[K]) => setInput({ ...input, [k]: v });
