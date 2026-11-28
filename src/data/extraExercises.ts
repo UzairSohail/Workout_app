@@ -859,6 +859,7 @@ export const ALIASES: Record<string, string[]> = {
   'Barbell_Bench_Press_-_Medium_Grip': ['bench press', 'barbell bench press', 'flat bench press'],
   'Barbell_Incline_Bench_Press_-_Medium_Grip': ['incline bench press', 'incline barbell bench press'],
   Side_Lateral_Raise: ['lateral raise', 'dumbbell lateral raise', 'side raise', 'lat raise', 'side delt raise'],
+  Side_Laterals_to_Front_Raise: ['lateral to front raise', 'side to front raise', 'lat to front raise', 'lateral front raise'],
   Barbell_Deadlift: ['deadlift', 'conventional deadlift'],
   // Names from the wger exercise list (wger.de) for exercises the app already has.
   x_B_Stance_Romanian_Deadlift: ['kickstand rdl', 'kickstand romanian deadlift'],
@@ -1069,4 +1070,16 @@ export const RENAMES: Record<string, string> = {
   // Plain names for the standard versions, so they come up before the variations.
   Incline_Dumbbell_Press: 'Incline Dumbbell Bench Press',
   Hammer_Grip_Incline_DB_Bench_Press: 'Hammer Grip Incline Dumbbell Bench Press',
+  Side_Laterals_to_Front_Raise: 'Lateral Raise to Front Raise',
+};
+
+/** Clearer step-by-step instructions for library exercises whose original text is confusing, keyed by id. */
+export const INSTRUCTIONS: Record<string, string[]> = {
+  Side_Laterals_to_Front_Raise: [
+    'Stand tall with a light dumbbell in each hand at your sides, palms facing in and elbows slightly bent.',
+    'Raise the dumbbells out to the sides to shoulder height, like a lateral raise.',
+    'Keeping them at shoulder height, sweep your arms forward until the dumbbells meet in front of you.',
+    'Lower the dumbbells slowly in front of your thighs. That is one rep.',
+    'Use lighter weights than your normal lateral raise, and keep your torso still with no swinging.',
+  ],
 };

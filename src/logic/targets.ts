@@ -100,6 +100,8 @@ export const MOVES: Move[] = [
   m('Side_Lateral_Raise', 'dumbbells', false, 'raise-side', 1, { deltSide: 1 }),
   m('Cable_Seated_Lateral_Raise', 'gym', false, 'raise-side', 0.95, { deltSide: 1 }),
   m('Front_Dumbbell_Raise', 'dumbbells', false, 'raise-front', 0.5, { deltFront: 1 }),
+  // One rep goes out to the side, then sweeps to the front: side delts first, front delts too.
+  m('Side_Laterals_to_Front_Raise', 'dumbbells', false, 'raise-side', 0.75, { deltSide: 1, deltFront: 0.6 }),
   m('Face_Pull', 'gym', false, 'rear', 1, { deltRear: 1, upperBack: 0.5, traps: 0.3 }),
   m('Reverse_Machine_Flyes', 'gym', false, 'rear', 0.95, { deltRear: 1, upperBack: 0.4 }),
   m('Reverse_Flyes', 'dumbbells', false, 'rear', 0.95, { deltRear: 1, upperBack: 0.4 }),
