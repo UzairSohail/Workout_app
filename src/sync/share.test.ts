@@ -12,7 +12,7 @@ const mem = new Map<string, string>();
 };
 
 const { db, initDb, getSettings } = await import('../db');
-const { cleanCode, joinProgram, shareProgram, stopSharing, syncShared, showCode } = await import('./share');
+const { cleanCode, joinProgram, joinShared, shareProgram, shareWorkout, stopSharing, syncShared, showCode } = await import('./share');
 import type { ShareRemote, SharedPlan } from './share';
 import type { Program } from '../types';
 
@@ -45,13 +45,14 @@ function fakeCloud() {
 }
 
 /** Each phone is a separate database; switching saves and restores its rows. */
-type Phone = { programs: Program[]; custom: unknown[]; settings: unknown[]; storage: Map<string, string> };
+type Phone = { programs: Program[]; custom: unknown[]; settings: unknown[]; workouts: unknown[]; saved: unknown[]; storage: Map<string, string> };
 const phones: Record<string, Phone> = {};
 let current = '';
 async function use(name: string) {
   if (current) {
     phones[current] = {
       programs: await db.programs.toArray(), custom: await db.customExercises.toArray(), settings: await db.settings.toArray(),
+      workouts: await db.workouts.toArray(), saved: await db.savedWorkouts.toArray(),
       storage: new Map(mem),
     };
   }
@@ -64,6 +65,8 @@ async function use(name: string) {
     await db.programs.bulkPut(p.programs);
     await db.customExercises.bulkPut(p.custom as never[]);
     await db.settings.bulkPut(p.settings as never[]);
+    await db.workouts.bulkPut(p.workouts as never[]);
+    await db.savedWorkouts.bulkPut(p.saved as never[]);
     p.storage.forEach((v, k) => mem.set(k, v));
   }
   current = name;
@@ -163,7 +166,42 @@ describe('shared splits', () => {
   });
 
   it('a wrong code says so', async () => {
-    await expect(joinProgram(fakeCloud().as('b'), 'b', 'ABCD-2345')).rejects.toThrow(/No split has that code/);
+    await expect(joinProgram(fakeCloud().as('b'), 'b', 'ABCD-2345')).rejects.toThrow(/Nothing is shared with that code/);
     await expect(joinProgram(fakeCloud().as('b'), 'b', 'ABC')).rejects.toThrow(/8 letters/);
+  });
+
+  it('shares a single workout: partner gets it in saved workouts without weights, and later edits follow', async () => {
+    const cloud = fakeCloud();
+    const set = (weight: number, reps: number) => ({ weight, reps, type: 'working' as const, done: true });
+    await db.workouts.put({
+      id: 'w1', name: 'Push', startedAt: 1, exercises: [
+        { exerciseId: 'bench', repMin: 6, repMax: 10, rest: 120, sets: [{ ...set(40, 10), type: 'warmup' as never }, set(80, 8), set(80, 7)] },
+      ],
+    } as never);
+    const code = await shareWorkout(cloud.as('a'), 'w1');
+
+    await use('wife');
+    const r = await joinShared(cloud.as('b'), 'b', code);
+    expect(r.kind).toBe('workout');
+    const saved = (await db.savedWorkouts.toArray())[0];
+    expect(saved.name).toBe('Push');
+    expect(saved.exercises[0].sets).toHaveLength(2);
+    expect(saved.exercises[0].sets.every((s) => s.weight === null && s.reps === null && !s.done)).toBe(true);
+    expect(cloud.docs.get(code)!.members).toEqual(['a']); // a workout is only read, never joined
+
+    // Nacho adds an exercise mid-workout; sync sends it and her saved copy updates.
+    await use('nacho');
+    const w = (await db.workouts.get('w1'))!;
+    w.exercises.push({ exerciseId: 'dips', repMin: 8, repMax: 12, rest: 90, sets: [set(0, 0)] });
+    await db.workouts.put(w);
+    await syncShared(cloud.as('a'), 'a');
+    await use('wife');
+    await syncShared(cloud.as('b'), 'b');
+    const after = await db.savedWorkouts.toArray();
+    expect(after).toHaveLength(1);
+    expect(after[0].exercises.map((e) => e.exerciseId)).toEqual(['bench', 'dips']);
+
+    // A split code is still refused by the split-only join.
+    await expect(joinProgram(cloud.as('b'), 'b', code)).rejects.toThrow(/single workout/);
   });
 });

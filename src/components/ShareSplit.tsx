@@ -43,7 +43,7 @@ export function ShareSplit({ program, startOpen = false }: { program: Program; s
   };
 
   const send = async () => {
-    const text = `Join my workout split "${program.name}" in the Workout app: Splits > Join a partner's split, code ${showCode(code!)}`;
+    const text = `Join my workout split "${program.name}" in the Workout app: Splits > Join your partner, code ${showCode(code!)}`;
     try {
       if (navigator.share) {
         await navigator.share({ text });
@@ -72,7 +72,7 @@ export function ShareSplit({ program, startOpen = false }: { program: Program; s
         <>
           <p className="share-code" aria-label="Share code">{showCode(code)}</p>
           <p className="muted small">
-            Your partner signs in with their own account, then opens Splits, taps Join a partner's split and types this code.
+            Your partner signs in with their own account, then opens Splits, taps Join your partner and types this code.
             You both see the same exercises, and changes either of you make show on both phones. Workouts, weights and progress stay separate.
           </p>
           <button className="wide" onClick={send}>{copied ? 'Code copied' : 'Send code'}</button>

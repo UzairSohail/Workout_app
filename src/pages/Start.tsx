@@ -1,3 +1,4 @@
+import { cloudAvailable } from '../sync/config';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Link, useNavigate } from 'react-router-dom';
 import { db } from '../db';
@@ -53,6 +54,14 @@ export function StartPage() {
               <span><strong>Empty workout</strong><small className="muted">Add exercises as you go</small></span>
             </button>
           </li>
+          {cloudAvailable && (
+            <li>
+              <Link className="list-item" to="/programs/join">
+                <span className="lead-ico" aria-hidden><PlusIcon /></span>
+                <span><strong>Get your partner's workout</strong><small className="muted">Type the code they shared</small></span>
+              </Link>
+            </li>
+          )}
           <li>
             <Link className="list-item" to="/import">
               <span className="lead-ico" aria-hidden><CameraIcon /></span>

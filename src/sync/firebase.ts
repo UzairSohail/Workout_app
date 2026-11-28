@@ -61,9 +61,9 @@ export function shareRemoteFor(uid: string): ShareRemote {
     async get(code) {
       const snap = await getDoc(ref(code));
       if (!snap.exists()) return null;
-      const v = snap.data() as { owner: string; members: string[]; program: string; exercises?: string; updatedAt?: Timestamp };
+      const v = snap.data() as { owner: string; members: string[]; program: string; exercises?: string; kind?: 'split' | 'workout'; updatedAt?: Timestamp };
       const t = v.updatedAt;
-      return { owner: v.owner, members: v.members ?? [], program: v.program, exercises: v.exercises ?? '[]', version: t ? `${t.seconds}:${t.nanoseconds}` : '' };
+      return { owner: v.owner, members: v.members ?? [], program: v.program, exercises: v.exercises ?? '[]', kind: v.kind, version: t ? `${t.seconds}:${t.nanoseconds}` : '' };
     },
     async create(code, plan) {
       await setDoc(ref(code), { owner: uid, members: [uid], ...plan, by: uid, updatedAt: serverTimestamp() });

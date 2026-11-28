@@ -211,4 +211,6 @@ export interface Workout {
   notes?: string;
   /** Short coach summary written by Gemini after the workout. */
   coachNote?: string;
+  /** On a saved workout: the code of the partner's shared workout it came from, so it follows their edits. */
+  shareCode?: string;
 }

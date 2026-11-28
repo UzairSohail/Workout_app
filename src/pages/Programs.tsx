@@ -103,7 +103,7 @@ export function Programs() {
         ))}
       </section>
       <button className="wide dashed" onClick={create}><PlusIcon />Build your own split</button>
-      {cloudAvailable && <Link className="link center-link" to="/programs/join">Join a partner's split</Link>}
+      {cloudAvailable && <Link className="link center-link" to="/programs/join">Join your partner with a code</Link>}
     </>
   );
 }

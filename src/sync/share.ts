@@ -1,5 +1,5 @@
 import { db, updateSettings } from '../db';
-import type { Exercise, Program } from '../types';
+import type { Exercise, LoggedExercise, Program, Workout } from '../types';
 
 /**
  * A split shared between two accounts (partners). The plan (days, exercises, sets, reps, rests) lives in
@@ -16,14 +16,18 @@ export interface SharedPlan {
   exercises: string;
   /** Changes whenever the plan is saved (the server time). */
   version: string;
+  /** 'workout' for a single workout (shared as a saved workout); a split otherwise. */
+  kind?: 'split' | 'workout';
 }
+
+type Payload = { program: string; exercises: string; kind?: 'split' | 'workout' };
 
 export interface ShareRemote {
   get(code: string): Promise<SharedPlan | null>;
-  create(code: string, plan: { program: string; exercises: string }): Promise<void>;
+  create(code: string, plan: Payload): Promise<void>;
   /** Adds the signed-in account to the plan's members. */
   join(code: string): Promise<void>;
-  update(code: string, plan: { program: string; exercises: string }): Promise<void>;
+  update(code: string, plan: Payload): Promise<void>;
   remove(code: string): Promise<void>;
 }
 
@@ -48,8 +52,8 @@ function writeState(s: ShareState) {
     /* storage full or blocked */
   }
 }
-function remember(code: string, seen: string, p: Program) {
-  writeState({ ...readState(), [code]: { seen, hash: planHash(p) } });
+function remember(code: string, seen: string, p: Program | string) {
+  writeState({ ...readState(), [code]: { seen, hash: typeof p === 'string' ? p : planHash(p) } });
 }
 function forget(code: string) {
   const s = readState();
@@ -70,13 +74,92 @@ export const showCode = (code: string) => `${code.slice(0, 4)}-${code.slice(4)}`
 
 const planHash = (p: Program) => JSON.stringify([p.name, p.description ?? '', p.days]);
 
-async function payload(p: Program) {
+async function customFor(ids: Set<string>) {
+  return JSON.stringify((await db.customExercises.toArray()).filter((e) => ids.has(e.id)));
+}
+
+async function payload(p: Program): Promise<Payload> {
   const ids = new Set(p.days.flatMap((d) => d.exercises.map((e) => e.exerciseId)));
-  const custom = (await db.customExercises.toArray()).filter((e) => ids.has(e.id));
   return {
     program: JSON.stringify({ id: p.id, name: p.name, description: p.description, days: p.days }),
-    exercises: JSON.stringify(custom),
+    exercises: await customFor(ids),
   };
+}
+
+// ---- Single workouts ----------------------------------------------------------
+
+/** The plan of a workout without anyone's weights or reps: exercises, set counts, rep ranges, rests, supersets. */
+function template(w: Workout): { name: string; exercises: LoggedExercise[] } {
+  return {
+    name: w.name.trim() || 'Workout',
+    exercises: w.exercises.map((e) => ({
+      exerciseId: e.exerciseId, repMin: e.repMin, repMax: e.repMax, rest: e.rest,
+      ...(e.mode ? { mode: e.mode } : {}),
+      ...(e.supersetWithNext ? { supersetWithNext: true } : {}),
+      sets: e.sets.filter((s) => s.type !== 'warmup').map((s) => ({ weight: null, reps: null, type: s.type, done: false })),
+    })),
+  };
+}
+const workoutHash = (w: Workout) => JSON.stringify(template(w));
+
+async function workoutPayload(w: Workout): Promise<Payload> {
+  return {
+    kind: 'workout',
+    program: JSON.stringify(template(w)),
+    exercises: await customFor(new Set(w.exercises.map((e) => e.exerciseId))),
+  };
+}
+
+/**
+ * Workouts this phone shared, by workout id. Kept beside the workout rather than on it, because the workout
+ * screen saves its whole row on every tap and would drop a field it doesn't know about.
+ */
+const WORKOUTS_KEY = 'share-workouts';
+function sharedWorkouts(): Record<string, string> {
+  try {
+    return JSON.parse(localStorage.getItem(WORKOUTS_KEY) || '{}') as Record<string, string>;
+  } catch {
+    return {};
+  }
+}
+function setSharedWorkouts(m: Record<string, string>) {
+  try {
+    localStorage.setItem(WORKOUTS_KEY, JSON.stringify(m));
+  } catch {
+    /* ignore */
+  }
+}
+
+/** Shares a workout's exercises (not its weights or reps). Sharing again sends the latest version under the same code. */
+export async function shareWorkout(remote: ShareRemote, workoutId: string): Promise<string> {
+  const w = await db.workouts.get(workoutId);
+  if (!w) throw new Error('That workout is gone.');
+  const plan = await workoutPayload(w);
+  let code: string | undefined = sharedWorkouts()[w.id];
+  if (code && (await remote.get(code))) {
+    await remote.update(code, plan);
+  } else {
+    code = newCode();
+    await remote.create(code, plan);
+    setSharedWorkouts({ ...sharedWorkouts(), [w.id]: code });
+  }
+  const after = await remote.get(code);
+  remember(code, after?.version ?? '', workoutHash(w));
+  return code;
+}
+
+/** Puts a partner's workout into Saved workouts, replacing an older copy of the same one. */
+async function applyWorkout(code: string, plan: SharedPlan): Promise<Workout> {
+  const t = JSON.parse(plan.program) as { name: string; exercises: LoggedExercise[] };
+  const exercises = JSON.parse(plan.exercises || '[]') as Exercise[];
+  const existing = (await db.savedWorkouts.toArray()).find((x) => x.shareCode === code);
+  const saved: Workout = { id: existing?.id ?? `shared-${code}`, name: t.name, startedAt: Date.now(), exercises: t.exercises, shareCode: code };
+  await db.transaction('rw', db.savedWorkouts, db.customExercises, async () => {
+    await db.savedWorkouts.put(saved);
+    for (const e of exercises) if (!(await db.customExercises.get(e.id))) await db.customExercises.put(e);
+  });
+  remember(code, plan.version, '');
+  return saved;
 }
 
 /** Writes the cloud's version of the plan into this phone's copy, with any custom exercises it uses. */
@@ -118,12 +201,15 @@ export async function shareProgram(remote: ShareRemote, programId: string): Prom
   return code;
 }
 
-/** Follows a partner's split from its code and makes it this phone's active split. */
-export async function joinProgram(remote: ShareRemote, uid: string, typed: string): Promise<Program> {
+export type Joined = { kind: 'split'; program: Program } | { kind: 'workout'; workout: Workout };
+
+/** Follows a partner's split from its code (it becomes the active split), or adds their shared workout to Saved workouts. */
+export async function joinShared(remote: ShareRemote, uid: string, typed: string): Promise<Joined> {
   const code = cleanCode(typed);
   if (code.length !== 8) throw new Error('The code has 8 letters and numbers, like ABCD-2345.');
   let plan = await remote.get(code);
-  if (!plan) throw new Error('No split has that code. Check it with your partner.');
+  if (!plan) throw new Error('Nothing is shared with that code. Check it with your partner.');
+  if (plan.kind === 'workout') return { kind: 'workout', workout: await applyWorkout(code, plan) };
   if (!plan.members.includes(uid)) {
     if (plan.members.length >= MAX_MEMBERS) throw new Error('That split is already shared with the most people it can be.');
     await remote.join(code);
@@ -132,7 +218,14 @@ export async function joinProgram(remote: ShareRemote, uid: string, typed: strin
   const mine = (await db.programs.toArray()).find((p) => p.shareCode === code);
   const program = await applyPlan(code, plan, mine?.id);
   await updateSettings({ activeProgramId: program.id, nextDayIndex: 0 });
-  return program;
+  return { kind: 'split', program };
+}
+
+/** Follows a partner's split from its code and makes it this phone's active split. */
+export async function joinProgram(remote: ShareRemote, uid: string, typed: string): Promise<Program> {
+  const r = await joinShared(remote, uid, typed);
+  if (r.kind !== 'split') throw new Error('That code is for a single workout, not a split.');
+  return r.program;
 }
 
 /** Stops sharing. The owner deletes the shared plan (partners keep their copy); a partner just stops following it. */
@@ -165,6 +258,36 @@ export async function syncShared(remote: ShareRemote, uid: string) {
       await remote.update(code, await payload(p));
       const after = await remote.get(code);
       remember(code, after?.version ?? st.seen, p);
+    }
+  }
+
+  // A workout this person shared and is still doing: send edits (added, removed or reordered exercises, set counts).
+  const mine = sharedWorkouts();
+  for (const [id, code] of Object.entries(mine)) {
+    const w = await db.workouts.get(id);
+    if (!w || w.finishedAt) {
+      // Done or discarded: stop following it (the partner keeps their copy).
+      delete mine[id];
+      setSharedWorkouts(mine);
+      continue;
+    }
+    const st = readState()[code];
+    if (!st || st.hash === workoutHash(w)) continue;
+    const plan = await remote.get(code);
+    if (!plan || plan.owner !== uid) continue;
+    await remote.update(code, await workoutPayload(w));
+    const after = await remote.get(code);
+    remember(code, after?.version ?? st.seen, workoutHash(w));
+  }
+
+  // A partner's workout waiting in Saved workouts: take their latest version.
+  for (const t of (await db.savedWorkouts.toArray()).filter((x) => x.shareCode)) {
+    const plan = await remote.get(t.shareCode!);
+    if (!plan) {
+      await db.savedWorkouts.put({ ...t, shareCode: undefined });
+      forget(t.shareCode!);
+    } else if (plan.version !== readState()[t.shareCode!]?.seen) {
+      await applyWorkout(t.shareCode!, plan);
     }
   }
 }
