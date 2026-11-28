@@ -75,7 +75,7 @@ describe('splitCatchUp', () => {
     id: `${dayId}${hoursAgo}`, name: dayId, programId: 'ppl', dayId, startedAt: NOW - hoursAgo * H, finishedAt: NOW - hoursAgo * H + H,
     exercises: ids.map((exerciseId) => ({ exerciseId, repMin: 8, repMax: 12, rest: 90, sets: [{ weight: 50, reps: 10, type: 'working' as const, done: true }] })),
   });
-  // A round that never trains lats, traps or the biceps long head.
+  // A round that never trains lats, traps, forearms or the biceps long head.
   const round = [
     w('push', 72, ['Barbell_Bench_Press_-_Medium_Grip', 'Incline_Dumbbell_Press', 'Cable_Crossover', 'Side_Lateral_Raise', 'Triceps_Overhead_Extension_with_Rope', 'Triceps_Pushdown']),
     w('pull', 48, ['Seated_Cable_Rows', 'Face_Pull', 'Preacher_Curl', 'Hammer_Curls']),
@@ -85,10 +85,23 @@ describe('splitCatchUp', () => {
 
   it('offers a workout for what the round skipped once its last day is done', () => {
     const c = splitCatchUp(program, round, byId, { minutes: 60 })!;
-    expect(c.missed).toEqual(expect.arrayContaining(['lats', 'traps', 'bicepsLong']));
+    expect(c.missed).toEqual(expect.arrayContaining(['lats', 'traps', 'forearms', 'bicepsLong']));
     const ids = c.day.exercises.map((e) => e.exerciseId);
     for (const t of c.missed) expect(coveredBy(ids, t)).toBe(true);
     expect(c.day.id).toBe(catchUpDayId('ppl'));
+  });
+
+  it('trains traps and forearms in a generated push / pull / legs round or its catch-up', () => {
+    for (const equipment of ['gym', 'dumbbells'] as const) for (const minutes of [45, 60, 90]) {
+      const p = generateProgram({ goal: 'muscle', days: 3, experience: 'beginner', equipment, minutes, split: 'ppl' }, 'ppl');
+      const done = p.days.map((d, i) => w(d.id, 72 - i * 24, d.exercises.map((e) => e.exerciseId)));
+      const c = splitCatchUp(p, done, byId, { minutes })!;
+      const ids = c.day.exercises.map((e) => e.exerciseId);
+      const round = p.days.flatMap((d) => d.exercises.map((e) => e.exerciseId));
+      const ok = (t: Target) => coveredBy(round, t) || coveredBy(ids, t);
+      expect({ equipment, minutes, traps: ok('traps'), forearms: ok('forearms') })
+        .toEqual({ equipment, minutes, traps: true, forearms: true });
+    }
   });
 
   it('waits for the last day, and stops offering once the catch-up is done', () => {

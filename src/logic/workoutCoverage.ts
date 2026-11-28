@@ -8,7 +8,7 @@ const SHORT: Record<Target, string> = {
   chestUpper: 'upper', chestMid: 'mid', chestLower: 'lower',
   deltFront: 'front', deltSide: 'side', deltRear: 'rear',
   lats: 'lats', upperBack: 'mid back', lowerBack: 'lower back', traps: 'traps',
-  bicepsLong: 'long head', bicepsShort: 'short head', brachialis: 'brachialis',
+  bicepsLong: 'long head', bicepsShort: 'short head', brachialis: 'brachialis', forearms: 'wrists and grip',
   tricepsLong: 'long head', tricepsOuter: 'outer heads',
   quads: 'main', rectusFemoris: 'rectus femoris',
   hamsHip: 'hinge', hamsKnee: 'curl',

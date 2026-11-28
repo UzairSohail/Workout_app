@@ -52,6 +52,7 @@ export function subAreas(ex: Exercise | undefined): Hits {
         break;
       case 'lower back': set('lowerBack', 1); break;
       case 'traps': set('traps', 1); break;
+      case 'forearms': set('forearms', 1); break;
       case 'quadriceps':
         if (has(/extension|sissy/)) set('rectusFemoris', 1);
         set('quads', has(/extension/) ? 0.6 : 1);
