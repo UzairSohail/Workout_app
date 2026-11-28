@@ -1,7 +1,6 @@
 import { useSyncExternalStore } from 'react';
 import { cloudAvailable } from './config';
-import { joinProgram, shareProgram, stopSharing, syncShared } from './share';
-import type { Program } from '../types';
+import { joinShared, shareProgram, shareWorkout, stopSharing, syncShared, type Joined } from './share';
 import { clearSyncState, getSyncState, isSyncing, pendingCount, setSyncState, subscribe, syncNow, trackChanges } from './engine';
 
 type Fb = typeof import('./firebase');
@@ -125,9 +124,12 @@ async function shareCall<T>(fn: (f: Fb, uid: string) => Promise<T>): Promise<T> 
 /** Makes a share code for a split. */
 export const shareSplit = (programId: string): Promise<string> =>
   shareCall((f, uid) => shareProgram(f.shareRemoteFor(uid), programId));
-/** Follows a partner's split from their code and makes it the active split. */
-export const joinSplit = (code: string): Promise<Program> =>
-  shareCall((f, uid) => joinProgram(f.shareRemoteFor(uid), uid, code));
+/** Follows a partner's split (it becomes the active split) or adds their workout to Saved workouts. */
+export const joinShare = (code: string): Promise<Joined> =>
+  shareCall((f, uid) => joinShared(f.shareRemoteFor(uid), uid, code));
+/** Makes (or refreshes) a share code for a workout's exercises. */
+export const shareWorkoutNow = (workoutId: string): Promise<string> =>
+  shareCall((f, uid) => shareWorkout(f.shareRemoteFor(uid), workoutId));
 /** Stops sharing (owner) or following (partner) a split. The split stays on this phone. */
 export const unshareSplit = (programId: string): Promise<void> =>
   shareCall((f, uid) => stopSharing(f.shareRemoteFor(uid), uid, programId));

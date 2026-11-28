@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { cloudAvailable } from '../sync/config';
+import { ShareWorkout } from '../components/ShareWorkout';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, saveForLater } from '../db';
 import { ExerciseImage } from '../components/ExerciseImage';
@@ -114,6 +116,7 @@ export function WorkoutPage() {
   const settings = useSettings();
   const { all, byId } = useExercises();
   const navigate = useNavigate();
+  const [sharing, setSharing] = useState(false);
   const [picker, setPicker] = useState(false);
   /** Index of the exercise a new superset partner goes after. */
   const [supersetAfter, setSupersetAfter] = useState<number | null>(null);
@@ -299,6 +302,8 @@ export function WorkoutPage() {
                 <summary aria-label="Workout options"><MoreIcon /></summary>
                 <div>
                   {w.exercises.length > 0 && <button className="ghost" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); saveLater(); }}>Save for later</button>}
+                  {cloudAvailable && w.exercises.length > 0 && <button className="ghost" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); setSharing(true); }}>Share this workout</button>}
+                  {w.programId && cloudAvailable && <button className="ghost" onClick={() => navigate(`/programs/${w.programId}?share=1`)}>Share this split</button>}
                   <button className="ghost danger" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); discard(); }}>Discard workout</button>
                 </div>
               </details>
@@ -669,6 +674,7 @@ export function WorkoutPage() {
         />
       )}
 
+      {sharing && <ShareWorkout workout={w} onClose={() => setSharing(false)} />}
       {picker && (
         <ExercisePicker
           onClose={() => setPicker(false)}

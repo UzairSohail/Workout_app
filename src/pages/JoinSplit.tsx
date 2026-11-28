@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { joinSplit, useAccount } from '../sync';
+import { joinShare, useAccount } from '../sync';
 import { ChevronLeft } from '../components/Icons';
 import { toast } from '../components/UndoBar';
 
-/** Follow a partner's split from the code they sent. */
+/** Follow a partner's split, or get their workout, from the code they sent. */
 export function JoinSplit() {
   const a = useAccount();
   const navigate = useNavigate();
@@ -16,9 +16,14 @@ export function JoinSplit() {
     setBusy(true);
     setErr('');
     try {
-      const p = await joinSplit(code);
-      toast(`You're now training with "${p.name}"`);
-      navigate('/');
+      const r = await joinShare(code);
+      if (r.kind === 'split') {
+        toast(`You're now training with "${r.program.name}"`);
+        navigate('/');
+      } else {
+        toast(`"${r.workout.name}" is in your saved workouts`);
+        navigate('/start');
+      }
     } catch (e) {
       setErr((e as Error).message);
     } finally {
@@ -30,7 +35,7 @@ export function JoinSplit() {
     <>
       <header className="page-head">
         <button className="ghost back" onClick={() => navigate('/programs')}><ChevronLeft />Splits</button>
-        <h1>Join a partner's split</h1>
+        <h1>Join your partner</h1>
       </header>
       <section className="card form">
         {!a.available ? (
@@ -43,14 +48,14 @@ export function JoinSplit() {
         ) : (
           <form className="form" onSubmit={(e) => { e.preventDefault(); join(); }}>
             <p className="muted small">
-              Type the code your partner sent. You'll get the same exercises, and any changes either of you make show on both phones.
-              Your workouts, weights and progress stay your own.
+              Type the code your partner sent. A shared split becomes your split, and changes either of you make show on both phones.
+              A shared workout goes into your saved workouts, ready to start. Your weights, logs and progress stay your own.
             </p>
             <label>Code
               <input className="share-input" value={code} onChange={(e) => setCode(e.target.value)} placeholder="ABCD-2345"
                 autoCapitalize="characters" autoComplete="off" spellCheck={false} required />
             </label>
-            <button className="wide" type="submit" disabled={busy}>{busy ? 'One moment…' : 'Join split'}</button>
+            <button className="wide" type="submit" disabled={busy}>{busy ? 'One moment…' : 'Join'}</button>
           </form>
         )}
         {err && <p className="error small">{err}</p>}
