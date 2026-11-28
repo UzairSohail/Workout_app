@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from './db';
-import { ALIASES, EXTRA_EXERCISES, RENAMES, SIMILAR_PHOTOS } from './data/extraExercises';
+import { ALIASES, EXTRA_EXERCISES, INSTRUCTIONS, RENAMES, SIMILAR_PHOTOS } from './data/extraExercises';
 import type { Exercise } from './types';
 
 /** Pinned commit of github.com/yuhonas/free-exercise-db (public domain). Keep in sync with scripts/build-exercises.mjs. */
@@ -38,7 +38,7 @@ export function withExtras(library: Exercise[]): Exercise[] {
   return [...library, ...extras]
     .map((e) => {
       const aliases = [...(ALIASES[e.id] ?? []), ...(RENAMES[e.id] ? [e.name] : [])];
-      return { ...e, name: RENAMES[e.id] ?? e.name, ...(aliases.length ? { aliases } : {}) };
+      return { ...e, name: RENAMES[e.id] ?? e.name, instructions: INSTRUCTIONS[e.id] ?? e.instructions, ...(aliases.length ? { aliases } : {}) };
     })
     .sort((a, b) => a.name.localeCompare(b.name));
 }

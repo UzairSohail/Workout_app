@@ -35,7 +35,8 @@ describe('rotationsFor', () => {
 
   it('respects missing equipment and swaps in place', () => {
     const r = rotationsFor(day, weekly(6), NOW, (id) => !id.startsWith('Cable'));
-    expect(r.find((x) => x.from === 'Side_Lateral_Raise')).toBeUndefined();
+    // No cable, so the lateral raise rotates to the dumbbell lateral-to-front raise instead.
+    expect(r.find((x) => x.from === 'Side_Lateral_Raise')?.to.id).toBe('Side_Laterals_to_Front_Raise');
     const next = applyRotations(day, r);
     expect(next.exercises.map((e) => e.exerciseId).slice(0, 2)).toEqual(['Barbell_Bench_Press_-_Medium_Grip', 'Incline_Dumbbell_Press']);
     expect(next.exercises[2]).toMatchObject({ sets: 3, repMin: 8, repMax: 12 });

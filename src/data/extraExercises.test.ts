@@ -62,6 +62,8 @@ describe('extra exercises', () => {
     expect(find('australian pull up')[0]).toBe('Inverted Row');
     expect(find('egyptian lateral raise')[0]).toBe('Leaning Lateral Raise');
     expect(find('leg curl')[0]).toBe('Machine Lying Leg Curl');
+    expect(find('lateral raise to front raise')[0]).toBe('Lateral Raise to Front Raise');
+    expect(find('side laterals to front raise')[0]).toBe('Lateral Raise to Front Raise');
   });
   it('expand gym shorthand', () => {
     const find = (q: string) => filterExercises(all, q, '', '', false).map((e) => e.name);
