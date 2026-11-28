@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { cloudAvailable } from '../sync/config';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, saveForLater } from '../db';
 import { ExerciseImage } from '../components/ExerciseImage';
@@ -299,6 +300,7 @@ export function WorkoutPage() {
                 <summary aria-label="Workout options"><MoreIcon /></summary>
                 <div>
                   {w.exercises.length > 0 && <button className="ghost" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); saveLater(); }}>Save for later</button>}
+                  {w.programId && cloudAvailable && <button className="ghost" onClick={() => navigate(`/programs/${w.programId}?share=1`)}>Share this split</button>}
                   <button className="ghost danger" onClick={(ev) => { ev.currentTarget.closest('details')?.removeAttribute('open'); discard(); }}>Discard workout</button>
                 </div>
               </details>

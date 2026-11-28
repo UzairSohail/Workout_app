@@ -1,17 +1,25 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { db, getProgramState, getSettings, uid, updateSettings } from '../db';
+import { nextDayIndex } from '../logic/generator';
 import { shareSplit, unshareSplit, useAccount } from '../sync';
 import { showCode } from '../sync/share';
 import type { Program } from '../types';
 
 /** Share a split with a partner: same exercises on both phones, each person's logs and weights stay their own. */
-export function ShareSplit({ program }: { program: Program }) {
+export function ShareSplit({ program, startOpen = false }: { program: Program; startOpen?: boolean }) {
   const a = useAccount();
-  const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(startOpen);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
   const [copied, setCopied] = useState(false);
   const code = program.shareCode;
+  const box = useRef<HTMLElement>(null);
+  // Opened from a "Share" link: bring the panel into view, since it sits below the split's days.
+  useEffect(() => {
+    if (startOpen) box.current?.scrollIntoView({ block: 'center' });
+  }, [startOpen]);
 
   if (!a.available) return null;
   if (!open) {
@@ -53,7 +61,7 @@ export function ShareSplit({ program }: { program: Program }) {
   };
 
   return (
-    <section className="card form">
+    <section className="card form" ref={box}>
       <h2>Share with partner</h2>
       {!a.signedIn ? (
         <p className="muted small">
@@ -73,6 +81,20 @@ export function ShareSplit({ program }: { program: Program }) {
           </button>
           <p className="muted small">Stopping keeps a copy of the split on both phones; it just stops updating.</p>
         </>
+      ) : program.builtIn ? (
+        <>
+          <p className="muted small">
+            Built-in splits can't be changed, so sharing makes it your own split first, with the same exercises and your place in it kept.
+            You'll both train with the same exercises and keep your own workouts, weights and progress.
+          </p>
+          <button className="wide" disabled={busy} onClick={() => act(async () => {
+            const id = await ownCopy(program);
+            await shareSplit(id);
+            navigate(`/programs/${id}?share=1`, { replace: true });
+          })}>
+            {busy ? 'One moment…' : 'Get share code'}
+          </button>
+        </>
       ) : (
         <>
           <p className="muted small">
@@ -86,4 +108,21 @@ export function ShareSplit({ program }: { program: Program }) {
       {err && <p className="error small">{err}</p>}
     </section>
   );
+}
+
+/**
+ * Turns a built-in split into the person's own, keeping day ids, starting weights and their place in it,
+ * and makes it active if the built-in one was. Returns the new split's id.
+ */
+async function ownCopy(p: Program): Promise<string> {
+  const settings = await getSettings();
+  const finished = (await db.workouts.toArray()).filter((w) => w.finishedAt);
+  const id = uid();
+  await db.programs.put({ ...structuredClone(p), id, name: `Our ${p.name}`, builtIn: false, shareCode: undefined, createdAt: Date.now() });
+  const state = await getProgramState(p.id);
+  await db.programState.put({ ...structuredClone(state), programId: id });
+  if (settings.activeProgramId === p.id) {
+    await updateSettings({ activeProgramId: id, nextDayIndex: nextDayIndex(p, finished, settings.nextDayIndex) });
+  }
+  return id;
 }

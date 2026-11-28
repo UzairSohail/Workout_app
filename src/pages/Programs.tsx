@@ -60,7 +60,10 @@ export function Programs() {
         <section className="card accent splits" onClick={() => navigate(`/programs/${active.id}`)}>
           <div className="section-head">
             <p className="eyebrow" style={{ color: 'var(--accent-2)' }}>Active split{active.shareCode ? ' · shared' : ''}</p>
-            <Link className="small" to={`/programs/${active.id}`} onClick={(e) => e.stopPropagation()}>Edit</Link>
+            <span className="row tight">
+              {cloudAvailable && <Link className="small" to={`/programs/${active.id}?share=1`} onClick={(e) => e.stopPropagation()}>Share</Link>}
+              <Link className="small" to={`/programs/${active.id}`} onClick={(e) => e.stopPropagation()}>Edit</Link>
+            </span>
           </div>
           <h2 style={{ fontSize: '1.5rem', letterSpacing: '-0.03em', margin: '6px 0 4px' }}>{active.name}</h2>
           {active.description && <p className="muted small">{active.description}</p>}

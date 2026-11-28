@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { db, uid, updateSettings } from '../db';
 import { ExercisePicker } from '../components/ExercisePicker';
 import { StartingWeights } from '../components/StartingWeights';
@@ -38,6 +38,7 @@ function setPlanMode(e: PlannedExercise, mode: LogMode) {
 export function ProgramEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [search] = useSearchParams();
   const settings = useSettings();
   const { byId } = useExercises();
   const stored = useLiveQuery(() => db.programs.get(id!), [id]);
@@ -185,11 +186,11 @@ export function ProgramEdit() {
           <button className="secondary wide" onClick={() => mutate((d) => { d.days.push({ id: uid(), name: `Day ${d.days.length + 1}`, exercises: [] }); })}>
             + Add day
           </button>
-          <ShareSplit program={stored ?? p} />
           <button className="secondary wide" onClick={async () => navigate(`/programs/${await copyProgram(p)}`)}>Make a copy</button>
           <button className="ghost danger wide" onClick={remove}>Delete split</button>
         </>
       )}
+      <ShareSplit key={p.id} program={stored ?? p} startOpen={search.get('share') === '1'} />
       {settings.activeProgramId !== p.id && (
         <button className="wide" onClick={async () => {
           await updateSettings({ activeProgramId: p.id, nextDayIndex: 0 });
