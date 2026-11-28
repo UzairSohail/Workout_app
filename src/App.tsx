@@ -1,6 +1,7 @@
 import { HashRouter, NavLink, Route, Routes, useLocation } from 'react-router-dom';
 import { Home } from './pages/Home';
 import { Programs } from './pages/Programs';
+import { JoinSplit } from './pages/JoinSplit';
 import { ProgramEdit } from './pages/ProgramEdit';
 import { Generate } from './pages/Generate';
 import { ImportPlan } from './pages/ImportPlan';
@@ -40,6 +41,7 @@ function Shell() {
           <Route path="/" element={<Home />} />
           <Route path="/programs" element={<Programs />} />
           <Route path="/programs/generate" element={<Generate />} />
+          <Route path="/programs/join" element={<JoinSplit />} />
           <Route path="/programs/:id" element={<ProgramEdit />} />
           <Route path="/import" element={<ImportPlan />} />
           <Route path="/start" element={<StartPage />} />

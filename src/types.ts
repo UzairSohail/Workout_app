@@ -128,6 +128,8 @@ export interface Program {
   days: Day[];
   builtIn?: boolean;
   createdAt: number;
+  /** Set when this split follows a plan shared with a partner (both phones get the same exercises). */
+  shareCode?: string;
 }
 
 export interface LoggedSet {

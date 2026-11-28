@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useNavigate, useParams } from 'react-router-dom';
 import { db, uid, updateSettings } from '../db';
@@ -12,6 +12,7 @@ import type { LogMode, PlannedExercise, Program, SchemeKind } from '../types';
 import { ArrowUp, ChevronLeft, XIcon } from '../components/Icons';
 import { copyProgram } from './Programs';
 import { toast } from '../components/UndoBar';
+import { ShareSplit } from '../components/ShareSplit';
 
 function NumberField({ label, value, onChange, disabled }: {
   label: string; value: number; onChange: (n: number) => void; disabled?: boolean;
@@ -43,8 +44,13 @@ export function ProgramEdit() {
   const [p, setP] = useState<Program | null>(null);
   const [pickerFor, setPickerFor] = useState<number | null>(null);
 
+  // Take the stored split when it opens, and again when it changes from outside this screen (a partner's edit).
+  const seen = useRef('');
   useEffect(() => {
-    if (stored && (!p || p.id !== stored.id)) setP(structuredClone(stored));
+    if (!stored) return;
+    const now = JSON.stringify(stored);
+    if (!p || p.id !== stored.id || (now !== seen.current && now !== JSON.stringify(p))) setP(structuredClone(stored));
+    seen.current = now;
   }, [stored, p]);
 
   if (stored === undefined && !p) return <p className="muted">Loading…</p>;
@@ -53,7 +59,8 @@ export function ProgramEdit() {
   const ro = !!p.builtIn;
   const save = (next: Program) => {
     setP(next);
-    if (!ro) db.programs.put(next);
+    // Keep the share link as stored: it can change while this screen is open.
+    if (!ro) db.programs.get(next.id).then((cur) => db.programs.put({ ...next, shareCode: cur?.shareCode }));
   };
   const mutate = (fn: (draft: Program) => void) => {
     const next = structuredClone(p);
@@ -94,6 +101,7 @@ export function ProgramEdit() {
         {ro ? <h1>{p.name}</h1> : (
           <input className="title-input" value={p.name} onChange={(e) => mutate((d) => { d.name = e.target.value; })} />
         )}
+        {p.shareCode && <p className="muted small">Shared with your partner: changes here show on both phones.</p>}
         {ro && (
           <div className="notice">
             Built-in splits can't be edited.{' '}
@@ -177,6 +185,7 @@ export function ProgramEdit() {
           <button className="secondary wide" onClick={() => mutate((d) => { d.days.push({ id: uid(), name: `Day ${d.days.length + 1}`, exercises: [] }); })}>
             + Add day
           </button>
+          <ShareSplit program={stored ?? p} />
           <button className="secondary wide" onClick={async () => navigate(`/programs/${await copyProgram(p)}`)}>Make a copy</button>
           <button className="ghost danger wide" onClick={remove}>Delete split</button>
         </>

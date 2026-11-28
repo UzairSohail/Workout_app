@@ -1,5 +1,7 @@
 import { useSyncExternalStore } from 'react';
 import { cloudAvailable } from './config';
+import { joinProgram, shareProgram, stopSharing, syncShared } from './share';
+import type { Program } from '../types';
 import { clearSyncState, getSyncState, isSyncing, pendingCount, setSyncState, subscribe, syncNow, trackChanges } from './engine';
 
 type Fb = typeof import('./firebase');
@@ -17,6 +19,7 @@ async function run() {
   try {
     const f = await loadFb();
     await syncNow(f.remoteFor(state.uid));
+    await syncShared(f.shareRemoteFor(state.uid), state.uid);
     lastError = '';
   } catch (e) {
     lastError = friendly(e);
@@ -62,7 +65,7 @@ function friendly(e: unknown): string {
     'auth/user-not-found': 'No account with that email. Create one instead.',
     'auth/too-many-requests': 'Too many tries. Wait a minute and try again.',
     'auth/network-request-failed': 'No internet connection.',
-    'permission-denied': 'The cloud refused access. Try signing out and in again.',
+    'permission-denied': 'The cloud refused access. If this is about a shared split, check the code, or the cloud rules may need updating.',
     unavailable: 'Couldn\'t reach the cloud. It will try again later.',
   };
   return map[code] ?? ((e as Error)?.message || 'Something went wrong.');
@@ -105,6 +108,29 @@ export async function signOutNow() {
 }
 
 export const syncAgain = () => run();
+
+async function shareCall<T>(fn: (f: Fb, uid: string) => Promise<T>): Promise<T> {
+  const uid = getSyncState().uid;
+  if (!uid) throw new Error('Sign in first (Settings > Account and sync).');
+  const f = await loadFb();
+  try {
+    return await fn(f, uid);
+  } catch (e) {
+    throw new Error(friendly(e));
+  } finally {
+    ping();
+  }
+}
+
+/** Makes a share code for a split. */
+export const shareSplit = (programId: string): Promise<string> =>
+  shareCall((f, uid) => shareProgram(f.shareRemoteFor(uid), programId));
+/** Follows a partner's split from their code and makes it the active split. */
+export const joinSplit = (code: string): Promise<Program> =>
+  shareCall((f, uid) => joinProgram(f.shareRemoteFor(uid), uid, code));
+/** Stops sharing (owner) or following (partner) a split. The split stays on this phone. */
+export const unshareSplit = (programId: string): Promise<void> =>
+  shareCall((f, uid) => stopSharing(f.shareRemoteFor(uid), uid, programId));
 
 export interface AccountView {
   available: boolean;
